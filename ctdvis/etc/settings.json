@@ -1,0 +1,10 @@
+{
+    "local_py_paths": {
+        "ctdpy": "C:/Utveckling/ctdpy",
+        "sharkpylib": "C:/Utveckling/sharkpylib"
+    },
+    "settings_paths": {
+        "archive_structure_path": "/templates/archive_structure",
+        "export_path": "/exports/"
+    }
+}
