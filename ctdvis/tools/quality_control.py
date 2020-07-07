@@ -207,7 +207,6 @@ class QCWorkTool:
         """
         position_df = df[['STATION', 'LATITUDE_DD', 'LONGITUDE_DD', 'KEY', 'MONTH']].drop_duplicates(
             keep='first').reset_index(drop=True)
-        # boolean = position_df['LATITUDE_DD'].isna()
         xs, ys = convert_projection(position_df['LATITUDE_DD'].astype(float).values,
                                     position_df['LONGITUDE_DD'].astype(float).values)
         position_df['LONGI'] = xs

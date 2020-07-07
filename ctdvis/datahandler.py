@@ -35,6 +35,7 @@ class Datadict(dict):
         datasets = ctd_session.read()
 
         for key, item in datasets[0].items():
+            print('key', key)
             self.setdefault(key, item)
 
         if return_session:
