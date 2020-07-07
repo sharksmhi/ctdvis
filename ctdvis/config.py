@@ -50,7 +50,8 @@ class Settings(object):
     def _append_path_to_system(self, item):
         """"""
         if isinstance(item, str):
-            sys.path.append(item)
+            if item not in sys.path:
+                sys.path.append(item)
         elif isinstance(item, dict):
             for k, it in item.items():
                 self._append_path_to_system(it)
@@ -157,8 +158,16 @@ class Settings(object):
         return {item.get('q0_flag'): item.get('plot_color_key') for _, item in self.data_parameters.items()}
 
     @property
+    def plot_parameters_mapping(self):
+        d = {}
+        for key, item in self.data_parameters.items():
+            d[item.get('plot_key')] = ' '.join((key, item.get('unit')))
+            d[item.get('plot_q0_key')] = item.get('q0_flag')
+        return d
+
+    @property
     def parameter_formats(self):
-        return {key: float for key, item in self.data_parameters.items()}
+        return {key: float for key in self.data_parameters_with_units}
 
 
 class InfoLog:

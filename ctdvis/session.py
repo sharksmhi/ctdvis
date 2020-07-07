@@ -7,6 +7,7 @@ Created on 2020-07-03 11:24
 
 """
 from ctdvis.config import Settings
+from ctdvis.tools.quality_control import QCWorkTool
 
 
 class Session:
@@ -27,14 +28,31 @@ class Session:
         self.dh.load_profile_data(self.data_directory)
         self.dh.construct_dataframe(self.settings)
 
+    def run_tool(self, tool='qc_smhi'):
+        """"""
+        # TODO settings in yaml-files.. dynamic obj-load..
+        plot = QCWorkTool(self.dh.df[self.settings.selected_keys],
+                          self.dh.raw_data,
+                          parameters=self.settings.data_parameters_with_units,
+                          plot_parameters_mapping=self.settings.plot_parameters_mapping,
+                          color_fields=self.settings.q_colors,
+                          qflag_fields=self.settings.q_parameters,
+                          auto_q_flag_parameters=self.settings.q0_parameters,
+                          #  output_filename="svea_2020.html",  # Save as html-file (will automatic open in chrome/firefox), only javascript callbacks can be used
+                          output_as_notebook=True,
+                          # Open in notebook.. Window size is not ideal for this, BUT! python callbacks works :D
+                          ctdpy_session=self.dh.ctd_session,
+                          multi_sensors=True,  # IMPORTANT!!! SMHI HAS MULTIPLE TEMP, SALT, DOXY SENSORS
+                          combo_plots=True
+                          )
+        plot.plot_stations()
+        plot.plot_data()
 
-data_dir = 'C:\\Temp\\CTD_DV\\qc_SMHI_2018\\ctd_std_fmt_20200622_130128_april_2020'
-s = Session(visualize_setting='smhi_vis')
-# s.setup_datahandler(data_dir)
+        return plot.return_layout()
 
-# data_transformer.append_dataframes(dataframes)
-# data_transformer.add_columns()
-# data_transformer.add_color_columns(auto_q_flag_parameters, mapper=q_colors_mapper)
-# data_transformer.set_column_format(**parameter_formats)
-#
-# dataframe = data_transformer.get_dataframe(columns=df_parameter_list)
+
+# data_dir = 'C:\\Temp\\CTD_DV\\qc_SMHI_2018\\ctd_std_fmt_20200622_130128_april_2020'
+# s = Session(visualize_setting='smhi_vis', data_directory=data_dir)
+# s.setup_datahandler()
+
+# layout = s.run_tool()

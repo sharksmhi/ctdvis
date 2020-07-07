@@ -21,21 +21,24 @@ class Datadict(dict):
         super().__init__()
         self.data_directory = data_directory
 
-    def load_data(self):
+    def load_data(self, return_session=False):
         """
         :return:
         """
         files = generate_filepaths(self.data_directory,
                                    endswith='.txt',
-                                   only_from_dir=True,
-                                   )
-        s = Session(filepaths=files,
-                    reader='ctd_stdfmt',
-                    )
-        datasets = s.read()
+                                   only_from_dir=True)
+
+        ctd_session = Session(filepaths=files,
+                              reader='ctd_stdfmt')
+
+        datasets = ctd_session.read()
 
         for key, item in datasets[0].items():
             self.setdefault(key, item)
+
+        if return_session:
+            return ctd_session
 
 
 class Frame(pd.DataFrame, ABC):
@@ -84,11 +87,12 @@ class DataHandler(object):
     def __init__(self):
         self.raw_data = Datadict()
         self.df = Frame(index=[])
+        self.ctd_session = None
 
     def load_profile_data(self, directory):
         """"""
         self.raw_data.data_directory = directory
-        self.raw_data.load_data()
+        self.ctd_session = self.raw_data.load_data(return_session=True)
 
     def construct_dataframe(self, settings):
         """"""
