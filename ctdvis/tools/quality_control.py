@@ -13,6 +13,11 @@ from bokeh.models.widgets import Select, RangeSlider, DataTable, TableColumn, Pa
 from bokeh.plotting import figure, show, output_file
 from bokeh.tile_providers import get_provider, Vendors
 
+from bokeh.core.validation import silence
+from bokeh.core.validation.warnings import FIXED_SIZING_MODE
+silence(FIXED_SIZING_MODE, True)
+
+
 import numpy as np
 import pandas as pd
 from matplotlib import colors
@@ -281,10 +286,10 @@ class QCWorkTool:
         :return:
         """
         params = self.parameters + ['KEY']
-        ts_df = df[params]
-        ts_df.loc[:, 'x'] = ts_df[self.plot_parameters_mapping.get('x2')]  # x2 = SALT
-        ts_df.loc[:, 'y'] = ts_df[self.plot_parameters_mapping.get('x1')]  # x1 = TEMP
-        ts_df.loc[:, 'color'] = get_color_palette(dep_serie=ts_df[self.plot_parameters_mapping.get('y')])
+        ts_df = df.loc[:, params]
+        ts_df.loc[:, 'x'] = ts_df.loc[:, self.plot_parameters_mapping.get('x2')]  # x2 = SALT
+        ts_df.loc[:, 'y'] = ts_df.loc[:, self.plot_parameters_mapping.get('x1')]  # x1 = TEMP
+        ts_df.loc[:, 'color'] = get_color_palette(dep_serie=ts_df.loc[:, self.plot_parameters_mapping.get('y')])
         self.ts_source = ColumnDataSource(data=ts_df)
         self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
 
@@ -520,7 +525,7 @@ class QCWorkTool:
             self.ctd_session.settings.user, time_stamp)
 
     def get_tab_layout(self):
-        fig_tabs = [Panel(child=column([Spacer(height=30), self.ts]), title="TS")]
+        fig_tabs = [Panel(child=column([Spacer(height=30, width=20), self.ts]), title="TS")]
         for p, item in self.figures.items():
             if (self.multi_sensors and p not in ['x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'COMBO_TEMP', 'COMBO_SALT',
                                                  'COMBO_DOXY']) \
@@ -560,7 +565,7 @@ class QCWorkTool:
                         if p in self.flag_widgets:
                             tab_cols.append(self.flag_widgets[p])
                         else:
-                            tab_cols.append(Spacer(height=41))
+                            tab_cols.append(Spacer(width=20, height=41))
                         tab_cols.append(self.figures[p])
                         tab = column(tab_cols)
                         pan = Panel(child=tab, title=pan_title(self.plot_parameters_mapping.get(p) or p))
@@ -575,13 +580,13 @@ class QCWorkTool:
     def get_layout(self):
         tabs = self.get_tab_layout()
         meta_tabs = self.get_tabs(Data=['select_all_button', 'deselect_all_button', 'pressure_slider'],
-                                  Metadata=['comnt_samp', 'comnt_visit', 'comnt_visit_button'],
+                                  Metadata=['comnt_visit', 'comnt_visit_button'],  # ['comnt_samp', 'comnt_visit', 'comnt_visit_button'],
                                   Import_Export=['file_button', 'download_button'],
                                   Info=['info_block'])
         std_parameter_tabs = self.get_std_parameter_tab_layout()
         widgets_1 = column([self.month_selector, self.spacer, self.selected_series], sizing_mode="fixed", height=300,
                            width=200)
-        widgets_2 = column([Spacer(width=125)], sizing_mode="fixed", height=10, width=125)
+        widgets_2 = column([Spacer(height=10, width=125)], sizing_mode="fixed", height=10, width=125)
         widgets_3 = column([meta_tabs], sizing_mode="fixed", height=100, width=100)
         l = grid([row([self.map, widgets_1, widgets_2, widgets_3]),
                   row([*std_parameter_tabs,
@@ -592,7 +597,7 @@ class QCWorkTool:
 
     @property
     def spacer(self):
-        return Spacer(height=10)
+        return Spacer(height=10, width=20)
 
     def return_layout(self):
         """

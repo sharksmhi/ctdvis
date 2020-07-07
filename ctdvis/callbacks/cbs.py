@@ -373,7 +373,7 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
                         code=code)
     flag_selector = Select(value='A-flag',
                            options=['A-flag', 'B-flag', 'E-flag', 'S-flag'],
-                           width=100)
+                           width=100, height=50)
     callback.args["flag_selection"] = flag_selector
     callback.args["color_key"] = color_key
     callback.args["flag_key"] = flag_key
@@ -476,7 +476,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_key=Non
     # button_types = default, primary, success, warning or danger
     button_types = ['primary', 'danger', 'success', 'warning']
     flag_list = ['A-flag', 'B-flag', 'E-flag', 'S-flag']
-    button_list = [Spacer(width=10)]
+    button_list = [Spacer(width=10, height=10)]
     dummy_figure = figure()
     for flag, b_type in zip(flag_list, button_types):
         dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
@@ -498,7 +498,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_key=Non
 
         button_list.append(button)
 
-    button_list.append(Spacer(width=10))
+    button_list.append(Spacer(width=10, height=10))
 
     return row(button_list, sizing_mode="stretch_width")
 

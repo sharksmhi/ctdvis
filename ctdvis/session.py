@@ -28,7 +28,7 @@ class Session:
         self.dh.load_profile_data(self.data_directory)
         self.dh.construct_dataframe(self.settings)
 
-    def run_tool(self, tool='qc_smhi'):
+    def run_tool(self, tool='qc_smhi', return_layout=False):
         """"""
         # TODO settings in yaml-files.. dynamic obj-load..
         plot = QCWorkTool(self.dh.df[self.settings.selected_keys],
@@ -38,9 +38,6 @@ class Session:
                           color_fields=self.settings.q_colors,
                           qflag_fields=self.settings.q_parameters,
                           auto_q_flag_parameters=self.settings.q0_parameters,
-                          #  output_filename="svea_2020.html",  # Save as html-file (will automatic open in chrome/firefox), only javascript callbacks can be used
-                          output_as_notebook=True,
-                          # Open in notebook.. Window size is not ideal for this, BUT! python callbacks works :D
                           ctdpy_session=self.dh.ctd_session,
                           multi_sensors=True,  # IMPORTANT!!! SMHI HAS MULTIPLE TEMP, SALT, DOXY SENSORS
                           combo_plots=True
@@ -48,11 +45,5 @@ class Session:
         plot.plot_stations()
         plot.plot_data()
 
-        return plot.return_layout()
-
-
-# data_dir = 'C:\\Temp\\CTD_DV\\qc_SMHI_2018\\ctd_std_fmt_20200622_130128_april_2020'
-# s = Session(visualize_setting='smhi_vis', data_directory=data_dir)
-# s.setup_datahandler()
-
-# layout = s.run_tool()
+        if return_layout:
+            return plot.return_layout()
