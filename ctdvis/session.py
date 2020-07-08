@@ -47,3 +47,7 @@ class Session:
 
         if return_layout:
             return plot.return_layout()
+
+
+if __name__ == "__main__":
+    s = Session()

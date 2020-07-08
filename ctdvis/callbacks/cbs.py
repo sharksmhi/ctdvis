@@ -383,8 +383,8 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
     return row([flag_selector, button], sizing_mode="stretch_width")
 
 
-def get_flag_buttons_widget(position_source, data_source, datasets, flag_key=None,
-                            color_key=None, figure_objs=None, select_button=None):
+def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=None,
+                            color_keys=None, figure_objs=None, select_button=None):
     """"""
     code = """
     //console.log('get_flag_buttons_widget');
@@ -399,42 +399,32 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_key=Non
     var select_button_type = select_button.button_type;
 
     // Set variables attributes
-    var color_column = color_key;
+    var color_columns = color_keys;
+    var flag_keys = flag_keys;
     var selected_flag = flag;
 
     var selected_position = position_source.selected.indices;
     var selected_key = position_data['KEY'][selected_position[0]];
-    var flag_column = selected_key+'_'+flag_key;
+    //var flag_column = selected_key+'_'+flag_key;
 
     // Get indices array of all selected items
     var selected_indices = data_source.selected.indices;
 
-    var patches = {
-        color_column : [],
-        flag_column : [],
-    };
-
     var flag_value = flag_color_mapping[selected_flag]['flag'];
     var color_value = flag_color_mapping[selected_flag]['c'];
-    var color_tuple, flag_tuple, index_value;
-
+    
     //console.log('flag_value', flag_value)
     //console.log('color_value', color_value)
-    //console.log('patches', patches)
     //console.log('selected_indices.length', selected_indices.length)
 
     if (selected_position.length == 1) {
         for (var i = 0; i < selected_indices.length; i++) {
-            index_value = selected_indices[i];
-            color_tuple = (index_value, color_value);
-            flag_tuple = (index_value, flag_value);
 
             //console.log('index_value', index_value)
-            //console.log('color_tuple', color_tuple)
-            //console.log('flag_tuple', flag_tuple)
-
-            data[color_column][index_value] = color_value;
-            data[flag_column][index_value] = flag_value;
+            for (var j = 0; j < color_columns.length; j++) {
+                data[color_columns[j]][selected_indices[i]] = color_value;
+                data[selected_key+'_'+flag_keys[j]][selected_indices[i]] = flag_value;
+            }
         }
 
         // Save changes to ColumnDataSource (only on the plotting side of ColumnDataSource)
@@ -470,7 +460,8 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_key=Non
         # ds_key = self.key_ds_mapper.get(selected_key)
         ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
         flag_value = flag_color_mapping[flag].get('flag')
-        datasets[ds_key]['data'][flag_key].iloc[selected_indices] = flag_value
+        for f in flag_keys:
+            datasets[ds_key]['data'][f].iloc[selected_indices] = flag_value
         print('datasets update in -- %.3f sec' % (time.time() - start_time))
 
     # button_types = default, primary, success, warning or danger
@@ -490,8 +481,8 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_key=Non
                                   'select_button': select_button},
                             code=code)
 
-        callback.args["color_key"] = color_key
-        callback.args["flag_key"] = flag_key
+        callback.args["color_keys"] = color_keys
+        callback.args["flag_keys"] = flag_keys
 
         button = Button(label=flag, width=30, button_type=b_type)
         button.js_on_event(ButtonClick, callback)

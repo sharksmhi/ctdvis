@@ -115,7 +115,7 @@ class QCWorkTool:
         xrange_callbacks = {}
         y_range_setting = None
         for p in self.plot_parameters_mapping:
-            if p == 'y' or 'q' in p:
+            if p == 'y' or 'q' in p or p[0].isupper():
                 continue
             param = self.plot_parameters_mapping.get(p)
             self.figures[p] = figure(tools="pan,reset,wheel_zoom,lasso_select,save", active_drag="lasso_select",
@@ -272,13 +272,14 @@ class QCWorkTool:
         for fig_key in self.figures.keys():
             if fig_key.startswith('COMBO'):
                 continue
-            q_key = 'Q_' + self.plot_parameters_mapping.get(fig_key).split()[0]
+            parameter = self.plot_parameters_mapping.get(fig_key).split()[0]
+            # q_key = 'Q_' + parameter
             self.flag_widgets[fig_key] = cbs.get_flag_buttons_widget(self.position_plot_source,
                                                                      self.data_source,
                                                                      self.datasets,
                                                                      figure_objs=self.figures,
-                                                                     flag_key=q_key,
-                                                                     color_key='color_{}'.format(fig_key),
+                                                                     flag_keys=self.plot_parameters_mapping[parameter].get('q_flags'),
+                                                                     color_keys=self.plot_parameters_mapping[parameter].get('color_keys'),
                                                                      select_button=self.select_all_button)
 
     def _setup_TS_source(self, df):

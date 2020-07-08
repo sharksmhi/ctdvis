@@ -92,9 +92,11 @@ class Filter(object):
 
 
 if __name__ == "__main__":
-    name_list = ['ctd_profile_20181208_34AR_0171.txt', 'ctd_profile_20181108_34AR_0172.txt', 'ctd_profile_20180208_34AR_0173.txt']
+    name_list = ['ctd_profile_20181208_34AR_0171.txt',
+                 'ctd_profile_20180911_34AR_0172.txt',
+                 'ctd_profile_20180208_34AR_0173.txt']
     filter_obj = Filter(name_list)
-    filter_obj.add_filter(month_list=[2, 11],
+    filter_obj.add_filter(month_list=[2, 9],
                           ship_list=['34AR'],
                           serno_max=1111,
                           serno_min=170)
