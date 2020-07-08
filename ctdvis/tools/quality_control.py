@@ -71,11 +71,12 @@ def get_contour_data(x_min, x_max, y_min, y_max):
 
 
 def get_color_palette(dep_serie=None, ):
-    number_of_colors = int(dep_serie.max()) * 2 + 1
+    # print(dep_serie.max())
+    number_of_colors = int(dep_serie.max() * 2 + 1)
     # cm_map = cm.get_cmap('viridis', number_of_colors)
     cm_map = cm.get_cmap('cool', number_of_colors)
     color_array = pd.Series([colors.to_hex(cm_map(c)) for c in range(number_of_colors)])
-
+    # print(number_of_colors, len(color_array))
     return [color_array[int(d*2)] if d > 0 else 0 for d in dep_serie]
 
 

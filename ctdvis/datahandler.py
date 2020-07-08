@@ -13,18 +13,23 @@ import numpy as np
 from ctdpy.core.session import Session
 from ctdpy.core.utils import generate_filepaths
 
+from ctdvis.filter import Filter
+
 
 class Datadict(dict):
     """
+    Data Dictionary
+    We intend to use filenames as keys with profile dataframes as items
     """
     def __init__(self, data_directory=None):
         super().__init__()
         self.data_directory = data_directory
 
-    def load_data(self, return_session=False):
+    def load_data(self, return_session=False, filters=None):
         """
         :return:
         """
+        filter_obj = None
         files = generate_filepaths(self.data_directory,
                                    endswith='.txt',
                                    only_from_dir=True)
@@ -34,16 +39,30 @@ class Datadict(dict):
 
         datasets = ctd_session.read()
 
+        if filters:
+            # TODO Move filters to ctdpy ?
+            filter_obj = Filter(list(datasets[0].keys()))
+            filter_obj.add_filter(**filters)
+
         for key, item in datasets[0].items():
-            print('key', key)
-            self.setdefault(key, item)
+            if filters:
+                if key in filter_obj.valid_file_names:
+                    self.append_item(key, item)
+            else:
+                self.append_item(key, item)
 
         if return_session:
             return ctd_session
 
+    def append_item(self, key, item):
+        print('Appending data for key: {}'.format(key))
+        self.setdefault(key, item)
+
 
 class Frame(pd.DataFrame, ABC):
     """
+    Subclassing pandas.DataFrame
+    We intend to use Frame as a DataFrame for all selected profile dataset
     """
     @property
     def _constructor(self):
@@ -84,8 +103,12 @@ class Frame(pd.DataFrame, ABC):
 
 class DataHandler(object):
     """
+    Stores rawdata (ctd-standard-format)
+    Appends selected filtered datasets (self.raw_data) to Frame (self.df)
+    Conform self.df in order to use it in bokeh tools..
     """
-    def __init__(self):
+    def __init__(self, filters):
+        self.filters = filters
         self.raw_data = Datadict()
         self.df = Frame(index=[])
         self.ctd_session = None
@@ -93,7 +116,7 @@ class DataHandler(object):
     def load_profile_data(self, directory):
         """"""
         self.raw_data.data_directory = directory
-        self.ctd_session = self.raw_data.load_data(return_session=True)
+        self.ctd_session = self.raw_data.load_data(return_session=True, filters=self.filters)
 
     def construct_dataframe(self, settings):
         """"""

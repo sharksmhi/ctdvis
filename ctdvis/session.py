@@ -13,7 +13,7 @@ from ctdvis.tools.quality_control import QCWorkTool
 class Session:
     """
     """
-    def __init__(self, visualize_setting=None, data_directory=None):
+    def __init__(self, visualize_setting=None, data_directory=None, filters=None):
         self.data_directory = data_directory
         self.settings = Settings(visualize_setting=visualize_setting)
         # why here? well, we need to append local python paths from
@@ -21,7 +21,7 @@ class Session:
         from ctdvis.datahandler import DataHandler
         global DataHandler
 
-        self.dh = DataHandler()
+        self.dh = DataHandler(filters)
 
     def setup_datahandler(self):
         """"""
