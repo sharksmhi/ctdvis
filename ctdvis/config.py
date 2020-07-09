@@ -10,6 +10,7 @@ import os
 import sys
 from ctdvis import utils
 from ctdvis.readers import JSONreader
+from sharkpylib.qc.settings import Settings as shark_qc_settings
 
 
 class Settings(object):
@@ -20,10 +21,6 @@ class Settings(object):
         self.base_directory = os.path.dirname(os.path.realpath(__file__))
         etc_path = '\\'.join([self.base_directory, 'etc', ''])
         self._load_settings(etc_path)
-
-        self._add_py_paths_to_system()
-
-        from sharkpylib.qc.settings import Settings as shark_qc_settings
 
         qc_settings = shark_qc_settings()
         self.parameter_dependencies = qc_settings.parameter_dependencies.get('parameters')
