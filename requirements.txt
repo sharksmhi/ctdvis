@@ -1,6 +1,7 @@
-pyproj
-ctdpy
-gsw
-bokeh==1.4.0
 numpy
+matplotlib
+bokeh==1.4.0
+gsw
+pyproj==1.9.6
 pandas
+ctdpy
