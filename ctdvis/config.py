@@ -17,6 +17,8 @@ class Settings(object):
     """
     """
     def __init__(self, visualize_setting=None):
+        self.multi_sensors = None
+        self.combo_plots = None
         self.visualize_setting = visualize_setting or 'smhi_viz'
         self.base_directory = os.path.dirname(os.path.realpath(__file__))
         etc_path = '\\'.join([self.base_directory, 'etc', ''])
@@ -86,6 +88,7 @@ class Settings(object):
                     pass
             else:
                 path_list.append(p)
+        print(path_list)
         settings = JSONreader().load_json(config_files=path_list, return_dict=True)
 
         self.set_attributes(self, **settings)

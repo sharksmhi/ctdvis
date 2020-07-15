@@ -8,6 +8,7 @@ Created on 2020-07-03 11:24
 """
 from ctdvis.config import Settings
 from ctdvis.tools.quality_control import QCWorkTool
+from ctdvis.datahandler import DataHandler
 
 
 class Session:
@@ -16,10 +17,6 @@ class Session:
     def __init__(self, visualize_setting=None, data_directory=None, filters=None):
         self.data_directory = data_directory
         self.settings = Settings(visualize_setting=visualize_setting)
-        # why here? well, we need to append local python paths from
-        # Settings() first (eg. path to: ctdpy, sharkpylib)
-        from ctdvis.datahandler import DataHandler
-        global DataHandler
 
         self.dh = DataHandler(filters)
 
@@ -39,8 +36,8 @@ class Session:
                           qflag_fields=self.settings.q_parameters,
                           auto_q_flag_parameters=self.settings.q0_parameters,
                           ctdpy_session=self.dh.ctd_session,
-                          multi_sensors=True,  # IMPORTANT!!! SMHI HAS MULTIPLE TEMP, SALT, DOXY SENSORS
-                          combo_plots=True
+                          multi_sensors=self.settings.multi_sensors,  # IMPORTANT!!! SMHI HAS MULTIPLE TEMP, SALT, DOXY SENSORS
+                          combo_plots=self.settings.combo_plots
                           )
         plot.plot_stations()
         plot.plot_data()
@@ -50,4 +47,4 @@ class Session:
 
 
 if __name__ == "__main__":
-    s = Session()
+    s = Session(visualize_setting='smhi_vis')
