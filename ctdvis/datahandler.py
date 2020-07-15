@@ -29,7 +29,6 @@ class Datadict(dict):
         """
         :return:
         """
-        filter_obj = None
         files = generate_filepaths(self.data_directory,
                                    endswith='.txt',
                                    only_from_dir=True)
@@ -39,6 +38,7 @@ class Datadict(dict):
 
         datasets = ctd_session.read()
 
+        filter_obj = None
         if filters:
             # TODO Move filters to ctdpy ?
             filter_obj = Filter(list(datasets[0].keys()))
@@ -98,7 +98,7 @@ class Frame(pd.DataFrame, ABC):
         color = 'navy'
         for qf in qflags:
             color_key = mapper.get(qf)
-            self[color_key] = self[qf].fillna('').apply(lambda x: color if 'B' not in x else 'red')
+            self[color_key] = self[qf].fillna('').apply(lambda x: color if x != 'B' else 'red')
 
 
 class DataHandler(object):
@@ -129,6 +129,6 @@ class DataHandler(object):
         self.df.reset_index(drop=True, inplace=True)
 
         self.df.convert_formats()
-        self.df.add_color_columns(settings.q0_parameters,
+        self.df.add_color_columns(settings.q_parameters,
                                   mapper=settings.q_colors_mapper)
         self.df.set_column_format(**settings.parameter_formats)

@@ -160,7 +160,7 @@ class Settings(object):
 
     @property
     def q_colors_mapper(self):
-        return {item.get('q0_flag'): item.get('plot_color_key') for _, item in self.data_parameters.items()}
+        return {item.get('q_flag'): item.get('plot_color_key') for _, item in self.data_parameters.items()}
 
     @property
     def plot_parameters_mapping(self):

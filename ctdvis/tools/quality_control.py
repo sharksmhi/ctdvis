@@ -82,6 +82,8 @@ def get_color_palette(dep_serie=None, ):
 
 class QCWorkTool:
     """
+    # TODO
+    Well, this is great, however.. we need to simplify and divide this class into widgets instead. to be continued..
     """
     def __init__(self, dataframe, datasets=None, parameters=None, color_fields=None, qflag_fields=None,
                  auto_q_flag_parameters=None,
