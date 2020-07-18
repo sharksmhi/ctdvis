@@ -168,8 +168,8 @@ class Settings(object):
         for key, item in self.data_parameters.items():
             d[item.get('plot_key')] = ' '.join((key, item.get('unit')))
             d[item.get('plot_q0_key')] = item.get('q0_flag')
-            d[key] = {'q_flags': [self.data_parameters[k].get('q_flag') for k in self.parameter_dependencies[key]],
-                      'color_keys': [self.data_parameters[k].get('plot_color_key') for k in self.parameter_dependencies[key]]}
+            d[key] = {'q_flags': [self.data_parameters[k].get('q_flag') for k in self.parameter_dependencies[key] if k in self.data_parameters],
+                      'color_keys': [self.data_parameters[k].get('plot_color_key') for k in self.parameter_dependencies[key] if k in self.data_parameters]}
         return d
 
     @property
