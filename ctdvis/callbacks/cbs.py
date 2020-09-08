@@ -19,7 +19,7 @@ from ctdvis.utils import get_time_as_format
 
 def callback_test(source):
     code = """
-    // CALLBACK TESTING WITH PRINT
+    // CALLBACK TESTING, WITH PRINT
     console.log('console print callback_test!')        
 
     """

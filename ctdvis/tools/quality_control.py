@@ -17,67 +17,17 @@ from bokeh.core.validation import silence
 from bokeh.core.validation.warnings import FIXED_SIZING_MODE
 silence(FIXED_SIZING_MODE, True)
 
-
 import numpy as np
 import pandas as pd
 from matplotlib import colors
 from matplotlib import cm
 
-import gsw
+import time
 
-from ctdvis.utils import get_time_as_format, convert_projection
+from ctdvis.utils import get_time_as_format, convert_projection, get_contour_data
 from ctdvis.callbacks import cbs
-
-
-def get_contour_arrays(x_min, x_max, y_min, y_max):
-    """
-    Calculate how many gridcells we need in the x and y dimensions
-    Assuming x_key = Salinity and y_key = Temperature
-    :return:
-    """
-    xdim = int(round((x_max - x_min) / 0.1 + 1, 0))
-    ydim = int(round((y_max - y_min) / 0.1 + 1, 0))
-    t_m = np.zeros((ydim, xdim))
-    s_m = np.zeros((ydim, xdim))
-    dens = np.zeros((ydim, xdim))
-    ti = np.linspace(1, ydim - 1, ydim) * 0.1 + y_min
-    si = np.linspace(1, xdim - 1, xdim) * 0.1 + x_min
-    for j in range(0, int(ydim)):
-        for i in range(0, int(xdim)):
-            dens[j, i] = gsw.rho(si[i], ti[j], 0)
-            s_m[j, i] = si[i]
-            t_m[j, i] = ti[j]
-    dens = dens
-    return dens, t_m, s_m
-
-
-def get_contour_data(x_min, x_max, y_min, y_max):
-    """
-    Example:
-    x_min, x_max, y_min, y_max = 0, 40, -10, 30
-    data = get_contour_df(x_min, x_max, y_min, y_max)
-    """
-    dens, t_m, s_m = get_contour_arrays(x_min, x_max, y_min, y_max)
-    dens = np.round(dens, 2)
-    data = {}
-    selected_densities = np.arange(-6, 31, 2) + 1000
-    for s_dens in selected_densities:
-        # print('Selected density: {}'.format(s_dens))
-        index = dens == s_dens
-        data[str(s_dens)] = {'temp': t_m[index],
-                             'salt': s_m[index],
-                             'dens': dens[index]}
-    return data
-
-
-def get_color_palette(dep_serie=None, ):
-    # print(dep_serie.max())
-    number_of_colors = int(dep_serie.max() * 2 + 1)
-    # cm_map = cm.get_cmap('viridis', number_of_colors)
-    cm_map = cm.get_cmap('cool', number_of_colors)
-    color_array = pd.Series([colors.to_hex(cm_map(c)) for c in range(number_of_colors)])
-    # print(number_of_colors, len(color_array))
-    return [color_array[int(d*2)] if d > 0 else 0 for d in dep_serie]
+from ctdvis.sources.ts import Source as TS_Source
+from ctdvis.sources.data import setup_data_source
 
 
 class QCWorkTool:
@@ -170,8 +120,22 @@ class QCWorkTool:
         self.ts.title.align = 'center'
 
         self._setup_position_source(dataframe)
-        self._setup_data_source(dataframe)
-        self._setup_TS_source(dataframe)
+        # self._setup_data_source(dataframe)
+        self.data_source = setup_data_source(dataframe,
+                                             pmap=self.plot_parameters_mapping,
+                                             key_list=np.unique(self.position_source.data['KEY']),
+                                             parameter_list=self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields)
+        # self.data_source = CTDDataSource()
+        # parameter_list = self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields
+        # self.data_source.setup_source(dataframe,
+        #                               pmap=self.plot_parameters_mapping,
+        #                               key_list=np.unique(self.position_source.data['KEY']),
+        #                               parameter_list=parameter_list)
+
+        self.ts_source = TS_Source()
+        self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)
+        self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
+
         self._setup_month_selector()
         self._setup_comnt_inputs()
         self._setup_selection_widgets()
@@ -284,17 +248,18 @@ class QCWorkTool:
                                                                      color_keys=self.plot_parameters_mapping[parameter].get('color_keys'),
                                                                      select_button=self.select_all_button)
 
-    def _setup_TS_source(self, df):
-        """
-        :return:
-        """
-        params = self.parameters + ['KEY']
-        ts_df = df.loc[:, params]
-        ts_df.loc[:, 'x'] = ts_df.loc[:, self.plot_parameters_mapping.get('x2')]  # x2 = SALT
-        ts_df.loc[:, 'y'] = ts_df.loc[:, self.plot_parameters_mapping.get('x1')]  # x1 = TEMP
-        ts_df.loc[:, 'color'] = get_color_palette(dep_serie=ts_df.loc[:, self.plot_parameters_mapping.get('y')])
-        self.ts_source = ColumnDataSource(data=ts_df)
-        self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
+    # def _setup_TS_source(self, df):
+    #     """
+    #     :return:
+    #     """
+    #     parameters = [self.plot_parameters_mapping.get(p) for p in ('y', 'x1', 'x2')]
+    #     parameters.append('KEY')
+    #     ts_df = df.loc[:, parameters]
+    #     ts_df.loc[:, 'x'] = ts_df.loc[:, self.plot_parameters_mapping.get('x2')]  # x2 = SALT
+    #     ts_df.loc[:, 'y'] = ts_df.loc[:, self.plot_parameters_mapping.get('x1')]  # x1 = TEMP
+    #     ts_df.loc[:, 'color'] = get_color_palette(dep_serie=ts_df.loc[:, self.plot_parameters_mapping.get('y')])
+    #     self.ts_source = ColumnDataSource(data=ts_df)
+    #     self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
 
     def _setup_data_source(self, df):
         """
