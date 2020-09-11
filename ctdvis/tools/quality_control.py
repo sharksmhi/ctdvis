@@ -28,12 +28,14 @@ from ctdvis.utils import get_time_as_format, convert_projection, get_contour_dat
 from ctdvis.callbacks import cbs
 from ctdvis.sources.ts import Source as TS_Source
 from ctdvis.sources.data import setup_data_source
+from ctdvis.widgets.paragraph import standard_block_header, header_line
 
 
 class QCWorkTool:
     """
     # TODO
-    Well, this is great, however.. we need to simplify and divide this class into widgets instead. to be continued..
+    Well, this is great, however.. we need to simplify and divide this class into widgets instead..
+    to be continued..
     """
     def __init__(self, dataframe, datasets=None, parameters=None, color_fields=None, qflag_fields=None,
                  auto_q_flag_parameters=None,
@@ -125,6 +127,7 @@ class QCWorkTool:
                                              pmap=self.plot_parameters_mapping,
                                              key_list=np.unique(self.position_source.data['KEY']),
                                              parameter_list=self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields)
+        # print(self.data_source.data['20180821_26DA_0822_color_x1'])
         # self.data_source = CTDDataSource()
         # parameter_list = self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields
         # self.data_source.setup_source(dataframe,
@@ -139,6 +142,7 @@ class QCWorkTool:
         self._setup_month_selector()
         self._setup_comnt_inputs()
         self._setup_selection_widgets()
+        self._setup_multiflag_widget()
         self._setup_flag_widgets()
         self._setup_reset_callback(**xrange_callbacks)
         self._setup_datasource_callbacks()
@@ -248,19 +252,6 @@ class QCWorkTool:
                                                                      color_keys=self.plot_parameters_mapping[parameter].get('color_keys'),
                                                                      select_button=self.select_all_button)
 
-    # def _setup_TS_source(self, df):
-    #     """
-    #     :return:
-    #     """
-    #     parameters = [self.plot_parameters_mapping.get(p) for p in ('y', 'x1', 'x2')]
-    #     parameters.append('KEY')
-    #     ts_df = df.loc[:, parameters]
-    #     ts_df.loc[:, 'x'] = ts_df.loc[:, self.plot_parameters_mapping.get('x2')]  # x2 = SALT
-    #     ts_df.loc[:, 'y'] = ts_df.loc[:, self.plot_parameters_mapping.get('x1')]  # x1 = TEMP
-    #     ts_df.loc[:, 'color'] = get_color_palette(dep_serie=ts_df.loc[:, self.plot_parameters_mapping.get('y')])
-    #     self.ts_source = ColumnDataSource(data=ts_df)
-    #     self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
-
     def _setup_data_source(self, df):
         """
         :return:
@@ -327,6 +318,10 @@ class QCWorkTool:
         """
         self.info_block = Div(text=text, width=200, height=100)
 
+        self.text_index_selection = standard_block_header(text='Profile index selection', height=30)
+        self.text_multi_serie_flagging = standard_block_header(text='Multi serie parameter flagging', height=30)
+        # self.text_header_line = header_line(width=300, height=20)
+
     def _setup_selection_widgets(self):
         """
         :return:
@@ -338,6 +333,41 @@ class QCWorkTool:
                                            step=0.5, title="Select with pressure range", width=300)
         callback = cbs.range_selection_callback(data_source=self.data_source)
         self.pressure_slider.js_on_change('value', callback)
+
+    def _setup_multiflag_widget(self):
+        """
+        :return:
+        """
+        def sorted_params(plist):
+            l = []
+            i = 0
+            while i < len(plist):
+                if '2' in plist[i]:
+                    l.extend([plist[i+1], plist[i]])
+                    i += 2
+                else:
+                    l.append(plist[i])
+                    i += 1
+            return l
+
+        parameter_list = []
+        for p, item in self.figures.items():
+            if not p.startswith('COMBO'):
+                parameter_list.append(self.plot_parameters_mapping.get(p).split()[0])
+                # self.plot_parameters_mapping.get(p).split()[0].replace('_CTD', '')
+        parameter_list = sorted_params(sorted(parameter_list))
+
+        self.parameter_selector = Select(title="Select parameter",
+                                         value=parameter_list[0],
+                                         options=parameter_list
+                                         )
+
+        self.multi_flag_widget = cbs.get_multi_serie_flag_widget(self.position_plot_source,
+                                                                 self.data_source,
+                                                                 self.datasets,
+                                                                 parameter_selector=self.parameter_selector,
+                                                                 parameter_mapping=self.plot_parameters_mapping,
+                                                                 figure_objs=None)
 
     def _setup_reset_callback(self, **kwargs):
         """"""
@@ -355,7 +385,6 @@ class QCWorkTool:
 
     def _setup_map(self):
         """"""
-
         pan = PanTool()
         save = SaveTool()
         tap = TapTool()
@@ -512,11 +541,21 @@ class QCWorkTool:
         """
         tabs = []
         for name, item in kwargs.items():
-            tab = column([self.__getattribute__(attr) for attr in item])
+            tab = self.get_column(item)
             pan = Panel(child=tab, title=name)
             tabs.append(pan)
 
         return Tabs(tabs=tabs)
+
+    def get_column(self, item):
+        c_list = []
+        for attr in item:
+            if type(attr) == str:
+                c_list.append(self.__getattribute__(attr))
+            elif type(attr) == tuple:
+                r = row([self.__getattribute__(a) for a in attr], sizing_mode="stretch_width")
+                c_list.append(r)
+        return column(c_list)
 
     def get_std_parameter_tab_layout(self):
         def pan_title(string):
@@ -546,16 +585,27 @@ class QCWorkTool:
         return columns
 
     def get_layout(self):
+        """
+        :return:
+        """
         tabs = self.get_tab_layout()
-        meta_tabs = self.get_tabs(Data=['select_all_button', 'deselect_all_button', 'pressure_slider'],
-                                  Metadata=['comnt_visit', 'comnt_visit_button'],  # ['comnt_samp', 'comnt_visit', 'comnt_visit_button'],
-                                  Import_Export=['file_button', 'download_button'],
+        meta_tabs = self.get_tabs(Data=['text_index_selection',
+                                        ('select_all_button', 'deselect_all_button'),
+                                        'pressure_slider',
+                                        # 'text_header_line',
+                                        'text_multi_serie_flagging',
+                                        'parameter_selector',
+                                        'multi_flag_widget'],
+                                  Metadata=['comnt_visit',
+                                            'comnt_visit_button'],
+                                  Import_Export=['file_button',
+                                                 'download_button'],
                                   Info=['info_block'])
         std_parameter_tabs = self.get_std_parameter_tab_layout()
         widgets_1 = column([self.month_selector, self.spacer, self.selected_series], sizing_mode="fixed", height=300,
                            width=200)
         widgets_2 = column([Spacer(height=10, width=125)], sizing_mode="fixed", height=10, width=125)
-        widgets_3 = column([meta_tabs], sizing_mode="fixed", height=100, width=100)
+        widgets_3 = column([meta_tabs], sizing_mode="stretch_both", height=100, width=100)
         l = grid([row([self.map, widgets_1, widgets_2, widgets_3]),
                   row([*std_parameter_tabs,
                        column([tabs]),

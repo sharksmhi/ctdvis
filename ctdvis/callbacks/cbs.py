@@ -280,7 +280,7 @@ def select_button(data_source=None):
     button.button_type = 'success';
     //console.log('select_button DONE');
     """
-    button = Button(label="Select all", width=30, button_type="default")
+    button = Button(label="Select all indices", width=30, button_type="default")
     callback = CustomJS(args={'data_source': data_source, 'button': button}, code=code)
     button_type_callback = change_button_type_callback(button=button, btype='success')
     button.js_on_event(ButtonClick, callback, button_type_callback)
@@ -293,7 +293,7 @@ def deselect_button(data_source=None):
     data_source.selected.indices = [];
     """
     callback = CustomJS(args={'data_source': data_source}, code=code)
-    button = Button(label="Deselect all", width=30, button_type="default")
+    button = Button(label="Deselect all indices", width=30, button_type="default")
     button.js_on_event(ButtonClick, callback)
     return button
 
@@ -490,6 +490,122 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
         button_list.append(button)
 
     button_list.append(Spacer(width=10, height=10))
+
+    return row(button_list, sizing_mode="stretch_width")
+
+
+def get_multi_serie_flag_widget(position_source, data_source, datasets, parameter_selector=None,
+                                parameter_mapping=None, figure_objs=None):
+    """
+    :param parameter_selector:
+    :param parameter_mapping:
+    :param position_source:
+    :param data_source:
+    :param datasets:
+    :param figure_objs:
+    :return:
+    """
+
+    code = """
+    console.log('get_multi_serie_flag_widget');
+    var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
+                              'B-flag': {'c':'red', 'flag': 'B'},
+                              'E-flag': {'c':'green', 'flag': 'E'},
+                              'S-flag': {'c':'orange', 'flag': 'S'}};
+
+    // Get data from ColumnDataSource
+    var position_data = position_source.data;
+    var data = data_source.data;
+
+    // Set variables attributes
+    var selected_flag = flag;
+    
+    var flag_keys = parameter_mapping[parameter_selector.value]['q_flags']
+    var color_columns = parameter_mapping[parameter_selector.value]['color_keys']
+    
+    var flag_value = flag_color_mapping[selected_flag]['flag'];
+    var color_value = flag_color_mapping[selected_flag]['c'];
+    
+    var selected_position_indices = position_source.selected.indices;
+    var selected_key = 0;
+    var value_array = [];
+    var valid_indices = [];
+    
+    //console.log('selected_position_indices', selected_position_indices);
+    
+    for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) { 
+        var selected_key = position_data['KEY'][selected_position_indices[i_pos]];
+        var value_array = data[selected_key+'_color_x1'];
+        
+        //console.log('selected_key', selected_key);
+    
+        var valid_indices = [];
+        for (var v_i = 0; v_i < value_array.length; v_i++) {
+            if ( value_array[v_i] != 'NaN' ) {
+                valid_indices.push(v_i)            
+            } 
+        }
+        
+        for (var i = 0; i < valid_indices.length; i++) {
+            for (var j = 0; j < color_columns.length; j++) {
+                data[selected_key+'_'+color_columns[j]][valid_indices[i]] = color_value;
+                data[selected_key+'_'+flag_keys[j]][valid_indices[i]] = flag_value;
+            }
+        }
+    }
+    // Save changes to ColumnDataSource (only on the plotting side of ColumnDataSource)
+    data_source.change.emit();
+    for (var key in figure_objs) {
+        figure_objs[key].reset.emit();
+    }
+
+    // Trigger python callback inorder to save changes to the actual datasets
+    dummy_trigger.glyph.size = Math.random();
+    dummy_trigger.glyph.change.emit();
+    console.log('DONE - get_multi_serie_flag_widget');
+    """
+    flag_color_mapping = {'A-flag': {'c': 'navy', 'flag': ''},
+                          'B-flag': {'c': 'red', 'flag': 'B'},
+                          'E-flag': {'c': 'green', 'flag': 'E'},
+                          'S-flag': {'c': 'orange', 'flag': 'S'}}
+
+    def callback_py(attr, old, new, flag=None):
+        start_time = time.time()
+        flag_keys = parameter_mapping[parameter_selector.value].get('q_flags')
+
+        selected_position = position_source.selected.indices
+        for pos_source_index in selected_position:
+            selected_key = position_source.data['KEY'][pos_source_index]
+            ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
+            flag_value = flag_color_mapping[flag].get('flag')
+            for f in flag_keys:
+                # Flags all indices
+                # We might want to flag a certain pressure interval for multiple series?
+                datasets[ds_key]['data'].loc[:, f] = flag_value
+        print('datasets update in -- %.3f sec' % (time.time() - start_time))
+
+    # button_types = default, primary, success, warning or danger
+    button_types = ['primary', 'danger', 'success', 'warning']
+    flag_list = ['A-flag', 'B-flag', 'E-flag', 'S-flag']
+    button_list = []
+    dummy_figure = figure()
+    for flag, b_type in zip(flag_list, button_types):
+        dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
+        dummy_trigger.glyph.on_change('size', partial(callback_py, flag=flag))
+
+        callback = CustomJS(args={'position_source': position_source,
+                                  'data_source': data_source,
+                                  'figure_objs': figure_objs,
+                                  'parameter_mapping': parameter_mapping,
+                                  'parameter_selector': parameter_selector,
+                                  'flag': flag,
+                                  'dummy_trigger': dummy_trigger},
+                            code=code)
+
+        button = Button(label=flag, width=30, button_type=b_type)
+        button.js_on_event(ButtonClick, callback)
+
+        button_list.append(button)
 
     return row(button_list, sizing_mode="stretch_width")
 
