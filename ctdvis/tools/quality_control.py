@@ -178,6 +178,13 @@ class QCWorkTool:
         """
         position_df = df[['STATION', 'LATITUDE_DD', 'LONGITUDE_DD', 'KEY', 'MONTH']].drop_duplicates(
             keep='first').reset_index(drop=True)
+
+        for i, row in position_df.iterrows():
+            try:
+                float(row['LATITUDE_DD'])
+            except:
+                print('not valid', row['KEY'])
+
         xs, ys = convert_projection(position_df['LATITUDE_DD'].astype(float).values,
                                     position_df['LONGITUDE_DD'].astype(float).values)
         position_df['LONGI'] = xs
@@ -448,9 +455,10 @@ class QCWorkTool:
         """"""
         renderer = self.map.circle('LONGI', 'LATIT', source=self.position_plot_source,
                                    color="#5BC798", line_color="aquamarine", size=10, alpha=0.7)
-
         selected_circle = Circle(fill_alpha=0.5, fill_color="#FF0202", line_color="aquamarine")
         nonselected_circle = Circle(fill_alpha=0.3, fill_color="#5BC798", line_color="aquamarine")
+        # selected_circle = Circle(fill_alpha=0.5, fill_color="#E39A1B", line_color="#E39A1B")
+        # nonselected_circle = Circle(fill_alpha=0.5, fill_color="#E39A1B", line_color="black")
 
         renderer.selection_glyph = selected_circle
         renderer.nonselection_glyph = nonselected_circle
@@ -592,7 +600,6 @@ class QCWorkTool:
         meta_tabs = self.get_tabs(Data=['text_index_selection',
                                         ('select_all_button', 'deselect_all_button'),
                                         'pressure_slider',
-                                        # 'text_header_line',
                                         'text_multi_serie_flagging',
                                         'parameter_selector',
                                         'multi_flag_widget'],

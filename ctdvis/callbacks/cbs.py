@@ -505,7 +505,6 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
     :param figure_objs:
     :return:
     """
-
     code = """
     console.log('get_multi_serie_flag_widget');
     var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},

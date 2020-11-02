@@ -2,6 +2,6 @@ numpy
 matplotlib
 bokeh==1.4.0
 gsw
-pyproj==1.9.6
+pyproj
 pandas
 ctdpy

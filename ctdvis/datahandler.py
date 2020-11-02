@@ -40,7 +40,6 @@ class Datadict(dict):
 
         filter_obj = None
         if filters:
-            # TODO Move filters to ctdpy ?
             filter_obj = Filter(list(datasets[0].keys()))
             filter_obj.add_filter(**filters)
 

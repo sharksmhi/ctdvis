@@ -29,7 +29,7 @@ class Session:
         """"""
         # TODO settings in yaml-files.. dynamic obj-load..
         plot = QCWorkTool(self.dh.df[self.settings.selected_keys],
-                          self.dh.raw_data,
+                          datasets=self.dh.raw_data,
                           parameters=self.settings.data_parameters_with_units,
                           plot_parameters_mapping=self.settings.plot_parameters_mapping,
                           color_fields=self.settings.q_colors,
