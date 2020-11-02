@@ -13,7 +13,7 @@ from ctdvis.readers import JSONreader
 from sharkpylib.qc.settings import Settings as shark_qc_settings
 
 
-class Settings(object):
+class Settings:
     """
     """
     def __init__(self, visualize_setting=None):

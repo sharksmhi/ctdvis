@@ -49,7 +49,7 @@ class SplitNameList:
         cls.sernos.append(s)
 
 
-class Filter(object):
+class Filter:
     """
     Filter filenames according to ctd-standard format eg. 'ctd_profile_20181208_34AR_0171.txt'
     """
@@ -92,12 +92,24 @@ class Filter(object):
 
 
 if __name__ == "__main__":
-    name_list = ['ctd_profile_20181208_34AR_0171.txt',
-                 'ctd_profile_20180911_34AR_0172.txt',
-                 'ctd_profile_20180208_34AR_0173.txt']
+    import os
+    import time
+
+    start_time = time.time()
+    name_list = os.listdir('C:\\Arbetsmapp\\datasets\\Profile\\2019\\SHARK_Profile_2019_SMHI\\processed_data')
+    name_list = [n for n in name_list if n.startswith('ctd')]
+
+    # name_list = ['ctd_profile_20181208_34AR_0171.txt',
+    #              'ctd_profile_20180911_34AR_0172.txt',
+    #              'ctd_profile_20180208_34AR_0173.txt']
     filter_obj = Filter(name_list)
-    filter_obj.add_filter(month_list=[2, 9],
-                          ship_list=['34AR'],
-                          serno_max=1111,
-                          serno_min=170)
+
+    filter_obj.add_filter(
+        # month_list=[2, 9],
+        ship_list=['34AR'],
+        serno_max=1111,
+        serno_min=170,
+    )
+
+    print("Filter run--%.3f sec" % (time.time() - start_time))
     print(filter_obj.valid_file_names)

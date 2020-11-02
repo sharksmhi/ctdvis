@@ -122,18 +122,10 @@ class QCWorkTool:
         self.ts.title.align = 'center'
 
         self._setup_position_source(dataframe)
-        # self._setup_data_source(dataframe)
         self.data_source = setup_data_source(dataframe,
                                              pmap=self.plot_parameters_mapping,
                                              key_list=np.unique(self.position_source.data['KEY']),
                                              parameter_list=self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields)
-        # print(self.data_source.data['20180821_26DA_0822_color_x1'])
-        # self.data_source = CTDDataSource()
-        # parameter_list = self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields
-        # self.data_source.setup_source(dataframe,
-        #                               pmap=self.plot_parameters_mapping,
-        #                               key_list=np.unique(self.position_source.data['KEY']),
-        #                               parameter_list=parameter_list)
 
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)

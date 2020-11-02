@@ -7,6 +7,7 @@ Created on 2020-07-03 11:24
 
 """
 from abc import ABC
+import os
 
 import pandas as pd
 import numpy as np
@@ -30,25 +31,24 @@ class Datadict(dict):
         :return:
         """
         files = generate_filepaths(self.data_directory,
+                                   pattern='ctd_profile_',
                                    endswith='.txt',
                                    only_from_dir=True)
+
+        files = list(files)
+
+        if filters:
+            filter_obj = Filter([os.path.basename(f) for f in files])
+            filter_obj.add_filter(**filters)
+            files = [f for f in files if os.path.basename(f) in filter_obj.valid_file_names]
 
         ctd_session = Session(filepaths=files,
                               reader='ctd_stdfmt')
 
         datasets = ctd_session.read()
 
-        filter_obj = None
-        if filters:
-            filter_obj = Filter(list(datasets[0].keys()))
-            filter_obj.add_filter(**filters)
-
         for key, item in datasets[0].items():
-            if filters:
-                if key in filter_obj.valid_file_names:
-                    self.append_item(key, item)
-            else:
-                self.append_item(key, item)
+            self.append_item(key, item)
 
         if return_session:
             return ctd_session
