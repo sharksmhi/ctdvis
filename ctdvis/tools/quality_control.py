@@ -41,7 +41,9 @@ class QCWorkTool:
                  auto_q_flag_parameters=None,
                  tabs=None, plot_parameters_mapping=None, ctdpy_session=None, multi_sensors=False, combo_plots=False,
                  output_filename="CTD_QC_VIZ.html", output_as_notebook=False):
+
         self.seconds = ColumnDataSource(data=dict(tap_time=[None], reset_time=[None]))
+
         self.ctd_session = ctdpy_session
         self.multi_sensors = multi_sensors
         self.combo_plots = combo_plots
@@ -244,7 +246,7 @@ class QCWorkTool:
             parameter = self.plot_parameters_mapping.get(fig_key).split()[0]
             # q_key = 'Q_' + parameter
             self.flag_widgets[fig_key] = cbs.get_flag_buttons_widget(self.position_plot_source,
-                                                                     self.data_source,
+                                                                     self.data_source['main_source'],
                                                                      self.datasets,
                                                                      figure_objs=self.figures,
                                                                      flag_keys=self.plot_parameters_mapping[parameter].get('q_flags'),
@@ -380,7 +382,7 @@ class QCWorkTool:
         """"""
         set_button_type_callback = cbs.change_button_type_callback(button=self.select_all_button,
                                                                    btype='default')
-        self.data_source.selected.js_on_change('indices', set_button_type_callback)
+        self.data_source['main_source'].selected.js_on_change('indices', set_button_type_callback)
 
     def _setup_map(self):
         """"""
