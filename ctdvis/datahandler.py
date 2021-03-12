@@ -88,19 +88,25 @@ class Frame(pd.DataFrame, ABC):
                 except ValueError:
                     self[key] = self[key].replace('', np.nan).astype(value)
 
-    def add_color_columns(self, qflags, mapper=None):
+    def add_color_columns(self, q_params, mapper=None):
         """
-        :param qflags:
+        :param q_params:
         :param mapper:
         :return:
         """
-        color = 'navy'
-        for qf in qflags:
-            color_key = mapper.get(qf)
-            self[color_key] = self[qf].fillna('').apply(lambda x: color if x != 'B' else 'red')
+        def set_color_code(qf):
+            if qf == 'B':
+                return 'red'
+            elif qf == 'S':
+                return 'orange'
+            else:
+                return 'navy'
+        for q_para in q_params:
+            color_key = mapper.get(q_para)
+            self[color_key] = np.vectorize(set_color_code)(self[q_para].fillna(''))
 
 
-class DataHandler(object):
+class DataHandler:
     """
     Stores rawdata (ctd-standard-format)
     Appends selected filtered datasets (self.raw_data) to Frame (self.df)
