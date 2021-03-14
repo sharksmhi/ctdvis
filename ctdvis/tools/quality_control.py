@@ -37,13 +37,13 @@ class QCWorkTool:
     Well, this is great, however.. we need to simplify and divide this class into widgets instead..
     to be continued..
     """
-    def __init__(self, dataframe, datasets=None, parameters=None, color_fields=None, qflag_fields=None,
+    def __init__(self, dataframe, datasets=None, parameters=None, plot_keys=None, color_fields=None, qflag_fields=None,
                  auto_q_flag_parameters=None,
                  tabs=None, plot_parameters_mapping=None, ctdpy_session=None, multi_sensors=False, combo_plots=False,
                  output_filename="CTD_QC_VIZ.html", output_as_notebook=False):
-
+        from pprint import pprint
+        pprint(plot_parameters_mapping)
         self.seconds = ColumnDataSource(data=dict(tap_time=[None], reset_time=[None]))
-
         self.ctd_session = ctdpy_session
         self.multi_sensors = multi_sensors
         self.combo_plots = combo_plots
@@ -51,10 +51,12 @@ class QCWorkTool:
         self.map = None
         # self.selected_series = None
         # self.df = dataframe
+        self.plot_keys = plot_keys
         self.datasets = datasets
         self.key_ds_mapper = self.get_mapper_key_to_ds()
         self.parameters = parameters
         self.plot_parameters_mapping = plot_parameters_mapping
+        # pprint('plot_parameters_mapping', plot_parameters_mapping)
         self.color_fields = color_fields
         self.qflag_fields = qflag_fields
         self.auto_qflag_fields = auto_q_flag_parameters
@@ -71,7 +73,7 @@ class QCWorkTool:
         xrange_callbacks = {}
         y_range_setting = None
         for p in self.plot_parameters_mapping:
-            if p == 'y' or 'q' in p or p[0].isupper():
+            if p == 'y' or 'q' in p or p[0].isupper() or p.startswith('color'):
                 continue
             param = self.plot_parameters_mapping.get(p)
             self.figures[p] = figure(tools="pan,reset,wheel_zoom,lasso_select,save", active_drag="lasso_select",
@@ -127,7 +129,14 @@ class QCWorkTool:
         self.data_source = setup_data_source(dataframe,
                                              pmap=self.plot_parameters_mapping,
                                              key_list=np.unique(self.position_source.data['KEY']),
-                                             parameter_list=self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields)
+                                             parameter_list=self.color_fields + self.plot_keys
+                                             # parameter_list=self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields,
+                                             )
+
+        # print('---main_source---')
+        # pprint(self.data_source['main_source'].data)
+        # print('---a_key---')
+        # pprint(self.data_source['20190513_34AR_0288'].data)
 
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)
@@ -244,6 +253,7 @@ class QCWorkTool:
             if fig_key.startswith('COMBO'):
                 continue
             parameter = self.plot_parameters_mapping.get(fig_key).split()[0]
+            print('fig_key, parameter', fig_key, parameter)
             # q_key = 'Q_' + parameter
             self.flag_widgets[fig_key] = cbs.get_flag_buttons_widget(self.position_plot_source,
                                                                      self.data_source['main_source'],
@@ -327,12 +337,12 @@ class QCWorkTool:
         """
         :return:
         """
-        self.select_all_button = cbs.select_button(data_source=self.data_source)
-        self.deselect_all_button = cbs.deselect_button(data_source=self.data_source)
+        self.select_all_button = cbs.select_button(data_source=self.data_source['main_source'])
+        self.deselect_all_button = cbs.deselect_button(data_source=self.data_source['main_source'])
 
         self.pressure_slider = RangeSlider(start=0, end=100, value=(0, 100),
                                            step=0.5, title="Select with pressure range", width=300)
-        callback = cbs.range_selection_callback(data_source=self.data_source)
+        callback = cbs.range_selection_callback(data_source=self.data_source['main_source'])
         self.pressure_slider.js_on_change('value', callback)
 
     def _setup_multiflag_widget(self):
@@ -433,7 +443,7 @@ class QCWorkTool:
                                             single_select=1)
 
         update_slider_callback = cbs.range_slider_update_callback(slider=self.pressure_slider,
-                                                                  data_source=self.data_source)
+                                                                  data_source=self.data_source['main_source'])
 
         select_button_type_callback = cbs.change_button_type_callback(button=self.select_all_button, btype='default')
 
@@ -473,21 +483,21 @@ class QCWorkTool:
             if p.startswith('COMBO'):
                 p1, p2 = combo_mapping.get(p)
                 item.line(p1, 'y', color="color_{}".format(p1), line_color="navy", line_width=1, alpha=0.3,
-                          source=self.data_source)
+                          source=self.data_source['main_source'])
                 item.circle(p1, 'y', color="color_{}".format(p1), line_color="white", size=6, alpha=0.5,
-                            source=self.data_source)
+                            source=self.data_source['main_source'])
 
                 item.line(p2, 'y', color="color_{}".format(p2), line_color="navy", line_width=1, alpha=0.3,
-                          source=self.data_source)
-                item.cross(p2, 'y', color="color_{}".format(p2), size=6, alpha=0.5, source=self.data_source)
+                          source=self.data_source['main_source'])
+                item.cross(p2, 'y', color="color_{}".format(p2), size=6, alpha=0.5, source=self.data_source['main_source'])
 
                 item.y_range.flipped = True
                 # item.legend.location = "top_right"
             else:
                 item.line(p, 'y', color="color_{}".format(p), line_color="navy", line_width=1, alpha=0.3,
-                          source=self.data_source)  # , legend_label=p)
+                          source=self.data_source['main_source'])  # , legend_label=p)
                 renderer = item.circle(p, 'y', color="color_{}".format(p), line_color="white", size=6, alpha=0.5,
-                                       source=self.data_source)  # , legend_label=p)
+                                       source=self.data_source['main_source'])  # , legend_label=p)
                 renderer.nonselection_glyph = nonselected_circle
                 item.y_range.flipped = True
 

@@ -15,20 +15,31 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
     :param df: pd.DataFrame
     :param pmap: dictionary, parameter mapping
     :param key_list: array
-    :param parameter_list: array
+    :param parameter_list: plot_keys and color_keys
     :return:
     """
     main_source = {}
-    for p in pmap.keys():
-        main_source[p] = [1]
-        if p != 'y':
-            main_source['color_' + p] = ['black']
+    for p in parameter_list:
+        if p.startswith('color'):
+            main_source[p] = ['navy']
+        else:
+            main_source[p] = [1]
 
     data_dict = {'main_source': ColumnDataSource(main_source)}
 
     for key in key_list:
         data_boolean = df['KEY'] == key
-        data_dict[key] = ColumnDataSource(df.loc[data_boolean, parameter_list])
+        key_df = df.loc[data_boolean, :]
+        key_dict = {}
+        for p in parameter_list:
+            df_column = pmap.get(p) if not p.startswith('color') else p
+            if df_column and df_column in key_df:
+                key_dict[p] = key_df[df_column].values
+            else:
+                v = 'navy' if p.startswith('color') else np.nan
+                key_dict[p] = [v] * key_df.__len__()
+
+        data_dict[key] = ColumnDataSource(key_dict)
 
     return data_dict
 

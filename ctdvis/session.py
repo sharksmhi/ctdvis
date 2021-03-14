@@ -32,6 +32,7 @@ class Session:
                           datasets=self.dh.raw_data,
                           parameters=self.settings.data_parameters_with_units,
                           plot_parameters_mapping=self.settings.plot_parameters_mapping,
+                          plot_keys=self.settings.plot_keys,
                           color_fields=self.settings.q_colors,
                           qflag_fields=self.settings.q_parameters,
                           auto_q_flag_parameters=self.settings.q0_parameters,
