@@ -37,11 +37,25 @@ class QCWorkTool:
     Well, this is great, however.. we need to simplify and divide this class into widgets instead..
     to be continued..
     """
-    def __init__(self, dataframe, datasets=None, parameters=None, plot_keys=None, color_fields=None, qflag_fields=None,
+    def __init__(self,
+                 dataframe,
+                 datasets=None,
+                 parameters=None,
+                 plot_keys=None,
+                 color_fields=None,
+                 qflag_fields=None,
                  auto_q_flag_parameters=None,
-                 tabs=None, plot_parameters_mapping=None, ctdpy_session=None, multi_sensors=False, combo_plots=False,
-                 output_filename="CTD_QC_VIZ.html", output_as_notebook=False):
-
+                 tabs=None,
+                 plot_parameters_mapping=None,
+                 ctdpy_session=None,
+                 multi_sensors=False,
+                 combo_plots=False,
+                 output_filename="CTD_QC_VIZ.html",
+                 output_as_notebook=False,
+                 user_download_directory=None,
+                 ):
+        # start_time = time.time()
+        # print('', 'TimeIt -- %.3f sec' % (time.time() - start_time))
         self.seconds = ColumnDataSource(data=dict(tap_time=[None], reset_time=[None]))
         self.ctd_session = ctdpy_session
         self.multi_sensors = multi_sensors
@@ -61,9 +75,10 @@ class QCWorkTool:
         self.tabs = tabs
         self.output_as_notebook = output_as_notebook
         if self.output_as_notebook:
-            output_notebook()
-        else:
-            output_file(output_filename)
+            raise NotImplementedError('Not yet applicable to work with notebooks!')
+            # output_notebook()
+        # else:
+        #     output_file(output_filename)
 
         self.tile_provider = get_provider(Vendors.CARTODBPOSITRON_RETINA)
 
@@ -127,10 +142,9 @@ class QCWorkTool:
         self.data_source = setup_data_source(dataframe,
                                              pmap=self.plot_parameters_mapping,
                                              key_list=np.unique(self.position_source.data['KEY']),
-                                             parameter_list=self.color_fields + self.plot_keys
+                                             parameter_list=self.color_fields + self.plot_keys + self.auto_qflag_fields
                                              # parameter_list=self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields,
                                              )
-
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)
         self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
@@ -142,7 +156,7 @@ class QCWorkTool:
         self._setup_flag_widgets()
         self._setup_reset_callback(**xrange_callbacks)
         self._setup_datasource_callbacks()
-        self._setup_download_button()
+        self._setup_download_button(user_download_directory)
         self._setup_get_file_button()
         self._setup_serie_table()
         self._setup_info_block()
@@ -213,11 +227,12 @@ class QCWorkTool:
         # self.month_selector.title.text_align = 'center'
         callback.args["month"] = self.month_selector
 
-    def _setup_download_button(self):
+    def _setup_download_button(self, savepath):
         """"""
         self.download_button = cbs.get_download_widget(self.datasets,
                                                        self.position_plot_source,
-                                                       self.ctd_session)
+                                                       self.ctd_session,
+                                                       savepath)
 
     def _setup_get_file_button(self):
         """"""
@@ -268,7 +283,7 @@ class QCWorkTool:
         """
         :return:
         """
-        text = """
+        text_info_block = """
         <h4>Info links</h4>
         <ul>
           <li><a href="https://docs.bokeh.org/en/latest/docs/user_guide/tools.html" target="_blank">Bokeh toolbar info</a></li>
@@ -284,10 +299,21 @@ class QCWorkTool:
           <li>Spike check</li>
         </ol>
         """
-        self.info_block = Div(text=text, width=200, height=100)
+        text_export_block = """
+        <h4>Download steps:</h4>
+        <ol>
+          <li>Select series using "map-lasso" or "Shift-table-select"</li>
+          <li>Click on Download below</li>
+        </ol>
+        A folder with datafiles will be downloaded to your computer download-folder (eg. "Hämtade filer")
+        """
+        self.info_block = Div(text=text_info_block, width=200, height=100)
 
         self.text_index_selection = standard_block_header(text='Profile index selection', height=30)
         self.text_multi_serie_flagging = standard_block_header(text='Multi serie parameter flagging', height=30)
+        self.text_meta = standard_block_header(text='Change visit comment', height=30)
+        self.text_export = Div(text=text_export_block)
+        self.text_import = standard_block_header(text='Not yet applicable', height=30)
         # self.text_header_line = header_line(width=300, height=20)
 
     def _setup_selection_widgets(self):
@@ -370,6 +396,8 @@ class QCWorkTool:
                           tools=[pan, wheel, tap, lasso, tooltips, reset, save])
 
         self.map.yaxis.axis_label = ' '  # in order to aline y-axis with figure window below
+        self.map.xgrid.grid_line_color = None
+        self.map.ygrid.grid_line_color = None
         self.map.toolbar.active_scroll = self.map.select_one(WheelZoomTool)
         self.map.add_tile(self.tile_provider)
 
@@ -564,10 +592,13 @@ class QCWorkTool:
                                         'text_multi_serie_flagging',
                                         'parameter_selector',
                                         'multi_flag_widget'],
-                                  Metadata=['comnt_visit',
+                                  Metadata=['text_meta',
+                                            'comnt_visit',
                                             'comnt_visit_button'],
-                                  Import_Export=['file_button',
-                                                 'download_button'],
+                                  Import=['text_import',
+                                          'file_button'],
+                                  Export=['text_export',
+                                          'download_button'],
                                   Info=['info_block'])
         std_parameter_tabs = self.get_std_parameter_tab_layout()
         widgets_1 = column([self.month_selector, self.spacer, self.selected_series], sizing_mode="fixed", height=300,

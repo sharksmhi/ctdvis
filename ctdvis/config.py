@@ -21,6 +21,7 @@ class Settings:
         self.combo_plots = None
         self.visualize_setting = visualize_setting or 'smhi_viz'
         self.base_directory = os.path.dirname(os.path.realpath(__file__))
+        self.user_download_directory = os.path.join(os.path.expanduser("~"), "Downloads")
         etc_path = '\\'.join([self.base_directory, 'etc', ''])
         self._load_settings(etc_path)
 
@@ -149,6 +150,10 @@ class Settings:
     @property
     def q_colors(self):
         return [item.get('plot_color_key') for _, item in self.data_parameters.items()]
+
+    @property
+    def q0_plot_keys(self):
+        return [item.get('plot_q0_key') for _, item in self.data_parameters.items()]
 
     @property
     def plot_keys(self):

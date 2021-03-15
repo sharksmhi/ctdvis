@@ -397,17 +397,12 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     
     var selected_position = position_source.selected.indices;
     var selected_key = position_data['KEY'][selected_position[0]];
-    //var flag_column = selected_key+'_'+flag_key;
 
     // Get indices array of all selected items
     var selected_indices = data_source.selected.indices;
 
     var flag_value = flag_color_mapping[selected_flag]['flag'];
     var color_value = flag_color_mapping[selected_flag]['c'];
-    
-    //console.log('flag_value', flag_value)
-    //console.log('color_value', color_value)
-    //console.log('selected_indices.length', selected_indices.length)
     
     if (selected_position.length == 1) {
         for (var i = 0; i < selected_indices.length; i++) {
@@ -441,7 +436,6 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
                           'S-flag': {'c': 'orange', 'flag': 'S'}}
 
     def callback_py(attr, old, new, flag=None):
-        # start_time = time.time()
         selected_position = position_source.selected.indices
         if len(selected_position) > 1:
             print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_position)))
@@ -449,14 +443,9 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
 
         selected_key = position_source.data['KEY'][selected_position[0]]
         selected_indices = data_source.selected.indices
-        # ds_key = self.key_ds_mapper.get(selected_key)
         ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
         flag_value = flag_color_mapping[flag].get('flag')
-        #TODO do we/should we check if columns exists
         datasets[ds_key]['data'].loc[selected_indices, flag_keys] = flag_value
-        # for f in flag_keys:
-        #     datasets[ds_key]['data'][f].iloc[selected_indices] = flag_value
-        # print('datasets update in -- %.3f sec' % (time.time() - start_time))
 
     # button_types = default, primary, success, warning or danger
     button_types = ['primary', 'danger', 'success', 'warning']
@@ -515,8 +504,6 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
     var value_array = [];
     var valid_indices = [];
     
-    //console.log('selected_position_indices', selected_position_indices);
-    
     for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) { 
         var selected_key = position_data['KEY'][selected_position_indices[i_pos]];
         var value_array = data_source[selected_key].data['x1'];
@@ -528,6 +515,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
         }
         data_source[selected_key].change.emit();
     }
+    
     for (var key in figure_objs) {
         figure_objs[key].reset.emit();
     }
@@ -543,7 +531,6 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
                           'S-flag': {'c': 'orange', 'flag': 'S'}}
 
     def callback_py(attr, old, new, flag=None):
-        start_time = time.time()
         flag_keys = parameter_mapping[parameter_selector.value].get('q_flags')
 
         selected_position = position_source.selected.indices
@@ -552,11 +539,6 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
             ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
             flag_value = flag_color_mapping[flag].get('flag')
             datasets[ds_key]['data'].loc[:, flag_keys] = flag_value
-            # for f in flag_keys:
-            #     # Flags all indices
-            #     # We might want to flag a certain pressure interval for multiple series?
-            #     datasets[ds_key]['data'].loc[:, f] = flag_value
-        print('datasets update in -- %.3f sec' % (time.time() - start_time))
 
     # button_types = default, primary, success, warning or danger
     button_types = ['primary', 'danger', 'success', 'warning']
@@ -584,7 +566,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
     return row(button_list, sizing_mode="stretch_width")
 
 
-def get_download_widget(datasets, series, session):
+def get_download_widget(datasets, series, session, savepath):
     """"""
 
     def callback_download(event):
@@ -604,8 +586,6 @@ def get_download_widget(datasets, series, session):
             print('len(series.selected.indices)', series.selected.indices)
             return
 
-        # print('datasets.keys()', datasets.keys())
-        # print([series.data['KEY'][idx] for idx in series.selected.indices])
         generator = serie_generator(datasets.keys(),
                                     [series.data['KEY'][idx] for idx in series.selected.indices])
 
@@ -615,7 +595,11 @@ def get_download_widget(datasets, series, session):
             datasets_to_update[ds_name] = datasets[ds_name]
 
         if any(datasets_to_update):
-            session.save_data([datasets_to_update], writer='ctd_standard_template')
+            session.save_data(
+                [datasets_to_update],
+                save_path=savepath or 'C:/QC_CTD',
+                writer='ctd_standard_template',
+            )
         else:
             print('No download!')
 
@@ -683,33 +667,9 @@ def get_file_widget():
 
 
 def add_hlinked_crosshairs(*figs):
-    js_move = """
-    for (var cross_key in other_crosses){
-        other_crosses[cross_key].spans.width.computed_location = cb_obj.sy;
-    }
-    current_cross.spans.height.computed_location = null;
-    """
-    js_leave = """
-    for (var cross_key in other_crosses){
-        other_crosses[cross_key].spans.width.computed_location = null;
-    }
-    """
-    cross_objs = {}
-    fig_objs = {}
-    for i, f in enumerate(figs):
-        cross_objs[i] = CrosshairTool(line_alpha=0.5)
-        fig_objs[i] = f
-        fig_objs[i].add_tools(cross_objs[i])
-
-    for i in range(len(cross_objs)):
-        other_crosses = {ii: cross_objs[ii] for ii in range(len(cross_objs)) if ii != i}
-        if i != len(cross_objs) - 1:
-            args = {'current_cross': cross_objs[i], 'other_crosses': other_crosses, 'fig': fig_objs[i + 1]}
-        else:
-            args = {'current_cross': cross_objs[i], 'other_crosses': other_crosses, 'fig': fig_objs[0]}
-
-        fig_objs[i].js_on_event('mousemove', CustomJS(args=args, code=js_move))
-        fig_objs[i].js_on_event('mouseleave', CustomJS(args=args, code=js_leave))
+    cht = CrosshairTool(line_alpha=0.5, dimensions="width")
+    for f in figs:
+        f.add_tools(cht)
 
 
 def x_range_callback(x_range_obj=None, delta=4, seconds=None):
