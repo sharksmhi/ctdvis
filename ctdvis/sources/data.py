@@ -1,4 +1,4 @@
-# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 """
 Created on 2020-09-07 13:02
@@ -7,7 +7,6 @@ Created on 2020-09-07 13:02
 
 """
 import numpy as np
-import pandas as pd
 from bokeh.models import ColumnDataSource
 
 
@@ -16,34 +15,33 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
     :param df: pd.DataFrame
     :param pmap: dictionary, parameter mapping
     :param key_list: array
-    :param parameter_list: array
+    :param parameter_list: plot_keys and color_keys
     :return:
     """
-    data_dict = {}
+    main_source = {}
+    for p in parameter_list:
+        if p.startswith('color'):
+            main_source[p] = ['navy']
+        else:
+            main_source[p] = [1]
+
+    data_dict = {'main_source': ColumnDataSource(main_source)}
+
     for key in key_list:
         data_boolean = df['KEY'] == key
-        for parameter in parameter_list:
-            data_key = '_'.join((key, parameter))
-            data_dict[data_key] = df.loc[data_boolean, parameter].values
+        key_df = df.loc[data_boolean, :]
+        key_dict = {}
+        for p in parameter_list:
+            df_column = pmap.get(p) if not p.startswith('color') else p
+            if df_column and df_column in key_df:
+                key_dict[p] = key_df[df_column].values
+            else:
+                v = 'navy' if p.startswith('color') else np.nan
+                key_dict[p] = [v] * key_df.__len__()
 
-    length = 0
-    for key in data_dict:
-        l = len(data_dict[key])
-        if l > length:
-            length = l
-    for key in data_dict:
-        if len(data_dict[key]) < length:
-            data_dict[key] = np.pad(data_dict[key],
-                                    (0, length - len(data_dict[key])),
-                                    'constant',
-                                    constant_values=np.nan)
+        data_dict[key] = ColumnDataSource(key_dict, name=key)
 
-    for p in pmap.keys():
-        data_dict[p] = [1] * length
-        if p != 'y':
-            data_dict['color_' + p] = ['black'] * length
-
-    return ColumnDataSource(data_dict)
+    return data_dict
 
 
 if __name__ == "__main__":

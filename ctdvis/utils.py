@@ -8,7 +8,7 @@ Created on 2020-07-03 11:25
 """
 from collections import Mapping
 from datetime import datetime
-import pyproj
+from pyproj import CRS, transform
 import numpy as np
 import pandas as pd
 import gsw
@@ -30,12 +30,9 @@ def convert_projection(lats, lons):
     :param lons:
     :return:
     """
-    # project_projection = pyproj.Proj("EPSG:4326")  # wgs84
-    # google_projection = pyproj.Proj("EPSG:3857")  # default google projection
-    project_projection = pyproj.Proj({'init': 'epsg:4326', 'no_defs': True}, preserve_flags=True)  # wgs84
-    google_projection = pyproj.Proj({'init': 'epsg:3857', 'no_defs': True}, preserve_flags=True)  # default google projection
-
-    x, y = pyproj.transform(project_projection, google_projection, lons, lats)
+    project_projection = CRS('EPSG:4326')
+    google_projection = CRS('EPSG:3857')
+    x, y = transform(project_projection, google_projection, lons, lats, always_xy=True)
     return x, y
 
 

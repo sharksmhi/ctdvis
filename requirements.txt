@@ -1,6 +1,6 @@
 numpy
 matplotlib
-bokeh==1.4.0
+bokeh>=2.2.1
 gsw
 pyproj
 pandas

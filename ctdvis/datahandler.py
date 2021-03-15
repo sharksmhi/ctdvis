@@ -99,6 +99,8 @@ class Frame(pd.DataFrame, ABC):
                 return 'red'
             elif qf == 'S':
                 return 'orange'
+            elif qf == 'E':
+                return 'green'
             else:
                 return 'navy'
         for q_para in q_params:

@@ -100,7 +100,7 @@ def station_callback_2(position_source=None, data_source=None,
 
     // Get data from ColumnDataSource
     var position_data = position_source.data;
-    var data = data_source.data;
+    //var data = data_source.data;
     var parameter_mapping = parameter_mapping;
     var figures = figures;
     var single_select = single_select;
@@ -113,7 +113,7 @@ def station_callback_2(position_source=None, data_source=None,
     //console.log('data[y].length', data['y'].length)
     //console.log('selected', selected);
 
-    // Update figure titlesflag_color_mapping 
+    // Update figure titles flag_color_mapping 
     var station_name = position_data[statn_key][selected[0]];
     var selected_key = position_data[key][selected[0]];
 
@@ -122,23 +122,15 @@ def station_callback_2(position_source=None, data_source=None,
 
     // Update active keys in data source    
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
-        var data_parameter_name, q0_key, color_key;
+        //var data_parameter_name, q0_key, color_key;
         for (var fig_key in figures){
-            if ( ! fig_key.startsWith("COMBO")) {
-                data_parameter_name = parameter_mapping[fig_key];
-                q0_key = fig_key+'_q0';
-                color_key = 'color_'+fig_key;
-
-                data[fig_key] = data[selected_key+'_'+data_parameter_name];
-                data[q0_key] = data[selected_key+'_'+parameter_mapping[q0_key]];
-                data[color_key] = data[selected_key+'_'+color_key];
-            }
             figures[fig_key].title.text = station_name + ' - ' + selected_key
         }
-        data['y'] = data[selected_key+'_'+parameter_mapping['y']];
-
+        //data['y'] = data[selected_key+'_'+parameter_mapping['y']];
+        data_source['main_source'].data = data_source[selected_key].data;
         // Save changes to ColumnDataSource
-        data_source.change.emit();
+        //data_source.change.emit();
+        data_source['main_source'].change.emit();
     }
 
     var d = new Date();
@@ -402,10 +394,9 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     var color_columns = color_keys;
     var flag_keys = flag_keys;
     var selected_flag = flag;
-
+    
     var selected_position = position_source.selected.indices;
     var selected_key = position_data['KEY'][selected_position[0]];
-    //var flag_column = selected_key+'_'+flag_key;
 
     // Get indices array of all selected items
     var selected_indices = data_source.selected.indices;
@@ -413,17 +404,13 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     var flag_value = flag_color_mapping[selected_flag]['flag'];
     var color_value = flag_color_mapping[selected_flag]['c'];
     
-    //console.log('flag_value', flag_value)
-    //console.log('color_value', color_value)
-    //console.log('selected_indices.length', selected_indices.length)
-
     if (selected_position.length == 1) {
         for (var i = 0; i < selected_indices.length; i++) {
-
+            //console.log('selected_indices[i]', selected_indices[i])
             //console.log('index_value', index_value)
             for (var j = 0; j < color_columns.length; j++) {
                 data[color_columns[j]][selected_indices[i]] = color_value;
-                data[selected_key+'_'+flag_keys[j]][selected_indices[i]] = flag_value;
+                //data[flag_keys[j]][selected_indices[i]] = flag_value;
             }
         }
 
@@ -436,7 +423,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
         select_button.button_type = select_button_type;
 
         // Trigger python callback inorder to save changes to the actual datasets
-        dummy_trigger.glyph.size = Math.random();
+        dummy_trigger.glyph.size = {'value': Math.random(), 'units': 'screen'};
         dummy_trigger.glyph.change.emit();
 
     } else {
@@ -449,7 +436,6 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
                           'S-flag': {'c': 'orange', 'flag': 'S'}}
 
     def callback_py(attr, old, new, flag=None):
-        start_time = time.time()
         selected_position = position_source.selected.indices
         if len(selected_position) > 1:
             print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_position)))
@@ -457,12 +443,9 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
 
         selected_key = position_source.data['KEY'][selected_position[0]]
         selected_indices = data_source.selected.indices
-        # ds_key = self.key_ds_mapper.get(selected_key)
         ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
         flag_value = flag_color_mapping[flag].get('flag')
-        for f in flag_keys:
-            datasets[ds_key]['data'][f].iloc[selected_indices] = flag_value
-        print('datasets update in -- %.3f sec' % (time.time() - start_time))
+        datasets[ds_key]['data'].loc[selected_indices, flag_keys] = flag_value
 
     # button_types = default, primary, success, warning or danger
     button_types = ['primary', 'danger', 'success', 'warning']
@@ -470,7 +453,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     button_list = [Spacer(width=10, height=10)]
     dummy_figure = figure()
     for flag, b_type in zip(flag_list, button_types):
-        dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
+        dummy_trigger = dummy_figure.circle(x=[1], y=[1], alpha=0)
         dummy_trigger.glyph.on_change('size', partial(callback_py, flag=flag))
 
         callback = CustomJS(args={'position_source': position_source,
@@ -496,15 +479,6 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
 
 def get_multi_serie_flag_widget(position_source, data_source, datasets, parameter_selector=None,
                                 parameter_mapping=None, figure_objs=None):
-    """
-    :param parameter_selector:
-    :param parameter_mapping:
-    :param position_source:
-    :param data_source:
-    :param datasets:
-    :param figure_objs:
-    :return:
-    """
     code = """
     console.log('get_multi_serie_flag_widget');
     var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
@@ -514,7 +488,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
 
     // Get data from ColumnDataSource
     var position_data = position_source.data;
-    var data = data_source.data;
+    // var data = data_source.data;
 
     // Set variables attributes
     var selected_flag = flag;
@@ -530,36 +504,24 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
     var value_array = [];
     var valid_indices = [];
     
-    //console.log('selected_position_indices', selected_position_indices);
-    
     for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) { 
         var selected_key = position_data['KEY'][selected_position_indices[i_pos]];
-        var value_array = data[selected_key+'_color_x1'];
+        var value_array = data_source[selected_key].data['x1'];
         
-        //console.log('selected_key', selected_key);
-    
-        var valid_indices = [];
-        for (var v_i = 0; v_i < value_array.length; v_i++) {
-            if ( value_array[v_i] != 'NaN' ) {
-                valid_indices.push(v_i)            
-            } 
-        }
-        
-        for (var i = 0; i < valid_indices.length; i++) {
+        for (var i = 0; i < value_array.length; i++) {
             for (var j = 0; j < color_columns.length; j++) {
-                data[selected_key+'_'+color_columns[j]][valid_indices[i]] = color_value;
-                data[selected_key+'_'+flag_keys[j]][valid_indices[i]] = flag_value;
+                data_source[selected_key].data[color_columns[j]][i] = color_value;
             }
         }
+        data_source[selected_key].change.emit();
     }
-    // Save changes to ColumnDataSource (only on the plotting side of ColumnDataSource)
-    data_source.change.emit();
+    
     for (var key in figure_objs) {
         figure_objs[key].reset.emit();
     }
 
     // Trigger python callback inorder to save changes to the actual datasets
-    dummy_trigger.glyph.size = Math.random();
+    dummy_trigger.glyph.size = {'value': Math.random(), 'units': 'screen'};
     dummy_trigger.glyph.change.emit();
     console.log('DONE - get_multi_serie_flag_widget');
     """
@@ -569,7 +531,6 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
                           'S-flag': {'c': 'orange', 'flag': 'S'}}
 
     def callback_py(attr, old, new, flag=None):
-        start_time = time.time()
         flag_keys = parameter_mapping[parameter_selector.value].get('q_flags')
 
         selected_position = position_source.selected.indices
@@ -577,11 +538,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
             selected_key = position_source.data['KEY'][pos_source_index]
             ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
             flag_value = flag_color_mapping[flag].get('flag')
-            for f in flag_keys:
-                # Flags all indices
-                # We might want to flag a certain pressure interval for multiple series?
-                datasets[ds_key]['data'].loc[:, f] = flag_value
-        print('datasets update in -- %.3f sec' % (time.time() - start_time))
+            datasets[ds_key]['data'].loc[:, flag_keys] = flag_value
 
     # button_types = default, primary, success, warning or danger
     button_types = ['primary', 'danger', 'success', 'warning']
@@ -609,7 +566,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
     return row(button_list, sizing_mode="stretch_width")
 
 
-def get_download_widget(datasets, series, session):
+def get_download_widget(datasets, series, session, savepath):
     """"""
 
     def callback_download(event):
@@ -638,7 +595,11 @@ def get_download_widget(datasets, series, session):
             datasets_to_update[ds_name] = datasets[ds_name]
 
         if any(datasets_to_update):
-            session.save_data([datasets_to_update], writer='ctd_standard_template')
+            session.save_data(
+                [datasets_to_update],
+                save_path=savepath or 'C:/QC_CTD',
+                writer='ctd_standard_template',
+            )
         else:
             print('No download!')
 
@@ -677,7 +638,7 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
         position_source.change.emit();
 
         // Trigger python callback inorder to save changes to the actual datasets
-        dummy_trigger.glyph.size = Math.random();
+        dummy_trigger.glyph.size = {'value': Math.random(), 'units': 'screen'};
         dummy_trigger.glyph.change.emit();
 
     } else {
@@ -706,33 +667,9 @@ def get_file_widget():
 
 
 def add_hlinked_crosshairs(*figs):
-    js_move = """
-    for (var cross_key in other_crosses){
-        other_crosses[cross_key].spans.width.computed_location = cb_obj.sy;
-    }
-    current_cross.spans.height.computed_location = null;
-    """
-    js_leave = """
-    for (var cross_key in other_crosses){
-        other_crosses[cross_key].spans.width.computed_location = null;
-    }
-    """
-    cross_objs = {}
-    fig_objs = {}
-    for i, f in enumerate(figs):
-        cross_objs[i] = CrosshairTool(line_alpha=0.5)
-        fig_objs[i] = f
-        fig_objs[i].add_tools(cross_objs[i])
-
-    for i in range(len(cross_objs)):
-        other_crosses = {ii: cross_objs[ii] for ii in range(len(cross_objs)) if ii != i}
-        if i != len(cross_objs) - 1:
-            args = {'current_cross': cross_objs[i], 'other_crosses': other_crosses, 'fig': fig_objs[i + 1]}
-        else:
-            args = {'current_cross': cross_objs[i], 'other_crosses': other_crosses, 'fig': fig_objs[0]}
-
-        fig_objs[i].js_on_event('mousemove', CustomJS(args=args, code=js_move))
-        fig_objs[i].js_on_event('mouseleave', CustomJS(args=args, code=js_leave))
+    cht = CrosshairTool(line_alpha=0.5, dimensions="width")
+    for f in figs:
+        f.add_tools(cht)
 
 
 def x_range_callback(x_range_obj=None, delta=4, seconds=None):
