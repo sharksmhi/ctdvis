@@ -394,7 +394,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     var color_columns = color_keys;
     var flag_keys = flag_keys;
     var selected_flag = flag;
-
+    
     var selected_position = position_source.selected.indices;
     var selected_key = position_data['KEY'][selected_position[0]];
     //var flag_column = selected_key+'_'+flag_key;
@@ -408,14 +408,14 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     //console.log('flag_value', flag_value)
     //console.log('color_value', color_value)
     //console.log('selected_indices.length', selected_indices.length)
-
+    
     if (selected_position.length == 1) {
         for (var i = 0; i < selected_indices.length; i++) {
-
+            //console.log('selected_indices[i]', selected_indices[i])
             //console.log('index_value', index_value)
             for (var j = 0; j < color_columns.length; j++) {
                 data[color_columns[j]][selected_indices[i]] = color_value;
-                data[flag_keys[j]][selected_indices[i]] = flag_value;
+                //data[flag_keys[j]][selected_indices[i]] = flag_value;
             }
         }
 
@@ -428,7 +428,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
         select_button.button_type = select_button_type;
 
         // Trigger python callback inorder to save changes to the actual datasets
-        dummy_trigger.glyph.size = Math.random();
+        dummy_trigger.glyph.size = {'value': Math.random(), 'units': 'screen'};
         dummy_trigger.glyph.change.emit();
 
     } else {
@@ -441,7 +441,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
                           'S-flag': {'c': 'orange', 'flag': 'S'}}
 
     def callback_py(attr, old, new, flag=None):
-        start_time = time.time()
+        # start_time = time.time()
         selected_position = position_source.selected.indices
         if len(selected_position) > 1:
             print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_position)))
@@ -452,9 +452,11 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
         # ds_key = self.key_ds_mapper.get(selected_key)
         ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
         flag_value = flag_color_mapping[flag].get('flag')
-        for f in flag_keys:
-            datasets[ds_key]['data'][f].iloc[selected_indices] = flag_value
-        print('datasets update in -- %.3f sec' % (time.time() - start_time))
+        #TODO do we/should we check if columns exists
+        datasets[ds_key]['data'].loc[selected_indices, flag_keys] = flag_value
+        # for f in flag_keys:
+        #     datasets[ds_key]['data'][f].iloc[selected_indices] = flag_value
+        # print('datasets update in -- %.3f sec' % (time.time() - start_time))
 
     # button_types = default, primary, success, warning or danger
     button_types = ['primary', 'danger', 'success', 'warning']
@@ -462,7 +464,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     button_list = [Spacer(width=10, height=10)]
     dummy_figure = figure()
     for flag, b_type in zip(flag_list, button_types):
-        dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
+        dummy_trigger = dummy_figure.circle(x=[1], y=[1], alpha=0)
         dummy_trigger.glyph.on_change('size', partial(callback_py, flag=flag))
 
         callback = CustomJS(args={'position_source': position_source,
@@ -517,39 +519,21 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
     
     for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) { 
         var selected_key = position_data['KEY'][selected_position_indices[i_pos]];
-        //var value_array = data[selected_key+'_color_x1'];
-        var value_array = data_source[selected_key].data['color_x1'];
-        //console.log('selected_key', selected_key);
-    
-        var valid_indices = [];
-        for (var v_i = 0; v_i < value_array.length; v_i++) {
-            if ( value_array[v_i] != 'NaN' ) {
-                valid_indices.push(v_i)
-            }
-        }
+        var value_array = data_source[selected_key].data['x1'];
         
-        for (var i = 0; i < valid_indices.length; i++) {
+        for (var i = 0; i < value_array.length; i++) {
             for (var j = 0; j < color_columns.length; j++) {
-                // data[selected_key+'_'+color_columns[j]][valid_indices[i]] = color_value;
-                // data[selected_key+'_'+flag_keys[j]][valid_indices[i]] = flag_value;
-                data_source[selected_key].data[color_columns[j]][valid_indices[i]] = color_value;
-                data_source[selected_key].data[flag_keys[j]][valid_indices[i]] = flag_value;
+                data_source[selected_key].data[color_columns[j]][i] = color_value;
             }
         }
         data_source[selected_key].change.emit();
     }
-    // Save changes to ColumnDataSource (only on the plotting side of ColumnDataSource)
-    // data_source.change.emit();
-    
-    //TODO: update "main_source"...  with "selected_main_source".. 
-    //or simply look for the key in ['main_source'].data['KEY'][0]...
-    
     for (var key in figure_objs) {
         figure_objs[key].reset.emit();
     }
 
     // Trigger python callback inorder to save changes to the actual datasets
-    dummy_trigger.glyph.size = Math.random();
+    dummy_trigger.glyph.size = {'value': Math.random(), 'units': 'screen'};
     dummy_trigger.glyph.change.emit();
     console.log('DONE - get_multi_serie_flag_widget');
     """
@@ -567,10 +551,11 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
             selected_key = position_source.data['KEY'][pos_source_index]
             ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
             flag_value = flag_color_mapping[flag].get('flag')
-            for f in flag_keys:
-                # Flags all indices
-                # We might want to flag a certain pressure interval for multiple series?
-                datasets[ds_key]['data'].loc[:, f] = flag_value
+            datasets[ds_key]['data'].loc[:, flag_keys] = flag_value
+            # for f in flag_keys:
+            #     # Flags all indices
+            #     # We might want to flag a certain pressure interval for multiple series?
+            #     datasets[ds_key]['data'].loc[:, f] = flag_value
         print('datasets update in -- %.3f sec' % (time.time() - start_time))
 
     # button_types = default, primary, success, warning or danger
@@ -619,6 +604,8 @@ def get_download_widget(datasets, series, session):
             print('len(series.selected.indices)', series.selected.indices)
             return
 
+        # print('datasets.keys()', datasets.keys())
+        # print([series.data['KEY'][idx] for idx in series.selected.indices])
         generator = serie_generator(datasets.keys(),
                                     [series.data['KEY'][idx] for idx in series.selected.indices])
 
@@ -667,7 +654,7 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
         position_source.change.emit();
 
         // Trigger python callback inorder to save changes to the actual datasets
-        dummy_trigger.glyph.size = Math.random();
+        dummy_trigger.glyph.size = {'value': Math.random(), 'units': 'screen'};
         dummy_trigger.glyph.change.emit();
 
     } else {

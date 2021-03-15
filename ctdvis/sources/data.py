@@ -39,7 +39,7 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
                 v = 'navy' if p.startswith('color') else np.nan
                 key_dict[p] = [v] * key_df.__len__()
 
-        data_dict[key] = ColumnDataSource(key_dict)
+        data_dict[key] = ColumnDataSource(key_dict, name=key)
 
     return data_dict
 

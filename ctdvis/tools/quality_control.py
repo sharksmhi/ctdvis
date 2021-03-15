@@ -41,8 +41,7 @@ class QCWorkTool:
                  auto_q_flag_parameters=None,
                  tabs=None, plot_parameters_mapping=None, ctdpy_session=None, multi_sensors=False, combo_plots=False,
                  output_filename="CTD_QC_VIZ.html", output_as_notebook=False):
-        from pprint import pprint
-        pprint(plot_parameters_mapping)
+
         self.seconds = ColumnDataSource(data=dict(tap_time=[None], reset_time=[None]))
         self.ctd_session = ctdpy_session
         self.multi_sensors = multi_sensors
@@ -56,7 +55,6 @@ class QCWorkTool:
         self.key_ds_mapper = self.get_mapper_key_to_ds()
         self.parameters = parameters
         self.plot_parameters_mapping = plot_parameters_mapping
-        # pprint('plot_parameters_mapping', plot_parameters_mapping)
         self.color_fields = color_fields
         self.qflag_fields = qflag_fields
         self.auto_qflag_fields = auto_q_flag_parameters
@@ -132,11 +130,6 @@ class QCWorkTool:
                                              parameter_list=self.color_fields + self.plot_keys
                                              # parameter_list=self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields,
                                              )
-
-        # print('---main_source---')
-        # pprint(self.data_source['main_source'].data)
-        # print('---a_key---')
-        # pprint(self.data_source['20190513_34AR_0288'].data)
 
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)
@@ -253,8 +246,6 @@ class QCWorkTool:
             if fig_key.startswith('COMBO'):
                 continue
             parameter = self.plot_parameters_mapping.get(fig_key).split()[0]
-            print('fig_key, parameter', fig_key, parameter)
-            # q_key = 'Q_' + parameter
             self.flag_widgets[fig_key] = cbs.get_flag_buttons_widget(self.position_plot_source,
                                                                      self.data_source['main_source'],
                                                                      self.datasets,
@@ -262,40 +253,6 @@ class QCWorkTool:
                                                                      flag_keys=self.plot_parameters_mapping[parameter].get('q_flags'),
                                                                      color_keys=self.plot_parameters_mapping[parameter].get('color_keys'),
                                                                      select_button=self.select_all_button)
-
-    def _setup_data_source(self, df):
-        """
-        :return:
-        """
-        print('Setting up data source structure...')
-        # self.df[self.parameters] = self.df[self.parameters].astype(float)
-        data_dict = {}
-        for key in self.position_source.data['KEY']:
-            data_boolean = df['KEY'] == key
-            for parameter in self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields:
-                data_key = '_'.join((key, parameter))
-                data_dict[data_key] = df.loc[data_boolean, parameter].values
-
-        length = 0
-        for key in data_dict:
-            l = len(data_dict[key])
-            if l > length:
-                length = l
-        for key in data_dict:
-            if len(data_dict[key]) < length:
-                data_dict[key] = np.pad(data_dict[key],
-                                        (0, length - len(data_dict[key])),
-                                        'constant',
-                                        constant_values=np.nan)
-
-        for p in self.plot_parameters_mapping.keys():
-            data_dict[p] = [1] * length
-            if p != 'y':
-                data_dict['color_' + p] = ['black'] * length
-
-        self.data_source = ColumnDataSource(data=data_dict)
-
-        print('\nData source structure completed!\n')
 
     def _setup_comnt_inputs(self):
         """
