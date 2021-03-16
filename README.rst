@@ -30,3 +30,4 @@ CTDvis can be installed from PyPI with pip:
 Example visualization
 --------
 .. image:: docs/single_plot.png
+    :target: https://github.com/sharksmhi/ctdvis/tree/master/docs/single_plot.png
