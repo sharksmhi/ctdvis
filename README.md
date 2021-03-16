@@ -23,4 +23,4 @@ pip install ctdvis
 Example visualization
 --------
 
-![Example single_plot](https://github.com/sharksmhi/ctdvis/blob/master/docs/single_plot.PNG)
+![Example single_plot](docs/single_plot.PNG)
