@@ -23,8 +23,8 @@ pip install ctdvis
 Example visualization
 --------
 
+![Example Screen](docs/screenshot.PNG)
+
 ![Example single_plot](docs/single_plot.PNG) 
 
 ![Example Flag data](docs/flag_plot.PNG)
-
-![Example Screen](docs/screenshot.PNG)
