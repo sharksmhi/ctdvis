@@ -16,12 +16,10 @@ Installation
 
 CTDvis can be installed from PyPI with pip:
 
-.. code-block:: bash
-
-    pip install ctdvis
-
+```bash
+pip install ctdvis
+```
 
 Example visualization
 --------
-.. image:: https://raw.githubusercontent.com/sharksmhi/ctdvis/tree/master/docs/single_plot.png?sanitize=true
-
+![Example single_plot](docs/single_plot.png)
