@@ -1,15 +1,9 @@
 CTDvis
 ======
 
-.. image:: https://pypip.in/v/ctdvis/badge.png
-    :target: https://pypi.python.org/pypi/ctdvis/
-    :alt: Latest PyPI version
-
-.. image:: https://pypip.in/wheel/ctdvis/badge.svg
-    :target: https://pypi.python.org/pypi/ctdvis/
-
-.. image:: https://pypip.in/license/ctdvis/badge.svg
-    :target: https://pypi.python.org/pypi/ctdvis/
+[![PyPi version](https://badge.fury.io/py/ctdvis.svg)](https://pypi.python.org/pypi/ctdvis/)
+[![PyPi wheel](https://pypip.in/wheel/ctdvis/badge.png)](https://crate.io/packages/ctdvis/)
+[![PyPi license](https://pypip.in/license/ctdvis/badge.png)](https://crate.io/packages/ctdvis/)
 
 Python 3 library developed by Shd at SMHI.
 
