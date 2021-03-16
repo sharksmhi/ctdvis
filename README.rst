@@ -29,4 +29,4 @@ CTDvis can be installed from PyPI with pip:
 
 Example visualization
 --------
-![Example visualization](docs/single_plot.png)
+.. image:: docs/single_plot.png
