@@ -22,4 +22,4 @@ pip install ctdvis
 
 Example visualization
 --------
-![Example single_plot](docs/single_plot.png)
+![Example single_plot](ctdvis/docs/single_plot.PNG)
