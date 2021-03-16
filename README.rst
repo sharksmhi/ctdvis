@@ -26,3 +26,7 @@ CTDvis can be installed from PyPI with pip:
 
     pip install ctdvis
 
+
+Example visualization
+--------
+![Example visualization](docs/single_plot.png)

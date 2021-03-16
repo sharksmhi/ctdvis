@@ -9,5 +9,5 @@ Installation
 ------------
 CTDvis can be installed from PyPI with pip:
 
-`pip3 install ctdvis`
+`pip install ctdvis`
 
