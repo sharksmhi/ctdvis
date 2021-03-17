@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 *.pyc
 
-/ctdpy/exports/
+/ctdvis/etc/parameter_dependencies.json
 
 # C extensions
 *.so

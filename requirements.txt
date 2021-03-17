@@ -5,3 +5,5 @@ gsw
 pyproj
 pandas
 ctdpy
+requests
+PyYAML

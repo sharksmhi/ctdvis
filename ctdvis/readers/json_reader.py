@@ -11,6 +11,12 @@ import numpy as np
 from ctdvis import utils
 
 
+def load_json(file_path):
+    with open(file_path, 'r', encoding='utf-8') as fd:
+        f = json.load(fd)
+    return f
+
+
 class JSONreader(dict):
     """
     - Import json

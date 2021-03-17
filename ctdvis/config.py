@@ -8,9 +8,15 @@ Created on 2020-07-03 11:37
 """
 import os
 import sys
+import requests
 from ctdvis import utils
-from ctdvis.readers import JSONreader
-from sharkpylib.qc.settings import Settings as shark_qc_settings
+from ctdvis.readers import JSONreader, load_json
+try:
+    from sharkpylib.qc.settings import Settings as shark_qc_settings
+except ModuleNotFoundError as error:
+    print(error)
+    print('Could not import sharkpylib.qc.settings. \nTrying to catch parameter_dependencies via github..')
+    shark_qc_settings = None
 
 
 class Settings:
@@ -25,8 +31,26 @@ class Settings:
         etc_path = '\\'.join([self.base_directory, 'etc', ''])
         self._load_settings(etc_path)
 
-        qc_settings = shark_qc_settings()
-        self.parameter_dependencies = qc_settings.parameter_dependencies.get('parameters')
+        if shark_qc_settings:
+            qc_settings = shark_qc_settings()
+            self.parameter_dependencies = qc_settings.parameter_dependencies.get('parameters')
+        else:
+            file_path = os.path.join(etc_path, 'parameter_dependencies.json')
+            if not os.path.exists(file_path):
+                try:
+                    r = requests.get(
+                        'https://raw.githubusercontent.com/sharksmhi/sharkpylib/master/sharkpylib/qc/etc/parameter_dependencies.json',
+                        allow_redirects=True,
+                    )
+                    open(file_path, 'wb').write(r.content)
+                    print('Download completed! file saved here: {}'.format(file_path))
+                except:
+                    raise ConnectionError(
+                        'Was not able to download https://raw.githubusercontent.com/sharksmhi/sharkpylib/master/sharkpylib/qc/etc/parameter_dependencies.json'
+                        'and could not import sharkpylib.qc.settings\n '
+                        'Try again when you have access to the internet!'
+                    )
+            self.parameter_dependencies = load_json(file_path)
 
     def __setattr__(self, name, value):
         """
@@ -89,7 +113,7 @@ class Settings:
                     pass
             else:
                 path_list.append(p)
-        print(path_list)
+        # print(path_list)
         settings = JSONreader().load_json(config_files=path_list, return_dict=True)
 
         self.set_attributes(self, **settings)
