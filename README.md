@@ -3,12 +3,14 @@ CTDvis
 
 [![PyPi version](https://pypip.in/v/ctdvis/badge.png)](https://pypi.python.org/pypi/ctdvis/)
 [![PyPi wheel](https://pypip.in/wheel/ctdvis/badge.svg)](https://pypi.python.org/pypi/ctdvis/)
-[![PyPi license](https://pypip.in/license/ctdvis/badge.svg)](https://pypi.python.org/pypi/ctdvis/)
+[![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://pypi.python.org/pypi/ansicolortags/)
 
 Python 3 library developed by Shd at SMHI.
 
 - Visualize high resolution oceanographic profile data, eg. CTD, MVP.
 - Main purpose: Quality control
+
+See [script examples](https://github.com/sharksmhi/ctdvis/tree/master/ctdvis/tests)
 
 Installation
 ------------

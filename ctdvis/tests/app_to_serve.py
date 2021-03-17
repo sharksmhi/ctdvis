@@ -19,6 +19,7 @@ from ctdvis.session import Session
 
 
 def bokeh_qc_tool():
+    """ Path to CTD-standard-format (including auto-QC-fields) """
     data_dir = 'C:/Arbetsmapp/datasets/Profile/2019/SHARK_Profile_2019_SMHI/processed_data'
 
     """ Filters are advised to be implemented if the datasource is big, (~ >3 months of SMHI-EXP-data) """
