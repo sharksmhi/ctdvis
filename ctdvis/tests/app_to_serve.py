@@ -34,7 +34,11 @@ def bokeh_qc_tool():
         # serno_max=355,
     )
 
-    s = Session(visualize_setting='smhi_vis', data_directory=data_dir, filters=filters)
+    s = Session(
+        visualize_setting='smhi_vis',
+        data_directory=data_dir,
+        filters=filters,
+    )
     s.setup_datahandler()
     layout = s.run_tool(return_layout=True)
 

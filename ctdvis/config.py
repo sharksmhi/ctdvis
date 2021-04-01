@@ -33,7 +33,7 @@ class Settings:
 
         if shark_qc_settings:
             qc_settings = shark_qc_settings()
-            self.parameter_dependencies = qc_settings.parameter_dependencies.get('parameters')
+            self.parameter_dependencies = qc_settings.parameter_dependencies.copy()
         else:
             file_path = os.path.join(etc_path, 'parameter_dependencies.json')
             if not os.path.exists(file_path):
