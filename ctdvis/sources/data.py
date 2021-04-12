@@ -20,7 +20,9 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
     """
     main_source = {}
     for p in parameter_list:
-        if p.startswith('color'):
+        if p.startswith('COMNT'):
+            main_source[p] = ['']
+        elif p.startswith('color'):
             main_source[p] = ['navy']
         else:
             main_source[p] = [1]
@@ -32,7 +34,11 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
         key_df = df.loc[data_boolean, :]
         key_dict = {}
         for p in parameter_list:
-            df_column = pmap.get(p) if not p.startswith('color') else p
+            if p.startswith('COMNT'):
+                df_column = p
+            else:
+                df_column = pmap.get(p) if not p.startswith('color') else p
+
             if df_column and df_column in key_df:
                 key_dict[p] = key_df[df_column].values
             else:
@@ -42,15 +48,3 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
         data_dict[key] = ColumnDataSource(key_dict, name=key)
 
     return data_dict
-
-
-if __name__ == "__main__":
-    import pandas as pd
-    mapping = {'x1': 'TEMP', 'x2': 'SALT', 'y': 'PRES'}
-    # d = CTDDataSource()
-    # d.setup_source(pd.DataFrame({'TEMP': [1, 2, 3],
-    #                              'SALT': [1, 2, 3],
-    #                              'PRES': [1, 2, 3],
-    #                              'KEY': ['a', 'b', 'c']}),
-    #                mapping)
-    # print(d.data)

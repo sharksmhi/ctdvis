@@ -208,7 +208,9 @@ class Settings:
 
     @property
     def parameter_formats(self):
-        return {key: float for key in self.data_parameters_with_units}
+        d = {key: float for key in self.data_parameters_with_units}
+        d.setdefault('COMNT_SAMP', str)
+        return d
 
 
 class InfoLog:

@@ -20,19 +20,20 @@ from ctdvis.session import Session
 
 def bokeh_qc_tool():
     """ Path to CTD-standard-format (including auto-QC-fields) """
-    data_dir = 'C:/Arbetsmapp/datasets/Profile/2019/SHARK_Profile_2019_SMHI/processed_data'
+    # data_dir = 'C:/Arbetsmapp/datasets/Profile/2019/SHARK_Profile_2019_SMHI/processed_data'
+    data_dir = r'C:\Utveckling\ctdpy\ctdpy\exports\ctd_std_fmt_20210406_170323'
 
     """ Filters are advised to be implemented if the datasource is big, (~ >3 months of SMHI-EXP-data) """
-    # filters = None
-    filters = dict(
-        # month_list=[1, 2, 3],
-        month_list=[5],
-        # month_list=[7, 8, 9],
-        # month_list=[10, 11, 12],
-        # ship_list=['77SE', '34AR']
-        # serno_min=311,
-        # serno_max=355,
-    )
+    filters = None
+    # filters = dict(
+    #     # month_list=[1, 2, 3],
+    #     month_list=[5],
+    #     # month_list=[7, 8, 9],
+    #     # month_list=[10, 11, 12],
+    #     # ship_list=['77SE', '34AR']
+    #     # serno_min=311,
+    #     # serno_max=355,
+    # )
 
     s = Session(
         visualize_setting='smhi_vis',

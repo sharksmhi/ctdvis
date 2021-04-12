@@ -224,6 +224,7 @@ def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
     // Set Sources
     var position_data = position_source.data;
     var comnt_obj = comnt_obj;
+    var title_obj = title_obj;
     var single_select = single_select;
 
     // Get indices array of all selected items
@@ -236,8 +237,8 @@ def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
 
     // Update active keys in data source    
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
-        comnt_obj.value = comnt
-        comnt_obj.title = comnt_key + ':  ' + station_name + ' - ' + selected_key
+        comnt_obj.value = comnt;
+        comnt_obj.title = 'COMNT_VISIT: ' + station_name + ' - ' + selected_key;
     }
 
     """
@@ -247,6 +248,54 @@ def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
                           'single_select': single_select,
                           },
                     code=code)
+
+
+def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None, comnt_selector=None, single_select=None):
+    # assert position_source, data_source
+    code = """
+    // Set column name to select similar glyphs
+    var key = 'KEY';
+    var statn_key = 'STATION';
+
+    // Set Sources
+    var position_data = position_source.data;
+    var data = data_source.data;
+    var comnt_obj = comnt_obj;
+    var single_select = single_select;
+
+    // Get indices array of all selected items
+    var selected = position_source.selected.indices;
+
+    // Update active keys in data source    
+    if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
+        // Update figure title
+        var station_name = position_data[statn_key][selected[0]];
+        var selected_key = position_data[key][selected[0]];
+        comnt_obj.title = 'COMNT_SAMP:  ' + station_name + ' - ' + selected_key;
+        comnt_obj.value = '';
+        function onlyUnique(value, index, self) {
+          return self.indexOf(value) === index;
+        }
+        var unique_values = data['COMNT_SAMP'].filter(onlyUnique);
+        unique_values = unique_values.filter(function(item) {
+            return item !== ""
+        })
+        var using = [''];
+        using.push(...unique_values);
+        comnt_selector.options = using;
+    }
+
+    """
+    return CustomJS(
+        args={
+            'position_source': position_source,
+            'comnt_obj': comnt_obj,
+            'comnt_selector': comnt_selector,
+            'data_source': data_source,
+            'single_select': single_select,
+        },
+        code=code
+    )
 
 
 def change_button_type_callback(button=None, btype=None):
@@ -654,9 +703,102 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
                               'dummy_trigger': dummy_trigger},
                         code=js_code)
 
-    button = Button(label="Commit", width=30, button_type="success")
+    button = Button(label="Commit visit comnt", width=30, button_type="success")
     button.js_on_event(ButtonClick, callback)
     return button
+
+
+def comnt_samp_change_button(datasets=None, position_source=None, data_source=None, comnt_obj=None):
+    """"""
+
+    def callback_py(attr, old, new, comnt_obj=None):
+        selected_indices = position_source.selected.indices
+        if len(selected_indices) > 1:
+            print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_indices)))
+            return
+        selected_key = position_source.data['KEY'][selected_indices[0]]
+        selected_data_indices = data_source.selected.indices
+        # data_source[selected_key].data['COMNT_SAMP'][selected_data_indices] = comnt_obj.value
+        ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
+        # TODO add '; '.join(...)
+        # datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices] = \
+        #     datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices].apply(
+        #         lambda x: '; '.join((x, comnt_obj.value))
+        #     )
+        datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices] = comnt_obj.value
+        # datasets[ds_key]['data'][cv_boolean] = comnt_obj.value
+
+    js_code = """
+    console.log('comnt_visit_change_button')
+    // Get data from ColumnDataSource
+    var position_data = position_source.data;
+    var data = data_source.data;
+
+    // Set variables attributes
+    var selected_position_indices = position_source.selected.indices;
+
+    if (selected_position_indices.length == 1) {
+        var selected_water_indices = data_source.selected.indices;
+        var selected_key = position_data['KEY'][selected_position_indices[0]];
+        
+        for (var i = 0; i < selected_water_indices.length; i++) {
+            data['COMNT_SAMP'][selected_water_indices[i]] = comnt_obj.value;
+        }
+        
+        // Save changes to ColumnDataSource
+        data_source.change.emit();
+
+        // Trigger python callback inorder to save changes to the actual datasets
+        dummy_trigger.glyph.size = {'value': Math.random(), 'units': 'screen'};
+        dummy_trigger.glyph.change.emit();
+
+    } else {
+        console.log('To many selected stations!! We can only work with one at a time', selected_indices.length)
+    }
+    """
+    dummy_figure = figure()
+    dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
+    dummy_trigger.glyph.on_change('size', partial(callback_py, comnt_obj=comnt_obj))
+
+    callback = CustomJS(args={'position_source': position_source,
+                              'data_source': data_source,
+                              'comnt_obj': comnt_obj,
+                              'dummy_trigger': dummy_trigger},
+                        code=js_code)
+
+    button = Button(label="Commit sample comnt", width=30, button_type="success")
+    button.js_on_event(ButtonClick, callback)
+    return button
+
+
+def comnt_samp_selection(data_source=None, comnt_obj=None):
+    code = """
+    //console.log('select: value=' + this.value, this.toString())
+    comnt_obj.value = this.value;
+    var data = data_source.data;
+    var selected_indices = [];
+    var comnt_value;
+    for (var i = 0; i < data.COMNT_SAMP.length; i++) {
+        comnt_value = data.COMNT_SAMP[i];
+        if (comnt_value == this.value) {
+            selected_indices.push(i);
+        }
+    }
+    data_source.selected.indices = selected_indices;
+    
+    """
+    callback = CustomJS(
+        code=code,
+        args={'data_source': data_source,
+              'comnt_obj': comnt_obj}
+    )
+    select = Select(
+        title="Select comnt incl. index",
+        value='None',
+        options=[],
+    )
+    select.js_on_change("value", callback)
+    return select
 
 
 def get_file_widget():

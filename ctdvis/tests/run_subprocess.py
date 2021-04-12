@@ -19,6 +19,7 @@ if __name__ == "__main__":
             "app_to_serve.py"  (or PATH TO PY-FILE)
     """
     child_process = subprocess.Popen(["bokeh", "serve", "app_to_serve.py"])
+    # child_process = subprocess.Popen(["bokeh", "serve", "--port", "5002", "app_to_serve.py"])
 
     """ Terminate the subprocess (via GUI?) """
     # child_process.terminate()
