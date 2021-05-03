@@ -36,6 +36,9 @@ class QCWorkTool:
     # TODO
     Well, this is great, however.. we need to simplify and divide this class into widgets instead..
     to be continued..
+
+    - delete color fields? use flag fields instead?
+
     """
     def __init__(self,
                  dataframe,
@@ -139,12 +142,13 @@ class QCWorkTool:
         self.ts.title.align = 'center'
 
         self._setup_position_source(dataframe)
-        self.data_source = setup_data_source(dataframe,
-                                             pmap=self.plot_parameters_mapping,
-                                             key_list=np.unique(self.position_source.data['KEY']),
-                                             parameter_list=self.color_fields + self.plot_keys + self.auto_qflag_fields
-                                             # parameter_list=self.parameters + self.color_fields + self.qflag_fields + self.auto_qflag_fields,
-                                             )
+        self.data_source = setup_data_source(
+            dataframe,
+            pmap=self.plot_parameters_mapping,
+            key_list=np.unique(self.position_source.data['KEY']),
+            parameter_list=self.color_fields + self.plot_keys + self.auto_qflag_fields + ['COMNT_SAMP']
+        )
+
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)
         self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
@@ -273,11 +277,25 @@ class QCWorkTool:
         """
         :return:
         """
-        self.comnt_samp = TextInput(value="", title="COMNT_SAMP:")
         self.comnt_visit = TextInput(value="", title="COMNT_VISIT:")
-        self.comnt_visit_button = cbs.comnt_visit_change_button(datasets=self.datasets,
-                                                                position_source=self.position_plot_source,
-                                                                comnt_obj=self.comnt_visit)
+        self.comnt_visit_button = cbs.comnt_visit_change_button(
+            datasets=self.datasets,
+            position_source=self.position_plot_source,
+            comnt_obj=self.comnt_visit,
+        )
+
+        self.comnt_samp = TextInput(value="", title="COMNT_SAMP:")
+        self.comnt_samp_button = cbs.comnt_samp_change_button(
+            datasets=self.datasets,
+            position_source=self.position_plot_source,
+            data_source=self.data_source['main_source'],
+            comnt_obj=self.comnt_samp,
+        )
+
+        self.comnt_samp_selector = cbs.comnt_samp_selection(
+            data_source=self.data_source['main_source'],
+            comnt_obj=self.comnt_samp,
+        )
 
     def _setup_info_block(self):
         """
@@ -311,7 +329,7 @@ class QCWorkTool:
 
         self.text_index_selection = standard_block_header(text='Profile index selection', height=30)
         self.text_multi_serie_flagging = standard_block_header(text='Multi serie parameter flagging', height=30)
-        self.text_meta = standard_block_header(text='Change visit comment', height=30)
+        self.text_meta = standard_block_header(text='Change comments', height=30)
         self.text_export = Div(text=text_export_block)
         self.text_import = standard_block_header(text='Not yet applicable', height=30)
         # self.text_header_line = header_line(width=300, height=20)
@@ -427,18 +445,29 @@ class QCWorkTool:
                                             comnt_obj=self.comnt_visit,
                                             single_select=1)
 
+        comnt_samp_callback = cbs.comnt_samp_callback(
+            position_source=self.position_plot_source,
+            data_source=self.data_source['main_source'],
+            comnt_obj=self.comnt_samp,
+            comnt_selector=self.comnt_samp_selector,
+            single_select=1,
+        )
+
         update_slider_callback = cbs.range_slider_update_callback(slider=self.pressure_slider,
                                                                   data_source=self.data_source['main_source'])
 
         select_button_type_callback = cbs.change_button_type_callback(button=self.select_all_button, btype='default')
 
         lasso_callback.args["month"] = self.month_selector
-        self.position_plot_source.selected.js_on_change('indices',
-                                                        lasso_callback,
-                                                        station_data_callback_2,
-                                                        comnt_callback,
-                                                        update_slider_callback,
-                                                        select_button_type_callback)
+        self.position_plot_source.selected.js_on_change(
+            'indices',
+            lasso_callback,
+            station_data_callback_2,
+            comnt_callback,
+            update_slider_callback,
+            select_button_type_callback,
+            comnt_samp_callback,
+        )
 
     def plot_stations(self):
         """"""
@@ -593,15 +622,17 @@ class QCWorkTool:
                                         'parameter_selector',
                                         'multi_flag_widget'],
                                   Metadata=['text_meta',
-                                            'comnt_visit',
-                                            'comnt_visit_button'],
+                                            'comnt_visit', 'comnt_visit_button',
+                                            'comnt_samp',
+                                            'comnt_samp_selector',
+                                            'comnt_samp_button'],
                                   Import=['text_import',
                                           'file_button'],
                                   Export=['text_export',
                                           'download_button'],
                                   Info=['info_block'])
         std_parameter_tabs = self.get_std_parameter_tab_layout()
-        widgets_1 = column([self.month_selector, self.spacer, self.selected_series], sizing_mode="fixed", height=300,
+        widgets_1 = column([self.month_selector, self.spacer, self.selected_series], sizing_mode="fixed", height=400,
                            width=200)
         widgets_2 = column([Spacer(height=10, width=125)], sizing_mode="fixed", height=10, width=125)
         widgets_3 = column([meta_tabs], sizing_mode="stretch_both", height=100, width=100)

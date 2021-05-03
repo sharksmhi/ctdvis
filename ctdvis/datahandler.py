@@ -85,6 +85,8 @@ class Frame(pd.DataFrame, ABC):
             if key in self.columns:
                 try:
                     self[key] = self[key].astype(value)
+                    if value == str:
+                        self[key] = self[key].replace('nan', '')
                 except ValueError:
                     self[key] = self[key].replace('', np.nan).astype(value)
 
