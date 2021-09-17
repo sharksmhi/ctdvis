@@ -24,12 +24,6 @@ def get_color_palette(dep_serie=None, ):
 
 
 def convert_projection(lats, lons):
-    """
-
-    :param lats:
-    :param lons:
-    :return:
-    """
     project_projection = CRS('EPSG:4326')
     google_projection = CRS('EPSG:3857')
     x, y = transform(project_projection, google_projection, lons, lats, always_xy=True)
@@ -85,7 +79,7 @@ def get_time_as_format(**kwargs):
     if kwargs.get('fmt'):
         return d.strftime(kwargs.get('fmt'))
     else:
-        raise NotImplementedError
+        raise KeyError
 
 
 def recursive_dict_update(d, u):

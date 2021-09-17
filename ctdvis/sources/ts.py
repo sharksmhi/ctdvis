@@ -27,15 +27,3 @@ class Source(ColumnDataSource):
         ts_df.loc[:, 'color'] = get_color_palette(dep_serie=ts_df.loc[:, pmap.get('y')])
 
         self.data.update(ts_df)
-
-
-if __name__ == "__main__":
-    import pandas as pd
-    mapping = {'x1': 'TEMP', 'x2': 'SALT', 'y': 'PRES'}
-    d = Source()
-    d.setup_source(pd.DataFrame({'TEMP': [1, 2, 3],
-                                 'SALT': [1, 2, 3],
-                                 'PRES': [1, 2, 3],
-                                 'KEY': ['a', 'b', 'c']}),
-                   mapping)
-    print(d.data)

@@ -7,7 +7,6 @@ Created on 2020-07-03 11:42
 
 """
 import json
-import numpy as np
 from ctdvis import utils
 
 

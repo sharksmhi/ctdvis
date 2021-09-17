@@ -6,7 +6,6 @@ Created on 2020-07-06 15:33
 @author: a002028
 
 """
-import time
 from functools import partial
 from bokeh.models import Button, FileInput, CustomJS, CrosshairTool
 from bokeh.layouts import row, Spacer

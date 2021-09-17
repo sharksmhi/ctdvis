@@ -16,7 +16,7 @@ with open('requirements.txt', 'r') as fh:
         requirements.append(line.strip())
 
 NAME = 'ctdvis'
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 README = open('READMEpypi.rst', 'r').read()
 
 setuptools.setup(
@@ -30,7 +30,7 @@ setuptools.setup(
     url="https://github.com/sharksmhi/ctdvis",
     packages=setuptools.find_packages(),
     package_data={'ctdvis': [
-        os.path.join('etc', 'settings.json'),
+        os.path.join('etc', '*.json'),
         os.path.join('etc', 'vis_setup', '*.json'),
     ]},
     classifiers=[

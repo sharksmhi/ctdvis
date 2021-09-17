@@ -141,3 +141,10 @@ class DataHandler:
         self.df.add_color_columns(settings.q_parameters,
                                   mapper=settings.q_colors_mapper)
         self.df.set_column_format(**settings.parameter_formats)
+
+        self.check_columns(*settings.meta_parameters)
+
+    def check_columns(self, *args):
+        for col in args:
+            if col not in self.df:
+                self.df[col] = ''
