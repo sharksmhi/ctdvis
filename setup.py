@@ -1,4 +1,4 @@
-# Copyright (c) 2021 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2021 SMHI, Swedish Meteorological and Hydrological Institute.
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 """
 Created on 2021-02-18 13:52

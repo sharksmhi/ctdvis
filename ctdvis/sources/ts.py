@@ -1,10 +1,9 @@
-# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute.
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 """
 Created on 2020-09-07 11:38
 
 @author: a002028
-
 """
 from bokeh.models import ColumnDataSource
 from ctdvis.utils import get_color_palette

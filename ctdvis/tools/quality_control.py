@@ -1,34 +1,42 @@
-# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute.
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 """
 Created on 2020-07-06 15:29
 
 @author: a002028
-
 """
 from bokeh.io import output_notebook
-from bokeh.models import TextInput, ColumnDataSource, Div, Circle, TapTool, HoverTool, WheelZoomTool, ResetTool, PanTool, SaveTool,  LassoSelectTool, ColorBar, LinearColorMapper
+from bokeh.models import (
+    TextInput,
+    ColumnDataSource,
+    Div,
+    Circle,
+    TapTool,
+    HoverTool,
+    WheelZoomTool,
+    ResetTool,
+    PanTool,
+    SaveTool,
+    LassoSelectTool,
+    ColorBar,
+    LinearColorMapper
+)
 from bokeh.layouts import grid, row, column, Spacer
 from bokeh.models.widgets import Select, RangeSlider, DataTable, TableColumn, Panel, Tabs
 from bokeh.plotting import figure, show, output_file
 from bokeh.tile_providers import get_provider, Vendors
-
 from bokeh.core.validation import silence
 from bokeh.core.validation.warnings import FIXED_SIZING_MODE
-silence(FIXED_SIZING_MODE, True)
-
 import numpy as np
 import pandas as pd
 from matplotlib import colors
 from matplotlib import cm
-
-import time
-
 from ctdvis.utils import get_time_as_format, convert_projection, get_contour_data
 from ctdvis.callbacks import cbs
 from ctdvis.sources.ts import Source as TS_Source
 from ctdvis.sources.data import setup_data_source
 from ctdvis.widgets.paragraph import standard_block_header, header_line
+silence(FIXED_SIZING_MODE, True)
 
 
 class QCWorkTool:

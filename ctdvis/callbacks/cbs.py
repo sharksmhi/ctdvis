@@ -1,10 +1,9 @@
-# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute.
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 """
 Created on 2020-07-06 15:33
 
 @author: a002028
-
 """
 from functools import partial
 from bokeh.models import Button, FileInput, CustomJS, CrosshairTool
@@ -12,7 +11,6 @@ from bokeh.layouts import row, Spacer
 from bokeh.models.widgets import Select
 from bokeh.plotting import figure
 from bokeh.events import ButtonClick
-
 from ctdvis.utils import get_time_as_format
 
 

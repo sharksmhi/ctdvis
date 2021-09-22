@@ -1,4 +1,4 @@
-# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute.
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 """
 Created on 2021-03-17 09:17
@@ -12,7 +12,6 @@ In a conda-prompt run:
 
 Open in web browser: http://localhost:5006/app_to_serve
     Bokeh app running at: http://localhost:5006/app_to_serve
-
 """
 from bokeh.plotting import curdoc
 from ctdvis.session import Session

@@ -1,10 +1,9 @@
-# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute.
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 """
 Created on 2020-07-03 11:25
 
 @author: a002028
-
 """
 from collections import Mapping
 from datetime import datetime
@@ -16,7 +15,8 @@ from matplotlib import colors
 from matplotlib import cm
 
 
-def get_color_palette(dep_serie=None, ):
+def get_color_palette(dep_serie=None):
+    """Return palette."""
     number_of_colors = int(dep_serie.max() * 2 + 1)
     cm_map = cm.get_cmap('cool', number_of_colors)
     color_array = pd.Series([colors.to_hex(cm_map(c)) for c in range(number_of_colors)])
@@ -24,6 +24,7 @@ def get_color_palette(dep_serie=None, ):
 
 
 def convert_projection(lats, lons):
+    """Return position in google projection."""
     project_projection = CRS('EPSG:4326')
     google_projection = CRS('EPSG:3857')
     x, y = transform(project_projection, google_projection, lons, lats, always_xy=True)
@@ -31,8 +32,7 @@ def convert_projection(lats, lons):
 
 
 def get_contour_arrays(x_min, x_max, y_min, y_max):
-    """
-    Calculate how many gridcells we need in the x and y dimensions
+    """Calculate how many gridcells we need in the x and y dimensions.
     Assuming x_key = Salinity and y_key = Temperature
     :return:
     """
