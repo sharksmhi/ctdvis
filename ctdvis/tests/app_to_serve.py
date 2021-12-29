@@ -38,7 +38,7 @@ def bokeh_qc_tool():
 
     s = Session(
         # visualize_setting='sgus_vis',
-        # visualize_setting='slua_vis',
+        # visualize_setting='umsc_vis',
         visualize_setting='smhi_vis',
         data_directory=data_dir,
         filters=filters,

@@ -558,8 +558,8 @@ class QCWorkTool:
     def get_tab_layout(self):
         fig_tabs = [Panel(child=column([Spacer(height=30, width=20), self.ts]), title="TS")]
         for p, item in self.figures.items():
-            if (self.multi_sensors and p not in ['x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'COMBO_TEMP', 'COMBO_SALT',
-                                                 'COMBO_DOXY']) \
+            if (self.multi_sensors and p not in ['x1', 'x2', 'x3', 'x4', 'x5', 'x6',
+                                                 'COMBO_TEMP', 'COMBO_SALT', 'COMBO_DOXY']) \
                     or (not self.multi_sensors and p not in ['x1', 'x2', 'x3']):
                 tab_layout = column([self.flag_widgets[p], item])
                 tab_name = self.plot_parameters_mapping.get(p).split()[0].replace('_CTD', '')
