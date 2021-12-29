@@ -119,15 +119,16 @@ def station_callback_2(position_source=None, data_source=None,
 
     // Update active keys in data source    
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
-        //var data_parameter_name, q0_key, color_key;
         for (var fig_key in figures){
             figures[fig_key].title.text = station_name + ' - ' + selected_key
         }
-        //data['y'] = data[selected_key+'_'+parameter_mapping['y']];
         data_source['main_source'].data = data_source[selected_key].data;
+
         // Save changes to ColumnDataSource
-        //data_source.change.emit();
         data_source['main_source'].change.emit();
+    } else {
+        data_source['main_source'].data = data_source['default_source'].data;
+        console.log('We can only work with one serie at a time', selected.length)
     }
 
     var d = new Date();
@@ -347,7 +348,11 @@ def range_slider_update_callback(slider=None, data_source=None):
         i++
     }
     slider.start = Math.min.apply(Math, values);
-    slider.end = Math.max.apply(Math, values);
+    if (slider.start !== Math.max.apply(Math, values)) {
+            slider.end = Math.max.apply(Math, values);
+    } else {
+        slider.end = Math.max.apply(Math, values) + 1;
+    }
     slider.value = [slider.start, slider.end];
     slider.change.emit();
     """

@@ -26,7 +26,10 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
         else:
             main_source[p] = [1]
 
-    data_dict = {'main_source': ColumnDataSource(main_source)}
+    data_dict = {
+        'main_source': ColumnDataSource(main_source),
+        'default_source': ColumnDataSource(main_source)
+    }
 
     for key in key_list:
         data_boolean = df['KEY'] == key
