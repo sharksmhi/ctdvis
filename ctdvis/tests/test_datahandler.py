@@ -9,7 +9,7 @@ from ctdvis.session import Session
 
 
 if __name__ == "__main__":
-    data_dir = 'C:\\Temp\\CTD_DV\\ctd_std_fmt_20200526_095058'
+    data_dir = 'C:/Temp/CTD_DV/ctd_std_fmt_20200526_095058'
 
     filters = dict(
         month_list=[5],

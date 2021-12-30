@@ -9,10 +9,7 @@ from bokeh.models import Div
 
 
 def header_line():
-    """
-    :param text: str
-    :return:
-    """
+    """Return Div object."""
     html_text = """
     <html>
     <body>
@@ -24,10 +21,7 @@ def header_line():
 
 
 def standard_block_header(text=None, width=300, height=40):
-    """
-    :param text: str
-    :return:
-    """
+    """Return Div object."""
     html_text = """
     <style>
         body {
@@ -46,10 +40,8 @@ def standard_block_header(text=None, width=300, height=40):
     return Div(text=html_text, width=width, height=height)
 
 
-def _setup_info_block():
-    """
-    :return:
-    """
+def get_info_block():
+    """Return Div object."""
     text = """
     <h4>Info links</h4>
     <ul>
@@ -67,3 +59,16 @@ def _setup_info_block():
     </ol>
     """
     return Div(text=text, width=200, height=100)
+
+
+def get_export_info_block():
+    """Return Div object."""
+    text = """
+    <h4>Download steps:</h4>
+    <ol>
+      <li>Select series using "map-lasso" or "Shift-table-select"</li>
+      <li>Click on Download below</li>
+    </ol>
+    A folder with datafiles will be downloaded to your computer download-folder (eg. "Hämtade filer")
+    """
+    return Div(text=text)

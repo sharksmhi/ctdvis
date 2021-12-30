@@ -15,6 +15,10 @@ from ctdvis.utils import get_time_as_format
 
 
 def callback_test(source):
+    """Return a CustomJS callback.
+
+    Intended for test use. printing 'console print callback_test!'.
+    """
     code = """
     // CALLBACK TESTING, WITH PRINT
     console.log('console print callback_test!')        
@@ -26,14 +30,9 @@ def callback_test(source):
 
 
 def month_selection_callback(position_source=None, position_plot_source=None):
-    """
+    """Return a CustomJS callback."""
     # TODO We need to rewrite the JScallback code.. not very versatile..
-    # simply use all columns from position_source to begin with?
-
-    :param position_source:
-    :param position_plot_source:
-    :return:
-    """
+    #  simply use all columns from position_source to begin with?
     code = """
     console.log('month_selection_callback');
     // Get data from ColumnDataSource
@@ -78,7 +77,7 @@ def month_selection_callback(position_source=None, position_plot_source=None):
 
     plot_source.data = selected_data;
     """
-    # Create a CustomJS callback with the code and the data
+    # Create a CustomJS callback.
     return CustomJS(args={'source': position_source,
                           'plot_source': position_plot_source},
                     code=code)
@@ -87,6 +86,7 @@ def month_selection_callback(position_source=None, position_plot_source=None):
 def station_callback_2(position_source=None, data_source=None,
                        figures=None, seconds=None, pmap=None,
                        single_select=None):
+    """Return a CustomJS callback."""
     # assert position_source, data_source
     code = """
     //console.log('station_callback_2');
@@ -154,7 +154,7 @@ def station_callback_2(position_source=None, data_source=None,
 
 
 def lasso_callback(monthly_keys=None, in_data=None, plot_data=None, x_range=None, y_range=None):
-    """"""
+    """Return a CustomJS callback."""
     code = """
     //console.log('lasso_callback');
     var month_mapping = {'All': 'All',
@@ -211,7 +211,7 @@ def lasso_callback(monthly_keys=None, in_data=None, plot_data=None, x_range=None
 
 
 def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
-    # assert position_source, data_source
+    """Return a CustomJS callback."""
     code = """
     //console.log('comnt_callback');
     // Set column name to select similar glyphs
@@ -248,8 +248,9 @@ def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
                     code=code)
 
 
-def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None, comnt_selector=None, single_select=None):
-    # assert position_source, data_source
+def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None,
+                        comnt_selector=None, single_select=None):
+    """Return a CustomJS callback."""
     code = """
     // Set column name to select similar glyphs
     var key = 'KEY';
@@ -297,7 +298,7 @@ def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None, 
 
 
 def change_button_type_callback(button=None, btype=None):
-    """"""
+    """Return a CustomJS callback."""
     code = """
     button.button_type = btype;
     """
@@ -305,7 +306,7 @@ def change_button_type_callback(button=None, btype=None):
 
 
 def select_button(data_source=None):
-    """"""
+    """Return a button."""
     code = """
     var data = data_source.data;
     var indices = [];
@@ -327,7 +328,7 @@ def select_button(data_source=None):
 
 
 def deselect_button(data_source=None):
-    """"""
+    """Return a button."""
     code = """
     data_source.selected.indices = [];
     """
@@ -338,7 +339,7 @@ def deselect_button(data_source=None):
 
 
 def range_slider_update_callback(slider=None, data_source=None):
-    """"""
+    """Return a CustomJS callback."""
     code = """
     var data = data_source.data;        
     var values = [];
@@ -361,7 +362,7 @@ def range_slider_update_callback(slider=None, data_source=None):
 
 
 def range_selection_callback(data_source=None):
-    """"""
+    """Return a CustomJS callback."""
     code = """
     var data = data_source.data;
     var min_pres = cb_obj.value[0];
@@ -379,7 +380,10 @@ def range_selection_callback(data_source=None):
 
 
 def get_flag_widget(position_source, data_source, flag_key=None, color_key=None):
-    """"""
+    """Return a bokeh row layout.
+
+    Flag selector.
+    """
     code = """
     console.log('get_flag_widget');
     var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
@@ -428,7 +432,10 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
 
 def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=None,
                             color_keys=None, figure_objs=None, select_button=None):
-    """"""
+    """Return a list of buttons.
+
+    Each button represents a QC-flag which will be applied when the button is pressed.
+    """
     code = """
     //console.log('get_flag_buttons_widget');
     var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
@@ -530,6 +537,10 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
 
 def get_multi_serie_flag_widget(position_source, data_source, datasets, parameter_selector=None,
                                 parameter_mapping=None, figure_objs=None):
+    """Return a list of buttons.
+
+    Each button represents a QC-flag which will be applied when the button is pressed.
+    """
     code = """
     console.log('get_multi_serie_flag_widget');
     var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
@@ -618,8 +629,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
 
 
 def get_download_widget(datasets, series, session, savepath):
-    """"""
-
+    """Return a download button."""
     def callback_download(event):
         def serie_generator(datasets_filelist, selected_keylist):
             for name in datasets_filelist:
@@ -660,8 +670,7 @@ def get_download_widget(datasets, series, session, savepath):
 
 
 def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=None):
-    """"""
-
+    """Return a button."""
     def callback_py(attr, old, new, comnt_obj=None):
         selected_indices = position_source.selected.indices
         if len(selected_indices) > 1:
@@ -711,8 +720,7 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
 
 
 def comnt_samp_change_button(datasets=None, position_source=None, data_source=None, comnt_obj=None):
-    """"""
-
+    """Return a button."""
     def callback_py(attr, old, new, comnt_obj=None):
         selected_indices = position_source.selected.indices
         if len(selected_indices) > 1:
@@ -774,6 +782,7 @@ def comnt_samp_change_button(datasets=None, position_source=None, data_source=No
 
 
 def comnt_samp_selection(data_source=None, comnt_obj=None):
+    """Return a select widget."""
     code = """
     //console.log('select: value=' + this.value, this.toString())
     comnt_obj.value = this.value;
@@ -804,6 +813,7 @@ def comnt_samp_selection(data_source=None, comnt_obj=None):
 
 
 def get_file_widget():
+    """Return a file input button."""
     # button_input = FileInput(accept=".csv,.txt")
     button_input = FileInput()
 
@@ -811,12 +821,14 @@ def get_file_widget():
 
 
 def add_hlinked_crosshairs(*figs):
+    """Link crosshair between figures."""
     cht = CrosshairTool(line_alpha=0.5, dimensions="width")
     for f in figs:
         f.add_tools(cht)
 
 
 def x_range_callback(x_range_obj=None, delta=4, seconds=None):
+    """Return a CustomJS callback."""
     code = """
     //console.log('x_range_callback');
     var sec = seconds.data;
@@ -846,6 +858,7 @@ def x_range_callback(x_range_obj=None, delta=4, seconds=None):
 
 
 def reset_callback(seconds):
+    """Return a CustomJS callback."""
     code = """
     //console.log('reset_callback');
     var sec = seconds.data;
@@ -860,6 +873,7 @@ def reset_callback(seconds):
 
 
 def reset_all_callback(figures):
+    """Return a CustomJS callback."""
     code = """
     console.log('reset_all_callback');
     for (var i = 0; i < figure_objs.length; i++) {

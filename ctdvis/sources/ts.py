@@ -10,13 +10,17 @@ from ctdvis.utils import get_color_palette
 
 
 class Source(ColumnDataSource):
+    """Inherit from bokeh.models.ColumnDataSource.
+
+    Used to create a TS-datasource.
     """
-    """
+
     def setup_source(self, df, pmap):
-        """
-        :param df: pd.DataFrame
-        :param pmap: dictionary, parameter mapping
-        :return:
+        """Update data source.
+
+        Args:
+            df: pandas.DataFrame
+            pmap: Dictionary with parameter mapping
         """
         parameters = [pmap.get(p) for p in ('y', 'x1', 'x2')]
         parameters.append('KEY')
