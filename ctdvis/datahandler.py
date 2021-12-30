@@ -33,6 +33,7 @@ class Datadict(dict):
 
     We intend to use filenames as keys with profile dataframes as items.
     """
+
     def __init__(self, data_directory=None):
         """Initiate."""
         super().__init__()
@@ -83,7 +84,7 @@ class Frame(pd.DataFrame, ABC):
 
     @property
     def _constructor(self):
-        """Constructor for DataFrame, overides method in pd.DataFrame."""
+        """Construct DataFrame, overides method in pd.DataFrame."""
         return Frame
 
     def convert_formats(self):

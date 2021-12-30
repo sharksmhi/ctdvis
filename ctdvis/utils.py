@@ -92,7 +92,7 @@ def recursive_dict_update(d, u):
 
     Copied from:
         http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth
-    """
+    """  # noqa: E501
     for k, v in u.items():
         if isinstance(v, Mapping):
             r = recursive_dict_update(d.get(k, {}), v)

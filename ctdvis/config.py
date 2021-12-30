@@ -8,7 +8,6 @@ Created on 2020-07-03 11:37
 import os
 import sys
 import requests
-from ctdvis import utils
 from ctdvis.readers import JSONreader, load_json
 try:
     from sharkpylib.qc.settings import Settings as shark_qc_settings
@@ -40,14 +39,14 @@ class Settings:
             if not os.path.exists(file_path):
                 try:
                     r = requests.get(
-                        'https://raw.githubusercontent.com/sharksmhi/sharkpylib/master/sharkpylib/qc/etc/parameter_dependencies.json',
+                        'https://raw.githubusercontent.com/sharksmhi/sharkpylib/master/sharkpylib/qc/etc/parameter_dependencies.json',  # noqa: E501
                         allow_redirects=True,
                     )
                     open(file_path, 'wb').write(r.content)
                     print('Download completed! file saved here: {}'.format(file_path))
-                except:
-                    raise ConnectionError(
-                        'Was not able to download https://raw.githubusercontent.com/sharksmhi/sharkpylib/master/sharkpylib/qc/etc/parameter_dependencies.json'
+                except ConnectionError as error:
+                    raise error(
+                        'Was not able to download https://raw.githubusercontent.com/sharksmhi/sharkpylib/master/sharkpylib/qc/etc/parameter_dependencies.json'  # noqa: E501
                         'and could not import sharkpylib.qc.settings\n '
                         'Try again when you have access to the internet!'
                     )
@@ -67,7 +66,7 @@ class Settings:
         """Append local python paths."""
         # TODO: Should not be needed.
         if hasattr(self, 'local_py_paths'):
-            for key, item in self.local_py_paths.items():
+            for item in self.local_py_paths.values():
                 self._append_path_to_system(item)
 
     def _append_path_to_system(self, item):
@@ -77,7 +76,7 @@ class Settings:
             if item not in sys.path:
                 sys.path.append(item)
         elif isinstance(item, dict):
-            for k, it in item.items():
+            for it in item.values():
                 self._append_path_to_system(it)
 
     def _check_for_paths(self, dictionary):
@@ -121,7 +120,7 @@ class Settings:
     def generate_filepaths(directory, pattern=''):
         """Create generator for file paths."""
         # TODO Move to utils?
-        for path, subdir, fids in os.walk(directory):
+        for path, _, fids in os.walk(directory):
             for f in fids:
                 if pattern in f:
                     yield os.path.abspath(os.path.join(path, f))
@@ -182,8 +181,10 @@ class Settings:
     @property
     def q_colors_mapper(self):
         """Return mapper."""
-        return {item.get('q_flag'): item.get('plot_color_key')
-                for item in self.data_parameters.values()}
+        return {
+            item.get('q_flag'): item.get('plot_color_key')
+            for item in self.data_parameters.values()
+        }
 
     @property
     def plot_parameters_mapping(self):
@@ -215,6 +216,7 @@ class Settings:
 
 class InfoLog:
     """Basic information logger."""
+
     missing_stations = []
 
     def __init__(self, station=None):
@@ -241,6 +243,7 @@ class InfoLog:
 
 class ErrorCapturing:
     """Basic error logger."""
+
     errors = []
 
     def __init__(self, error=None):

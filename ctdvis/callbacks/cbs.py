@@ -414,7 +414,7 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
 
     // Save changes to ColumnDataSource
     data_source.change.emit();
-    """
+    """  # noqa: E501
     callback = CustomJS(args={'position_source': position_source,
                               'data_source': data_source},
                         code=code)
@@ -487,7 +487,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     } else {
         console.log('To many selected stations!! We can only work with one at a time', selected_position.length)
     }
-    """
+    """  # noqa: E501
     flag_color_mapping = {'A-flag': {'c': 'navy', 'flag': ''},
                           'B-flag': {'c': 'red', 'flag': 'B'},
                           'E-flag': {'c': 'green', 'flag': 'E'},
@@ -496,7 +496,8 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     def callback_py(attr, old, new, flag=None):
         selected_position = position_source.selected.indices
         if len(selected_position) > 1:
-            print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_position)))
+            print('multi serie selection, no good! len(selected_position) = {}'
+                  ''.format(len(selected_position)))
             return
 
         selected_key = position_source.data['KEY'][selected_position[0]]
@@ -674,7 +675,8 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
     def callback_py(attr, old, new, comnt_obj=None):
         selected_indices = position_source.selected.indices
         if len(selected_indices) > 1:
-            print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_indices)))
+            print('multi serie selection, no good! len(selected_position) = {}'
+                  ''.format(len(selected_indices)))
             return
         selected_key = position_source.data['KEY'][selected_indices[0]]
         ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
@@ -704,7 +706,7 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
     } else {
         console.log('To many selected stations!! We can only work with one at a time', selected_indices.length)
     }
-    """
+    """  # noqa: E501
     dummy_figure = figure()
     dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
     dummy_trigger.glyph.on_change('size', partial(callback_py, comnt_obj=comnt_obj))
@@ -724,7 +726,8 @@ def comnt_samp_change_button(datasets=None, position_source=None, data_source=No
     def callback_py(attr, old, new, comnt_obj=None):
         selected_indices = position_source.selected.indices
         if len(selected_indices) > 1:
-            print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_indices)))
+            print('multi serie selection, no good! len(selected_position) = {}'
+                  ''.format(len(selected_indices)))
             return
         selected_key = position_source.data['KEY'][selected_indices[0]]
         selected_data_indices = data_source.selected.indices
@@ -765,7 +768,7 @@ def comnt_samp_change_button(datasets=None, position_source=None, data_source=No
     } else {
         console.log('To many selected stations!! We can only work with one at a time', selected_indices.length)
     }
-    """
+    """  # noqa: E501
     dummy_figure = figure()
     dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
     dummy_trigger.glyph.on_change('size', partial(callback_py, comnt_obj=comnt_obj))

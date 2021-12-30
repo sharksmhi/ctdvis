@@ -38,7 +38,7 @@ class Session:
             qflag_fields=self.settings.q_parameters,
             auto_q_flag_parameters=self.settings.q0_plot_keys,
             ctdpy_session=self.dh.ctd_session,
-            multi_sensors=self.settings.multi_sensors,  # IMPORTANT!!! SMHI HAS MULTIPLE TEMP, SALT, DOXY SENSORS
+            multi_sensors=self.settings.multi_sensors,  # IMPORTANT!!! SMHI HAS MULTIPLE TEMP, SALT, DOXY SENSORS  # noqa: E501
             combo_plots=self.settings.combo_plots,
             user_download_directory=self.settings.user_download_directory,
         )

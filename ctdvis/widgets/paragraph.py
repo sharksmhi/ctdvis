@@ -57,7 +57,7 @@ def get_info_block():
       <li>Sensor diff check</li>
       <li>Spike check</li>
     </ol>
-    """
+    """  # noqa: E501
     return Div(text=text, width=200, height=100)
 
 
@@ -70,5 +70,5 @@ def get_export_info_block():
       <li>Click on Download below</li>
     </ol>
     A folder with datafiles will be downloaded to your computer download-folder (eg. "Hämtade filer")
-    """
+    """  # noqa: E501
     return Div(text=text)
