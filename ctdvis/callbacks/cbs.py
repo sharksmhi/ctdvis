@@ -566,7 +566,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
     var value_array = [];
     var valid_indices = [];
 
-    for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) { 
+    for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) {
         var selected_key = position_data['KEY'][selected_position_indices[i_pos]];
         var value_array = data_source[selected_key].data['x1'];
 

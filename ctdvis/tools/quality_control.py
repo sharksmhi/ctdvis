@@ -126,9 +126,9 @@ class QCWorkTool:
 
         if self.combo_plots and self.multi_sensors:
             # TODO check the p2 (_) variable.. Should it not be used?
-            for name, p1, _ in zip(('COMBO_TEMP', 'COMBO_SALT', 'COMBO_DOXY'),
-                                    ('x1', 'x2', 'x3'),
-                                    ('x4', 'x5', 'x6')):
+            for name, p1, _ in zip(
+                    ('COMBO_TEMP', 'COMBO_SALT', 'COMBO_DOXY'),
+                    ('x1', 'x2', 'x3'), ('x4', 'x5', 'x6')):
                 param = self.plot_parameters_mapping.get(p1)
                 self.figures[name] = figure(tools="pan,reset,wheel_zoom,lasso_select,save",
                                             active_drag="lasso_select",
@@ -161,8 +161,7 @@ class QCWorkTool:
             dataframe,
             pmap=self.plot_parameters_mapping,
             key_list=np.unique(self.position_source.data['KEY']),
-            parameter_list=self.color_fields + self.plot_keys + \
-                           self.auto_qflag_fields + ['COMNT_SAMP']
+            parameter_list=self.color_fields + self.plot_keys + self.auto_qflag_fields + ['COMNT_SAMP']  # noqa: E501
         )
 
         self.ts_source = TS_Source()
@@ -646,13 +645,12 @@ class QCWorkTool:
         widgets_2 = column([Spacer(height=10, width=125)],
                            sizing_mode="fixed", height=10, width=125)
         widgets_3 = column([meta_tabs], sizing_mode="stretch_both", height=100, width=100)
-        layout = grid(
+        return grid(
             [
                 row([self.map, widgets_1, widgets_2, widgets_3]),
-                row([*std_parameter_tabs, column([tabs]),])
-            ],
+                row([*std_parameter_tabs, column([tabs])])
+            ]
         )
-        return l
 
     @property
     def spacer(self):
