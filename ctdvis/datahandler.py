@@ -111,7 +111,6 @@ class Frame(pd.DataFrame, ABC):
                 self[color_key] = np.vectorize(set_color_code)(self[q_para].fillna(''))
 
 
-
 class DataHandler:
     """Handler of data formats.
 
