@@ -107,7 +107,9 @@ class Frame(pd.DataFrame, ABC):
         """Add color columns for each parameter."""
         for q_para in q_params:
             color_key = mapper.get(q_para)
-            self[color_key] = np.vectorize(set_color_code)(self[q_para].fillna(''))
+            if q_para in self:
+                self[color_key] = np.vectorize(set_color_code)(self[q_para].fillna(''))
+
 
 
 class DataHandler:
@@ -141,7 +143,7 @@ class DataHandler:
         self.df.convert_formats()
         self.df.add_color_columns(settings.q_parameters, mapper=settings.q_colors_mapper)
         self.df.set_column_format(**settings.parameter_formats)
-        self.check_columns(*settings.meta_parameters)
+        self.check_columns(*settings.selected_keys)
 
     def check_columns(self, *args):
         """Add columns that are not present in the dataframe."""
