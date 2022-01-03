@@ -25,7 +25,7 @@ def standard_block_header(text=None, width=300, height=40):
     html_text = """
     <style>
         body {
-            text-align: left; 
+            text-align: left;
             vertical-align: text-top;
         }
         .centered {
@@ -34,7 +34,7 @@ def standard_block_header(text=None, width=300, height=40):
         }
     </style>
     <div class="centered">
-        <h4>"""+text+"""</h4>
+        <h4>""" + text + """</h4>
     </div>
     """
     return Div(text=html_text, width=width, height=height)

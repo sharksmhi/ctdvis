@@ -21,8 +21,7 @@ def callback_test(source):
     """
     code = """
     // CALLBACK TESTING, WITH PRINT
-    console.log('console print callback_test!')        
-
+    console.log('console print callback_test!')
     """
     # Create a CustomJS callback
     return CustomJS(args={'source': source},
@@ -110,14 +109,14 @@ def station_callback_2(position_source=None, data_source=None,
     //console.log('data[y].length', data['y'].length)
     //console.log('selected', selected);
 
-    // Update figure titles flag_color_mapping 
+    // Update figure titles flag_color_mapping
     var station_name = position_data[statn_key][selected[0]];
     var selected_key = position_data[key][selected[0]];
 
     //console.log('station_name', station_name);
     //console.log('selected_key', selected_key);
 
-    // Update active keys in data source    
+    // Update active keys in data source
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
         for (var fig_key in figures){
             figures[fig_key].title.text = station_name + ' - ' + selected_key
@@ -194,7 +193,7 @@ def lasso_callback(monthly_keys=None, in_data=None, plot_data=None, x_range=None
         //console.log('Update!')
         plot_data.data = data;
         x_range.start = Math.min.apply(Math, data.x)-0.5;
-        x_range.end = Math.max.apply(Math, data.x)+0.5;            
+        x_range.end = Math.max.apply(Math, data.x)+0.5;
         y_range.start = Math.min.apply(Math, data.y)-0.5;
         y_range.end = Math.max.apply(Math, data.y)+0.5;
         x_range.change.emit();
@@ -233,7 +232,7 @@ def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
     var selected_key = position_data[key][selected[0]];
     var comnt = position_data[comnt_key][selected[0]];
 
-    // Update active keys in data source    
+    // Update active keys in data source
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
         comnt_obj.value = comnt;
         comnt_obj.title = 'COMNT_VISIT: ' + station_name + ' - ' + selected_key;
@@ -265,7 +264,7 @@ def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None,
     // Get indices array of all selected items
     var selected = position_source.selected.indices;
 
-    // Update active keys in data source    
+    // Update active keys in data source
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
         // Update figure title
         var station_name = position_data[statn_key][selected[0]];
@@ -341,7 +340,7 @@ def deselect_button(data_source=None):
 def range_slider_update_callback(slider=None, data_source=None):
     """Return a CustomJS callback."""
     code = """
-    var data = data_source.data;        
+    var data = data_source.data;
     var values = [];
     var i = 0;
     while ( ! isNaN(data.y[i]) ) {
@@ -452,7 +451,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     var color_columns = color_keys;
     var flag_keys = flag_keys;
     var selected_flag = flag;
-    
+
     var selected_position = position_source.selected.indices;
     var selected_key = position_data['KEY'][selected_position[0]];
 
@@ -461,7 +460,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
 
     var flag_value = flag_color_mapping[selected_flag]['flag'];
     var color_value = flag_color_mapping[selected_flag]['c'];
-    
+
     if (selected_position.length == 1) {
         for (var i = 0; i < selected_indices.length; i++) {
             //console.log('selected_indices[i]', selected_indices[i])
@@ -555,22 +554,22 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
 
     // Set variables attributes
     var selected_flag = flag;
-    
+
     var flag_keys = parameter_mapping[parameter_selector.value]['q_flags']
     var color_columns = parameter_mapping[parameter_selector.value]['color_keys']
-    
+
     var flag_value = flag_color_mapping[selected_flag]['flag'];
     var color_value = flag_color_mapping[selected_flag]['c'];
-    
+
     var selected_position_indices = position_source.selected.indices;
     var selected_key = 0;
     var value_array = [];
     var valid_indices = [];
-    
+
     for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) { 
         var selected_key = position_data['KEY'][selected_position_indices[i_pos]];
         var value_array = data_source[selected_key].data['x1'];
-        
+
         for (var i = 0; i < value_array.length; i++) {
             for (var j = 0; j < color_columns.length; j++) {
                 data_source[selected_key].data[color_columns[j]][i] = color_value;
@@ -578,7 +577,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
         }
         data_source[selected_key].change.emit();
     }
-    
+
     for (var key in figure_objs) {
         figure_objs[key].reset.emit();
     }
@@ -648,11 +647,13 @@ def get_download_widget(datasets, series, session, savepath):
             print('len(series.selected.indices)', series.selected.indices)
             return
 
-        generator = serie_generator(datasets.keys(),
-                                    [series.data['KEY'][idx] for idx in series.selected.indices])
+        generator = serie_generator(
+            datasets.keys(),
+            [series.data['KEY'][idx] for idx in series.selected.indices]
+        )
 
         datasets_to_update = {}
-        for ds_name, serie_key in generator:
+        for ds_name, _ in generator:
             append_qc_comment(datasets[ds_name]['metadata'])
             datasets_to_update[ds_name] = datasets[ds_name]
 
@@ -753,11 +754,11 @@ def comnt_samp_change_button(datasets=None, position_source=None, data_source=No
     if (selected_position_indices.length == 1) {
         var selected_water_indices = data_source.selected.indices;
         var selected_key = position_data['KEY'][selected_position_indices[0]];
-        
+
         for (var i = 0; i < selected_water_indices.length; i++) {
             data['COMNT_SAMP'][selected_water_indices[i]] = comnt_obj.value;
         }
-        
+
         // Save changes to ColumnDataSource
         data_source.change.emit();
 
@@ -799,7 +800,6 @@ def comnt_samp_selection(data_source=None, comnt_obj=None):
         }
     }
     data_source.selected.indices = selected_indices;
-    
     """
     callback = CustomJS(
         code=code,

@@ -11,9 +11,9 @@ try:
 except DistributionNotFound:
     # package is not installed
     pass
-from ctdvis import callbacks
-from ctdvis import readers
-from ctdvis import sources
-from ctdvis import widgets
+from ctdvis import callbacks  # noqa: F401
+from ctdvis import readers  # noqa: F401
+from ctdvis import sources  # noqa: F401
+from ctdvis import widgets  # noqa: F401
 
 name = "ctdvis"

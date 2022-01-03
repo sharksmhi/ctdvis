@@ -18,16 +18,19 @@ def load_json(file_path):
 
 class JSONreader(dict):
     """Handler of json reader/writer.
+
     - Import json
     - Export to json
     - Find dictionary within json file based on a specific key
     - Add elements to dictionary
     - Fill up json/dictionary structure with relevant/desired information
     """
+
     # TODO: Divide into proper reader and writer!
 
-    def _export_json(self, data_dict={}, out_source='', indent=4):
+    def _export_json(self, data_dict=None, out_source='', indent=4):
         """Write data to json file."""
+        data_dict = data_dict or {}
         with open(out_source, "w") as outfile:
             json.dump(data_dict, outfile, indent=indent)
 
@@ -42,8 +45,10 @@ class JSONreader(dict):
         """
         self.out_file = []
 
-    def _get_dictionary_reference(self, dictionary={}, dict_path=[]):
+    def _get_dictionary_reference(self, dictionary=None, dict_path=None):
         """Return dict."""
+        dictionary = dictionary or {}
+        dict_path = dict_path or []
         for key in dict_path:
             if isinstance(key, str) and key not in dictionary:
                 return None

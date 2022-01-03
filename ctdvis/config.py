@@ -13,8 +13,8 @@ try:
     from sharkpylib.qc.settings import Settings as shark_qc_settings
 except ModuleNotFoundError as error:
     print(error)
-    print('Could not import sharkpylib.qc.settings. '
-          '\nTrying to catch parameter_dependencies via github..')
+    print('Could not import sharkpylib.qc.settings.',
+          'Trying to catch parameter_dependencies via github..')
     shark_qc_settings = None
 
 

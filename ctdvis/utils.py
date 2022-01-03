@@ -20,7 +20,7 @@ def get_color_palette(dep_serie=None):
     number_of_colors = int(dep_serie.max() * 2 + 1)
     cm_map = cm.get_cmap('cool', number_of_colors)
     color_array = pd.Series([colors.to_hex(cm_map(c)) for c in range(number_of_colors)])
-    return [color_array[int(d*2)] if d > 0 else 0 for d in dep_serie]
+    return [color_array[int(d * 2)] if d > 0 else 0 for d in dep_serie]
 
 
 def convert_projection(lats, lons):

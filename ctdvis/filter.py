@@ -10,10 +10,12 @@ import pandas as pd
 
 class Name:
     """Name properties object."""
+
     splitter = '_'
 
     def __init__(self, file_name):
-        args = file_name.strip('.txt').split(self.splitter)
+        """Initiate."""
+        args = file_name.replace('.txt', '').split(self.splitter)
         self.date = pd.Timestamp(args[2])
         self.shipc = args[3]
         self.serno = float(args[4])
@@ -21,11 +23,13 @@ class Name:
 
 class SplitNameList:
     """Name object handler."""
+
     dates = []
     ships = []
     sernos = []
 
     def __init__(self, name_list):
+        """Initiate."""
         self.names = name_list
         for name in name_list:
             name_obj = Name(name)
@@ -35,14 +39,17 @@ class SplitNameList:
 
     @classmethod
     def append_date(cls, d):
+        """Append date."""
         cls.dates.append(d)
 
     @classmethod
     def append_shipc(cls, s):
+        """Append ship code."""
         cls.ships.append(s)
 
     @classmethod
     def append_serno(cls, s):
+        """Append serie number."""
         cls.sernos.append(s)
 
 

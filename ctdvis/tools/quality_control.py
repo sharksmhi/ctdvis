@@ -5,11 +5,9 @@ Created on 2020-07-06 15:29
 
 @author: a002028
 """
-from bokeh.io import output_notebook
 from bokeh.models import (
     TextInput,
     ColumnDataSource,
-    Div,
     Circle,
     TapTool,
     HoverTool,
@@ -23,7 +21,7 @@ from bokeh.models import (
 )
 from bokeh.layouts import grid, row, column, Spacer
 from bokeh.models.widgets import Select, RangeSlider, DataTable, TableColumn, Panel, Tabs
-from bokeh.plotting import figure, show, output_file
+from bokeh.plotting import figure, show
 from bokeh.tile_providers import get_provider, Vendors
 from bokeh.core.validation import silence
 from bokeh.core.validation.warnings import FIXED_SIZING_MODE
@@ -37,7 +35,6 @@ from ctdvis.sources.ts import Source as TS_Source
 from ctdvis.sources.data import setup_data_source
 from ctdvis.widgets.paragraph import (
     standard_block_header,
-    header_line,
     get_info_block,
     get_export_info_block
 )
@@ -49,6 +46,7 @@ class QCWorkTool:
 
     Used for quality control of high resolution CTD-data (oceanography).
     """
+
     # TODO: Well, this is great.. However, we need to simplify and
     #  divide this class into widgets instead.. to be continued..
     #  - delete color fields? use flag fields instead?
@@ -127,7 +125,8 @@ class QCWorkTool:
             self.figures[p].x_range.js_on_change('start', xrange_callbacks[p])
 
         if self.combo_plots and self.multi_sensors:
-            for name, p1, p2 in zip(('COMBO_TEMP', 'COMBO_SALT', 'COMBO_DOXY'),
+            # TODO check the p2 (_) variable.. Should it not be used?
+            for name, p1, _ in zip(('COMBO_TEMP', 'COMBO_SALT', 'COMBO_DOXY'),
                                     ('x1', 'x2', 'x3'),
                                     ('x4', 'x5', 'x6')):
                 param = self.plot_parameters_mapping.get(p1)
@@ -162,7 +161,7 @@ class QCWorkTool:
             dataframe,
             pmap=self.plot_parameters_mapping,
             key_list=np.unique(self.position_source.data['KEY']),
-            parameter_list=self.color_fields + self.plot_keys +
+            parameter_list=self.color_fields + self.plot_keys + \
                            self.auto_qflag_fields + ['COMNT_SAMP']
         )
 
@@ -188,12 +187,14 @@ class QCWorkTool:
     def get_mapper_key_to_ds(self):
         """Return mapper between dataset filename and key.
 
-        Key = serie key (eg. '20191009_77SE_0005')"""
+        Key = serie key (eg. '20191009_77SE_0005')
+        """
         # TODO: would we like to create this mapper in any other way?
         #  Let´s say that the dataset name doesn't starts with "ctd_profile_"
         #  mapper = {}
         #  for key, item in self.datasets.items():
-        return {ds_name.strip('ctd_profile_|.txt'): ds_name for ds_name in self.datasets}
+        return {ds_name.replace('ctd_profile_', '').replace('.txt', ''): ds_name
+                for ds_name in self.datasets}
 
     @staticmethod
     def _get_monthly_keys(position_df):
@@ -215,11 +216,11 @@ class QCWorkTool:
             ['STATION', 'LATITUDE_DD', 'LONGITUDE_DD', 'KEY', 'MONTH']
         ].drop_duplicates(keep='first').reset_index(drop=True)
 
-        for i, row in position_df.iterrows():
+        for pos_row in position_df.itertuples():
             try:
-                float(row['LATITUDE_DD'])
-            except:
-                print('not valid', row['KEY'])
+                float(pos_row.LATITUDE_DD)
+            except Exception:
+                print('not valid', pos_row.KEY)
 
         xs, ys = convert_projection(position_df['LATITUDE_DD'].astype(float).values,
                                     position_df['LONGITUDE_DD'].astype(float).values)
@@ -334,22 +335,22 @@ class QCWorkTool:
     def _setup_multiflag_widget(self):
         """Set multiflag widgets."""
         def sorted_params(plist):
-            l = []
+            para_list = []
             i = 0
             while i < len(plist):
                 if '2' in plist[i]:
-                    l.extend([plist[i+1], plist[i]])
+                    para_list.extend([plist[i + 1], plist[i]])
                     i += 2
                 else:
-                    l.append(plist[i])
+                    para_list.append(plist[i])
                     i += 1
-            return l
+            return para_list
 
         parameter_list = []
-        for p, item in self.figures.items():
+        for p in self.figures.keys():
             if not p.startswith('COMBO'):
                 parameter_list.append(self.plot_parameters_mapping.get(p).split()[0])
-                # self.plot_parameters_mapping.get(p).split()[0].replace('_CTD', '')
+
         parameter_list = sorted_params(sorted(parameter_list))
 
         self.parameter_selector = Select(title="Select parameter",
@@ -371,8 +372,8 @@ class QCWorkTool:
 
         Autoreset all figures.
         """
-        for p, item in self.figures.items():
-            xr_cbs = (xr_cb for i, xr_cb in kwargs.items())
+        for p in self.figures.keys():
+            xr_cbs = (xr_cb for xr_cb in kwargs.values())
             self.figures[p].js_on_event('reset', cbs.reset_callback(self.seconds),
                                         *xr_cbs)
 
@@ -478,10 +479,6 @@ class QCWorkTool:
         combo_mapping = {
             'COMBO_TEMP': ('x1', 'x4'), 'COMBO_SALT': ('x2', 'x5'), 'COMBO_DOXY': ('x3', 'x6')
         }
-        legend_mapper = {
-            'x1': 'TEMP 1', 'x2': 'SALT 1', 'x3': 'DOXY 1',
-            'x4': 'TEMP 2', 'x5': 'SALT 2', 'x6': 'DOXY 2'
-        }
 
         nonselected_circle = Circle(fill_alpha=0.1, fill_color="#898989", line_color="lightgrey")
 
@@ -528,16 +525,17 @@ class QCWorkTool:
         self.ts.legend.location = "top_left"
 
         number_of_colors = int(self.ts_source.data[self.plot_parameters_mapping.get('y')].max()) * 2
-        number_of_colors =+ 1
+        number_of_colors = + 1
         cm_map = cm.get_cmap('cool', number_of_colors)
         color_array = [colors.to_hex(cm_map(c)) for c in range(number_of_colors)]
 
         color_bar = ColorBar(
+            location=(0, 0),
             color_mapper=LinearColorMapper(
                 palette=color_array,
                 low=0,
-                high=self.ts_source.data[self.plot_parameters_mapping.get('y')].max()),
-                location=(0, 0),
+                high=self.ts_source.data[self.plot_parameters_mapping.get('y')].max()
+            )
         )
 
         self.ts.add_layout(color_bar, 'right')
@@ -648,11 +646,12 @@ class QCWorkTool:
         widgets_2 = column([Spacer(height=10, width=125)],
                            sizing_mode="fixed", height=10, width=125)
         widgets_3 = column([meta_tabs], sizing_mode="stretch_both", height=100, width=100)
-        l = grid([row([self.map, widgets_1, widgets_2, widgets_3]),
-                  row([*std_parameter_tabs,
-                       column([tabs]),
-                       ])],
-                 )
+        layout = grid(
+            [
+                row([self.map, widgets_1, widgets_2, widgets_3]),
+                row([*std_parameter_tabs, column([tabs]),])
+            ],
+        )
         return l
 
     @property
@@ -669,5 +668,4 @@ class QCWorkTool:
 
     def show_plot(self):
         """Show layout in a html-file or in jupyter notebook."""
-        l = self.get_layout()
-        show(l)
+        show(self.get_layout())

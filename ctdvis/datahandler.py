@@ -134,7 +134,7 @@ class DataHandler:
         """Set up dataframe according to a bokeh friendly format."""
         for key, item in self.raw_data.items():
             df = item['data'].copy()
-            df['KEY'] = key.strip('ctd_profile|.txt')
+            df['KEY'] = key.replace('ctd_profile_', '').replace('.txt', '')
             self.df = self.df.append(Frame(df))
 
         self.df.reset_index(drop=True, inplace=True)

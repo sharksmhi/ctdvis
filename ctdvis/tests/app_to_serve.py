@@ -2,19 +2,22 @@
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 """
 Created on 2021-03-17 09:17
-@author: johannes
 
+@author: johannes
+"""
+from bokeh.plotting import curdoc
+from ctdvis.session import Session
+
+
+"""
 Ref: https://stackoverflow.com/questions/55049175/running-bokeh-server-on-local-network
 
 In a conda-prompt run:
     cd "PATH_TO_THIS_SCRIPT"
     bokeh serve app_to_serve.py
 
-Open in web browser: http://localhost:5006/app_to_serve
-    Bokeh app running at: http://localhost:5006/app_to_serve
+Bokeh app running at: http://localhost:5006/app_to_serve
 """
-from bokeh.plotting import curdoc
-from ctdvis.session import Session
 
 
 def bokeh_qc_tool():
