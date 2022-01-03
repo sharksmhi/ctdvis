@@ -9,10 +9,7 @@ from bokeh.models import Div
 
 
 def header_line():
-    """
-    :param text: str
-    :return:
-    """
+    """Return Div object."""
     html_text = """
     <html>
     <body>
@@ -24,14 +21,11 @@ def header_line():
 
 
 def standard_block_header(text=None, width=300, height=40):
-    """
-    :param text: str
-    :return:
-    """
+    """Return Div object."""
     html_text = """
     <style>
         body {
-            text-align: left; 
+            text-align: left;
             vertical-align: text-top;
         }
         .centered {
@@ -40,16 +34,14 @@ def standard_block_header(text=None, width=300, height=40):
         }
     </style>
     <div class="centered">
-        <h4>"""+text+"""</h4>
+        <h4>""" + text + """</h4>
     </div>
     """
     return Div(text=html_text, width=width, height=height)
 
 
-def _setup_info_block():
-    """
-    :return:
-    """
+def get_info_block():
+    """Return Div object."""
     text = """
     <h4>Info links</h4>
     <ul>
@@ -65,5 +57,18 @@ def _setup_info_block():
       <li>Sensor diff check</li>
       <li>Spike check</li>
     </ol>
-    """
+    """  # noqa: E501
     return Div(text=text, width=200, height=100)
+
+
+def get_export_info_block():
+    """Return Div object."""
+    text = """
+    <h4>Download steps:</h4>
+    <ol>
+      <li>Select series using "map-lasso" or "Shift-table-select"</li>
+      <li>Click on Download below</li>
+    </ol>
+    A folder with datafiles will be downloaded to your computer download-folder (eg. "Hämtade filer")
+    """  # noqa: E501
+    return Div(text=text)

@@ -5,4 +5,4 @@ Created on 2020-07-03 11:49
 
 @author: a002028
 """
-from ctdvis.readers.json_reader import JSONreader, load_json
+from ctdvis.readers.json_reader import JSONreader, load_json  # noqa: F401

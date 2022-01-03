@@ -10,13 +10,15 @@ from ctdvis import utils
 
 
 def load_json(file_path):
+    """Return json data."""
     with open(file_path, 'r', encoding='utf-8') as fd:
         f = json.load(fd)
     return f
 
 
 class JSONreader(dict):
-    """
+    """Handler of json reader/writer.
+
     - Import json
     - Export to json
     - Find dictionary within json file based on a specific key
@@ -24,22 +26,29 @@ class JSONreader(dict):
     - Fill up json/dictionary structure with relevant/desired information
     """
 
-    def _export_json(self, data_dict={}, out_source='', indent=4):
-        """ """
+    # TODO: Divide into proper reader and writer!
+
+    def _export_json(self, data_dict=None, out_source='', indent=4):
+        """Write data to json file."""
+        data_dict = data_dict or {}
         with open(out_source, "w") as outfile:
             json.dump(data_dict, outfile, indent=indent)
 
     def _initiate_attributes(self):
-        """ """
+        """Doc."""
         pass
 
     def _initiate_outfile(self):
-        """ json files can save multiple dictionaries stored in a list
+        """Initiate out file list.
+
+        Save multiple dictionaries stored in a list.
         """
         self.out_file = []
 
-    def _get_dictionary_reference(self, dictionary={}, dict_path=[]):
-        """ """
+    def _get_dictionary_reference(self, dictionary=None, dict_path=None):
+        """Return dict."""
+        dictionary = dictionary or {}
+        dict_path = dict_path or []
         for key in dict_path:
             if isinstance(key, str) and key not in dictionary:
                 return None
@@ -47,8 +56,7 @@ class JSONreader(dict):
         return dictionary
 
     def export(self, out_source='', out_file=None):
-        """ """
-
+        """Guide export method."""
         if out_file:
             self._export_json(out_source=out_source,
                               data_dict=out_file)
@@ -65,9 +73,7 @@ class JSONreader(dict):
             raise UserWarning('No outfile specified for export to .json')
 
     def load_json(self, config_files=None, return_dict=False):
-        """ array will be either a list of dictionaries or one single dictionary
-            depending on what the json file includes
-        """
+        """Load json data file(s)."""
         if isinstance(config_files, str):
             config_files = [config_files]
 

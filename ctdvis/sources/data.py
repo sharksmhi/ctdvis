@@ -10,12 +10,13 @@ from bokeh.models import ColumnDataSource
 
 
 def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
-    """
-    :param df: pd.DataFrame
-    :param pmap: dictionary, parameter mapping
-    :param key_list: array
-    :param parameter_list: plot_keys and color_keys
-    :return:
+    """Return a bokeh ColumnDataSource.
+
+    Args:
+        df: pandas.DataFrame
+        pmap: Dictionary with parameter mapping
+        key_list: array
+        parameter_list: plot_keys and color_keys
     """
     main_source = {}
     for p in parameter_list:

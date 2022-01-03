@@ -9,10 +9,7 @@ import yaml
 
 
 def yaml_reader(file_path):
-    """
-    :param file_path: str, path to YAML-file
-    :return: dictionary
-    """
+    """Return data from yaml file."""
     with open(file_path, encoding='utf8') as fd:
         data = yaml.load(fd, Loader=yaml.Loader)
     return data

@@ -15,10 +15,13 @@ from ctdvis.utils import get_time_as_format
 
 
 def callback_test(source):
+    """Return a CustomJS callback.
+
+    Intended for test use. printing 'console print callback_test!'.
+    """
     code = """
     // CALLBACK TESTING, WITH PRINT
-    console.log('console print callback_test!')        
-
+    console.log('console print callback_test!')
     """
     # Create a CustomJS callback
     return CustomJS(args={'source': source},
@@ -26,14 +29,9 @@ def callback_test(source):
 
 
 def month_selection_callback(position_source=None, position_plot_source=None):
-    """
+    """Return a CustomJS callback."""
     # TODO We need to rewrite the JScallback code.. not very versatile..
-    # simply use all columns from position_source to begin with?
-
-    :param position_source:
-    :param position_plot_source:
-    :return:
-    """
+    #  simply use all columns from position_source to begin with?
     code = """
     console.log('month_selection_callback');
     // Get data from ColumnDataSource
@@ -78,7 +76,7 @@ def month_selection_callback(position_source=None, position_plot_source=None):
 
     plot_source.data = selected_data;
     """
-    # Create a CustomJS callback with the code and the data
+    # Create a CustomJS callback.
     return CustomJS(args={'source': position_source,
                           'plot_source': position_plot_source},
                     code=code)
@@ -87,6 +85,7 @@ def month_selection_callback(position_source=None, position_plot_source=None):
 def station_callback_2(position_source=None, data_source=None,
                        figures=None, seconds=None, pmap=None,
                        single_select=None):
+    """Return a CustomJS callback."""
     # assert position_source, data_source
     code = """
     //console.log('station_callback_2');
@@ -110,14 +109,14 @@ def station_callback_2(position_source=None, data_source=None,
     //console.log('data[y].length', data['y'].length)
     //console.log('selected', selected);
 
-    // Update figure titles flag_color_mapping 
+    // Update figure titles flag_color_mapping
     var station_name = position_data[statn_key][selected[0]];
     var selected_key = position_data[key][selected[0]];
 
     //console.log('station_name', station_name);
     //console.log('selected_key', selected_key);
 
-    // Update active keys in data source    
+    // Update active keys in data source
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
         for (var fig_key in figures){
             figures[fig_key].title.text = station_name + ' - ' + selected_key
@@ -154,7 +153,7 @@ def station_callback_2(position_source=None, data_source=None,
 
 
 def lasso_callback(monthly_keys=None, in_data=None, plot_data=None, x_range=None, y_range=None):
-    """"""
+    """Return a CustomJS callback."""
     code = """
     //console.log('lasso_callback');
     var month_mapping = {'All': 'All',
@@ -194,7 +193,7 @@ def lasso_callback(monthly_keys=None, in_data=None, plot_data=None, x_range=None
         //console.log('Update!')
         plot_data.data = data;
         x_range.start = Math.min.apply(Math, data.x)-0.5;
-        x_range.end = Math.max.apply(Math, data.x)+0.5;            
+        x_range.end = Math.max.apply(Math, data.x)+0.5;
         y_range.start = Math.min.apply(Math, data.y)-0.5;
         y_range.end = Math.max.apply(Math, data.y)+0.5;
         x_range.change.emit();
@@ -211,7 +210,7 @@ def lasso_callback(monthly_keys=None, in_data=None, plot_data=None, x_range=None
 
 
 def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
-    # assert position_source, data_source
+    """Return a CustomJS callback."""
     code = """
     //console.log('comnt_callback');
     // Set column name to select similar glyphs
@@ -233,7 +232,7 @@ def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
     var selected_key = position_data[key][selected[0]];
     var comnt = position_data[comnt_key][selected[0]];
 
-    // Update active keys in data source    
+    // Update active keys in data source
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
         comnt_obj.value = comnt;
         comnt_obj.title = 'COMNT_VISIT: ' + station_name + ' - ' + selected_key;
@@ -248,8 +247,9 @@ def comnt_callback(position_source=None, comnt_obj=None, single_select=None):
                     code=code)
 
 
-def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None, comnt_selector=None, single_select=None):
-    # assert position_source, data_source
+def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None,
+                        comnt_selector=None, single_select=None):
+    """Return a CustomJS callback."""
     code = """
     // Set column name to select similar glyphs
     var key = 'KEY';
@@ -264,7 +264,7 @@ def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None, 
     // Get indices array of all selected items
     var selected = position_source.selected.indices;
 
-    // Update active keys in data source    
+    // Update active keys in data source
     if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
         // Update figure title
         var station_name = position_data[statn_key][selected[0]];
@@ -297,7 +297,7 @@ def comnt_samp_callback(position_source=None, comnt_obj=None, data_source=None, 
 
 
 def change_button_type_callback(button=None, btype=None):
-    """"""
+    """Return a CustomJS callback."""
     code = """
     button.button_type = btype;
     """
@@ -305,7 +305,7 @@ def change_button_type_callback(button=None, btype=None):
 
 
 def select_button(data_source=None):
-    """"""
+    """Return a button."""
     code = """
     var data = data_source.data;
     var indices = [];
@@ -327,7 +327,7 @@ def select_button(data_source=None):
 
 
 def deselect_button(data_source=None):
-    """"""
+    """Return a button."""
     code = """
     data_source.selected.indices = [];
     """
@@ -338,9 +338,9 @@ def deselect_button(data_source=None):
 
 
 def range_slider_update_callback(slider=None, data_source=None):
-    """"""
+    """Return a CustomJS callback."""
     code = """
-    var data = data_source.data;        
+    var data = data_source.data;
     var values = [];
     var i = 0;
     while ( ! isNaN(data.y[i]) ) {
@@ -361,7 +361,7 @@ def range_slider_update_callback(slider=None, data_source=None):
 
 
 def range_selection_callback(data_source=None):
-    """"""
+    """Return a CustomJS callback."""
     code = """
     var data = data_source.data;
     var min_pres = cb_obj.value[0];
@@ -379,7 +379,10 @@ def range_selection_callback(data_source=None):
 
 
 def get_flag_widget(position_source, data_source, flag_key=None, color_key=None):
-    """"""
+    """Return a bokeh row layout.
+
+    Flag selector.
+    """
     code = """
     console.log('get_flag_widget');
     var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
@@ -410,7 +413,7 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
 
     // Save changes to ColumnDataSource
     data_source.change.emit();
-    """
+    """  # noqa: E501
     callback = CustomJS(args={'position_source': position_source,
                               'data_source': data_source},
                         code=code)
@@ -428,7 +431,10 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
 
 def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=None,
                             color_keys=None, figure_objs=None, select_button=None):
-    """"""
+    """Return a list of buttons.
+
+    Each button represents a QC-flag which will be applied when the button is pressed.
+    """
     code = """
     //console.log('get_flag_buttons_widget');
     var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
@@ -445,7 +451,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     var color_columns = color_keys;
     var flag_keys = flag_keys;
     var selected_flag = flag;
-    
+
     var selected_position = position_source.selected.indices;
     var selected_key = position_data['KEY'][selected_position[0]];
 
@@ -454,7 +460,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
 
     var flag_value = flag_color_mapping[selected_flag]['flag'];
     var color_value = flag_color_mapping[selected_flag]['c'];
-    
+
     if (selected_position.length == 1) {
         for (var i = 0; i < selected_indices.length; i++) {
             //console.log('selected_indices[i]', selected_indices[i])
@@ -480,7 +486,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     } else {
         console.log('To many selected stations!! We can only work with one at a time', selected_position.length)
     }
-    """
+    """  # noqa: E501
     flag_color_mapping = {'A-flag': {'c': 'navy', 'flag': ''},
                           'B-flag': {'c': 'red', 'flag': 'B'},
                           'E-flag': {'c': 'green', 'flag': 'E'},
@@ -489,7 +495,8 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     def callback_py(attr, old, new, flag=None):
         selected_position = position_source.selected.indices
         if len(selected_position) > 1:
-            print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_position)))
+            print('multi serie selection, no good! len(selected_position) = {}'
+                  ''.format(len(selected_position)))
             return
 
         selected_key = position_source.data['KEY'][selected_position[0]]
@@ -530,6 +537,10 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
 
 def get_multi_serie_flag_widget(position_source, data_source, datasets, parameter_selector=None,
                                 parameter_mapping=None, figure_objs=None):
+    """Return a list of buttons.
+
+    Each button represents a QC-flag which will be applied when the button is pressed.
+    """
     code = """
     console.log('get_multi_serie_flag_widget');
     var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
@@ -543,22 +554,22 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
 
     // Set variables attributes
     var selected_flag = flag;
-    
+
     var flag_keys = parameter_mapping[parameter_selector.value]['q_flags']
     var color_columns = parameter_mapping[parameter_selector.value]['color_keys']
-    
+
     var flag_value = flag_color_mapping[selected_flag]['flag'];
     var color_value = flag_color_mapping[selected_flag]['c'];
-    
+
     var selected_position_indices = position_source.selected.indices;
     var selected_key = 0;
     var value_array = [];
     var valid_indices = [];
-    
-    for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) { 
+
+    for (var i_pos = 0; i_pos < selected_position_indices.length; i_pos++) {
         var selected_key = position_data['KEY'][selected_position_indices[i_pos]];
         var value_array = data_source[selected_key].data['x1'];
-        
+
         for (var i = 0; i < value_array.length; i++) {
             for (var j = 0; j < color_columns.length; j++) {
                 data_source[selected_key].data[color_columns[j]][i] = color_value;
@@ -566,7 +577,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
         }
         data_source[selected_key].change.emit();
     }
-    
+
     for (var key in figure_objs) {
         figure_objs[key].reset.emit();
     }
@@ -618,8 +629,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
 
 
 def get_download_widget(datasets, series, session, savepath):
-    """"""
-
+    """Return a download button."""
     def callback_download(event):
         def serie_generator(datasets_filelist, selected_keylist):
             for name in datasets_filelist:
@@ -637,11 +647,13 @@ def get_download_widget(datasets, series, session, savepath):
             print('len(series.selected.indices)', series.selected.indices)
             return
 
-        generator = serie_generator(datasets.keys(),
-                                    [series.data['KEY'][idx] for idx in series.selected.indices])
+        generator = serie_generator(
+            datasets.keys(),
+            [series.data['KEY'][idx] for idx in series.selected.indices]
+        )
 
         datasets_to_update = {}
-        for ds_name, serie_key in generator:
+        for ds_name, _ in generator:
             append_qc_comment(datasets[ds_name]['metadata'])
             datasets_to_update[ds_name] = datasets[ds_name]
 
@@ -660,12 +672,12 @@ def get_download_widget(datasets, series, session, savepath):
 
 
 def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=None):
-    """"""
-
+    """Return a button."""
     def callback_py(attr, old, new, comnt_obj=None):
         selected_indices = position_source.selected.indices
         if len(selected_indices) > 1:
-            print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_indices)))
+            print('multi serie selection, no good! len(selected_position) = {}'
+                  ''.format(len(selected_indices)))
             return
         selected_key = position_source.data['KEY'][selected_indices[0]]
         ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
@@ -695,7 +707,7 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
     } else {
         console.log('To many selected stations!! We can only work with one at a time', selected_indices.length)
     }
-    """
+    """  # noqa: E501
     dummy_figure = figure()
     dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
     dummy_trigger.glyph.on_change('size', partial(callback_py, comnt_obj=comnt_obj))
@@ -711,12 +723,12 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
 
 
 def comnt_samp_change_button(datasets=None, position_source=None, data_source=None, comnt_obj=None):
-    """"""
-
+    """Return a button."""
     def callback_py(attr, old, new, comnt_obj=None):
         selected_indices = position_source.selected.indices
         if len(selected_indices) > 1:
-            print('multi serie selection, no good! len(selected_position) = {}'.format(len(selected_indices)))
+            print('multi serie selection, no good! len(selected_position) = {}'
+                  ''.format(len(selected_indices)))
             return
         selected_key = position_source.data['KEY'][selected_indices[0]]
         selected_data_indices = data_source.selected.indices
@@ -742,11 +754,11 @@ def comnt_samp_change_button(datasets=None, position_source=None, data_source=No
     if (selected_position_indices.length == 1) {
         var selected_water_indices = data_source.selected.indices;
         var selected_key = position_data['KEY'][selected_position_indices[0]];
-        
+
         for (var i = 0; i < selected_water_indices.length; i++) {
             data['COMNT_SAMP'][selected_water_indices[i]] = comnt_obj.value;
         }
-        
+
         // Save changes to ColumnDataSource
         data_source.change.emit();
 
@@ -757,7 +769,7 @@ def comnt_samp_change_button(datasets=None, position_source=None, data_source=No
     } else {
         console.log('To many selected stations!! We can only work with one at a time', selected_indices.length)
     }
-    """
+    """  # noqa: E501
     dummy_figure = figure()
     dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
     dummy_trigger.glyph.on_change('size', partial(callback_py, comnt_obj=comnt_obj))
@@ -774,6 +786,7 @@ def comnt_samp_change_button(datasets=None, position_source=None, data_source=No
 
 
 def comnt_samp_selection(data_source=None, comnt_obj=None):
+    """Return a select widget."""
     code = """
     //console.log('select: value=' + this.value, this.toString())
     comnt_obj.value = this.value;
@@ -787,7 +800,6 @@ def comnt_samp_selection(data_source=None, comnt_obj=None):
         }
     }
     data_source.selected.indices = selected_indices;
-    
     """
     callback = CustomJS(
         code=code,
@@ -804,6 +816,7 @@ def comnt_samp_selection(data_source=None, comnt_obj=None):
 
 
 def get_file_widget():
+    """Return a file input button."""
     # button_input = FileInput(accept=".csv,.txt")
     button_input = FileInput()
 
@@ -811,12 +824,14 @@ def get_file_widget():
 
 
 def add_hlinked_crosshairs(*figs):
+    """Link crosshair between figures."""
     cht = CrosshairTool(line_alpha=0.5, dimensions="width")
     for f in figs:
         f.add_tools(cht)
 
 
 def x_range_callback(x_range_obj=None, delta=4, seconds=None):
+    """Return a CustomJS callback."""
     code = """
     //console.log('x_range_callback');
     var sec = seconds.data;
@@ -846,6 +861,7 @@ def x_range_callback(x_range_obj=None, delta=4, seconds=None):
 
 
 def reset_callback(seconds):
+    """Return a CustomJS callback."""
     code = """
     //console.log('reset_callback');
     var sec = seconds.data;
@@ -860,6 +876,7 @@ def reset_callback(seconds):
 
 
 def reset_all_callback(figures):
+    """Return a CustomJS callback."""
     code = """
     console.log('reset_all_callback');
     for (var i = 0; i < figure_objs.length; i++) {

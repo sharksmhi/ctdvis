@@ -20,7 +20,7 @@ def get_color_palette(dep_serie=None):
     number_of_colors = int(dep_serie.max() * 2 + 1)
     cm_map = cm.get_cmap('cool', number_of_colors)
     color_array = pd.Series([colors.to_hex(cm_map(c)) for c in range(number_of_colors)])
-    return [color_array[int(d*2)] if d > 0 else 0 for d in dep_serie]
+    return [color_array[int(d * 2)] if d > 0 else 0 for d in dep_serie]
 
 
 def convert_projection(lats, lons):
@@ -33,8 +33,8 @@ def convert_projection(lats, lons):
 
 def get_contour_arrays(x_min, x_max, y_min, y_max):
     """Calculate how many gridcells we need in the x and y dimensions.
+
     Assuming x_key = Salinity and y_key = Temperature
-    :return:
     """
     xdim = int(round((x_max - x_min) / 0.1 + 1, 0))
     ydim = int(round((y_max - y_min) / 0.1 + 1, 0))
@@ -53,10 +53,14 @@ def get_contour_arrays(x_min, x_max, y_min, y_max):
 
 
 def get_contour_data(x_min, x_max, y_min, y_max):
-    """
+    """Return dictionary of contour data.
+
+    Used for TS diagram.
+    Salinity as sigma-T.
+
     Example:
-    x_min, x_max, y_min, y_max = 0, 40, -10, 30
-    data = get_contour_df(x_min, x_max, y_min, y_max)
+        x_min, x_max, y_min, y_max = 0, 40, -10, 30
+        data = get_contour_df(x_min, x_max, y_min, y_max)
     """
     dens, t_m, s_m = get_contour_arrays(x_min, x_max, y_min, y_max)
     dens = np.round(dens, 2)
@@ -70,24 +74,25 @@ def get_contour_data(x_min, x_max, y_min, y_max):
     return data
 
 
-def get_time_as_format(**kwargs):
-    if kwargs.get('now'):
+def get_time_as_format(now=None, timestamp=None, fmt=None):
+    """Return time as string format."""
+    if now:
         d = datetime.now()
-    elif kwargs.get('timestamp'):
+    elif timestamp:
         raise NotImplementedError
 
-    if kwargs.get('fmt'):
-        return d.strftime(kwargs.get('fmt'))
+    if fmt:
+        return d.strftime(fmt)
     else:
         raise KeyError
 
 
 def recursive_dict_update(d, u):
-    """ Recursive dictionary update using
+    """Recursive dictionary update.
+
     Copied from:
         http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth
-        via satpy
-    """
+    """  # noqa: E501
     for k, v in u.items():
         if isinstance(v, Mapping):
             r = recursive_dict_update(d.get(k, {}), v)

@@ -9,25 +9,27 @@ import pandas as pd
 
 
 class Name:
-    """
-    """
+    """Name properties object."""
+
     splitter = '_'
 
     def __init__(self, file_name):
-        args = file_name.strip('.txt').split(self.splitter)
+        """Initiate."""
+        args = file_name.replace('.txt', '').split(self.splitter)
         self.date = pd.Timestamp(args[2])
         self.shipc = args[3]
         self.serno = float(args[4])
 
 
 class SplitNameList:
-    """
-    """
+    """Name object handler."""
+
     dates = []
     ships = []
     sernos = []
 
     def __init__(self, name_list):
+        """Initiate."""
         self.names = name_list
         for name in name_list:
             name_obj = Name(name)
@@ -37,22 +39,28 @@ class SplitNameList:
 
     @classmethod
     def append_date(cls, d):
+        """Append date."""
         cls.dates.append(d)
 
     @classmethod
     def append_shipc(cls, s):
+        """Append ship code."""
         cls.ships.append(s)
 
     @classmethod
     def append_serno(cls, s):
+        """Append serie number."""
         cls.sernos.append(s)
 
 
 class Filter:
+    """Filter filenames according to ctd-standard format.
+
+    Filename example: 'ctd_profile_20181208_34AR_0171.txt'.
     """
-    Filter filenames according to ctd-standard format eg. 'ctd_profile_20181208_34AR_0171.txt'
-    """
+
     def __init__(self, name_list):
+        """Initiate."""
         lists = SplitNameList(name_list)
         self.serie_names = pd.Series(lists.names)
         self.serie_dates = pd.Series(lists.dates)
@@ -62,8 +70,10 @@ class Filter:
         self._boolean = True
 
     def add_filter(self, **kwargs):
-        """
-        if any valid filter arguments: append boolean according to @boolean.setter (property.setter)
+        """Set boolean filter.
+
+        If any valid filter arguments we append boolean according to:
+        @boolean.setter (property.setter).
         """
         if 'month_list' in kwargs:
             print('month', self.serie_dates.dt.month)
@@ -80,12 +90,15 @@ class Filter:
 
     @property
     def valid_file_names(self):
+        """Return valid filenames."""
         return self.serie_names[self.boolean].values
 
     @property
     def boolean(self):
+        """Return boolean."""
         return self._boolean
 
     @boolean.setter
     def boolean(self, add_bool):
+        """Set boolean."""
         self._boolean = self._boolean & add_bool
