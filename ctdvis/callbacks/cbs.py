@@ -82,13 +82,12 @@ def month_selection_callback(position_source=None, position_plot_source=None):
                     code=code)
 
 
-def station_callback_2(position_source=None, data_source=None,
-                       figures=None, seconds=None, pmap=None,
-                       single_select=None):
+def station_callback(position_source=None, data_source=None,
+                     figures=None, seconds=None, pmap=None):
     """Return a CustomJS callback."""
     # assert position_source, data_source
     code = """
-    //console.log('station_callback_2');
+    //console.log('station_callback');
     // Set column name to select similar glyphs
     var key = 'KEY';
     var statn_key = 'STATION';
@@ -99,7 +98,6 @@ def station_callback_2(position_source=None, data_source=None,
     //var data = data_source.data;
     var parameter_mapping = parameter_mapping;
     var figures = figures;
-    var single_select = single_select;
 
     //console.log('parameter_mapping', parameter_mapping);
 
@@ -117,7 +115,7 @@ def station_callback_2(position_source=None, data_source=None,
     //console.log('selected_key', selected_key);
 
     // Update active keys in data source
-    if ((single_select == 1 && selected.length == 1) || (single_select == 0)) {
+    if (selected.length == 1) {
         for (var fig_key in figures){
             figures[fig_key].title.text = station_name + ' - ' + selected_key
         }
@@ -139,7 +137,7 @@ def station_callback_2(position_source=None, data_source=None,
     for (var fig_key in figures){
         figures[fig_key].reset.emit();
     }
-    //console.log('station_callback_2 - DONE');
+    //console.log('station_callback - DONE');
     """
     # Create a CustomJS callback with the code and the data
     return CustomJS(args={'position_source': position_source,
@@ -147,7 +145,6 @@ def station_callback_2(position_source=None, data_source=None,
                           'figures': figures,
                           'seconds': seconds,
                           'parameter_mapping': pmap,
-                          'single_select': single_select,
                           },
                     code=code)
 

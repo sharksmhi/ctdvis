@@ -406,12 +406,11 @@ class QCWorkTool:
         self.map.toolbar.active_scroll = self.map.select_one(WheelZoomTool)
         self.map.add_tile(self.tile_provider)
 
-        station_data_callback = cbs.station_callback_2(position_source=self.position_plot_source,
-                                                       data_source=self.data_source,
-                                                       figures=self.figures,
-                                                       seconds=self.seconds,
-                                                       pmap=self.plot_parameters_mapping,
-                                                       single_select=0)
+        station_data_callback = cbs.station_callback(position_source=self.position_plot_source,
+                                                     data_source=self.data_source,
+                                                     figures=self.figures,
+                                                     seconds=self.seconds,
+                                                     pmap=self.plot_parameters_mapping)
         tap.callback = station_data_callback
 
         # When we mark stations on the map using lasso selection, we activate the TS-diagram.
@@ -421,12 +420,11 @@ class QCWorkTool:
                                             x_range=self.ts.x_range,
                                             y_range=self.ts.y_range)
 
-        station_data_callback_2 = cbs.station_callback_2(position_source=self.position_plot_source,
-                                                         data_source=self.data_source,
-                                                         figures=self.figures,
-                                                         seconds=self.seconds,
-                                                         pmap=self.plot_parameters_mapping,
-                                                         single_select=1)
+        station_data_callback_2 = cbs.station_callback(position_source=self.position_plot_source,
+                                                       data_source=self.data_source,
+                                                       figures=self.figures,
+                                                       seconds=self.seconds,
+                                                       pmap=self.plot_parameters_mapping)
 
         comnt_callback = cbs.comnt_callback(position_source=self.position_plot_source,
                                             comnt_obj=self.comnt_visit,
