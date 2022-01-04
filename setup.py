@@ -16,7 +16,7 @@ with open('requirements.txt', 'r') as fh:
         requirements.append(line.strip())
 
 NAME = 'ctdvis'
-VERSION = "0.1.5"
+VERSION = "0.1.7"
 README = open('READMEpypi.rst', 'r').read()
 
 setuptools.setup(
