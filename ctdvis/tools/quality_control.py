@@ -524,17 +524,16 @@ class QCWorkTool:
         self.ts.legend.location = "top_left"
 
         number_of_colors = int(self.ts_source.data[self.plot_parameters_mapping.get('y')].max()) * 2
-        number_of_colors = + 1
+        number_of_colors += 1
         cm_map = cm.get_cmap('cool', number_of_colors)
         color_array = [colors.to_hex(cm_map(c)) for c in range(number_of_colors)]
-
         color_bar = ColorBar(
-            location=(0, 0),
             color_mapper=LinearColorMapper(
                 palette=color_array,
                 low=0,
                 high=self.ts_source.data[self.plot_parameters_mapping.get('y')].max()
-            )
+            ),
+            location=(0, 0),
         )
 
         self.ts.add_layout(color_bar, 'right')
