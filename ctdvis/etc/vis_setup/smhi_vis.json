@@ -1,6 +1,9 @@
 {
     "multi_sensors": true,
     "combo_plots": true,
+    "file_name_elements": [
+        "SMTYP", "DTYPE", "SDATE", "SHIPC", "SERNO"
+    ],
     "meta_parameters": [
         "STATION", "LATITUDE_DD", "LONGITUDE_DD",
         "SDATE", "MONTH", "STIME", "KEY", "COMNT_SAMP"

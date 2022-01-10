@@ -25,26 +25,24 @@ def bokeh_qc_tool():
 
     Path to CTD-standard-format (including auto-QC-fields).
     """
-    data_dir = 'C:/Arbetsmapp/datasets/Profile/2019/SHARK_Profile_2019_SMHI/processed_data'
+    # data_dir = r'C:\Temp\CTD_DV\test_flex_format'
+    data_dir = r'C:\Arbetsmapp\datasets\Profile\2020\SHARK_Profile_2020_COD_SMHI\processed_data'
 
-    # Filters are advised to be implemented if the datasource is big,
-    # (~ >3 months of SMHI-EXP-data)
-
-    # filters = None
-    filters = dict(
-        # month_list=[1, 2, 3],
-        month_list=[4],
-        # month_list=[7, 8, 9],
-        # month_list=[10, 11, 12],
-        # ship_list=['77SE', '34AR']
-        # serno_min=311,
-        # serno_max=355,
-    )
+    filters = None
+    # filters = dict(
+    #     # month_list=[1, 2, 3],
+    #     month_list=[4],
+    #     # month_list=[7, 8, 9],
+    #     # month_list=[10, 11, 12],
+    #     # ship_list=['77SE', '34AR']
+    #     # serno_min=311,
+    #     # serno_max=355,
+    # )
 
     s = Session(
-        # visualize_setting='sgus_vis',
+        visualize_setting='slua_vis',
         # visualize_setting='umsc_vis',
-        visualize_setting='smhi_vis',
+        # visualize_setting='smhi_vis',
         data_directory=data_dir,
         filters=filters,
     )

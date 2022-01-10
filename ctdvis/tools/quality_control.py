@@ -54,35 +54,27 @@ class QCWorkTool:
     def __init__(self,
                  dataframe,
                  datasets=None,
-                 parameters=None,
-                 plot_keys=None,
-                 color_fields=None,
-                 qflag_fields=None,
-                 auto_q_flag_parameters=None,
+                 settings=None,
                  tabs=None,
-                 plot_parameters_mapping=None,
                  ctdpy_session=None,
-                 multi_sensors=False,
-                 combo_plots=False,
                  output_filename="CTD_QC_VIZ.html",
                  output_as_notebook=False,
-                 user_download_directory=None,
                  ):
         """Initiate."""
         self.seconds = ColumnDataSource(data=dict(tap_time=[None], reset_time=[None]))
         self.ctd_session = ctdpy_session
-        self.multi_sensors = multi_sensors
-        self.combo_plots = combo_plots
+        self.multi_sensors = settings.multi_sensors
+        self.combo_plots = settings.combo_plots
 
         self.map = None
-        self.plot_keys = plot_keys
+        self.plot_keys = settings.plot_keys
         self.datasets = datasets
-        self.key_ds_mapper = self.get_mapper_key_to_ds()
-        self.parameters = parameters
-        self.plot_parameters_mapping = plot_parameters_mapping
-        self.color_fields = color_fields
-        self.qflag_fields = qflag_fields
-        self.auto_qflag_fields = auto_q_flag_parameters
+        self.key_ds_mapper = self.get_mapper_key_to_ds(settings.file_name_elements)
+        self.parameters = settings.data_parameters_with_units
+        self.plot_parameters_mapping = settings.plot_parameters_mapping
+        self.color_fields = settings.q_colors
+        self.qflag_fields = settings.q_parameters
+        self.auto_qflag_fields = settings.q0_plot_keys
         self.tabs = tabs
         self.output_as_notebook = output_as_notebook
         if self.output_as_notebook:
@@ -175,7 +167,7 @@ class QCWorkTool:
         self._setup_flag_widgets()
         self._setup_reset_callback(**xrange_callbacks)
         self._setup_datasource_callbacks()
-        self._setup_download_button(user_download_directory)
+        self._setup_download_button(settings.user_download_directory)
         self._setup_get_file_button()
         self._setup_serie_table()
         self._setup_info_block()
@@ -183,17 +175,18 @@ class QCWorkTool:
 
         self.ts_axis_ranges = {'t_min': 0, 't_max': 25, 's_min': 2, 's_max': 36}
 
-    def get_mapper_key_to_ds(self):
+    def get_mapper_key_to_ds(self, file_name_elements):
         """Return mapper between dataset filename and key.
 
         Key = serie key (eg. '20191009_77SE_0005')
         """
-        # TODO: would we like to create this mapper in any other way?
-        #  Let´s say that the dataset name doesn't starts with "ctd_profile_"
-        #  mapper = {}
-        #  for key, item in self.datasets.items():
-        return {ds_name.replace('ctd_profile_', '').replace('.txt', ''): ds_name
-                for ds_name in self.datasets}
+        selected_keys = ('SDATE', 'SHIPC', 'SERNO')
+        mapper = {}
+        for ds_name in self.datasets:
+            name_map = {k: v for k, v in zip(file_name_elements,
+                                             ds_name.replace('.txt', '').split('_'))}
+            mapper['_'.join((name_map.get(k) for k in selected_keys))] = ds_name
+        return mapper
 
     @staticmethod
     def _get_monthly_keys(position_df):
@@ -282,6 +275,7 @@ class QCWorkTool:
                 self.position_plot_source,
                 self.data_source['main_source'],
                 self.datasets,
+                key_mapper=self.key_ds_mapper,
                 figure_objs=self.figures,
                 flag_keys=self.plot_parameters_mapping[parameter].get('q_flags'),
                 color_keys=self.plot_parameters_mapping[parameter].get('color_keys'),
@@ -294,6 +288,7 @@ class QCWorkTool:
         self.comnt_visit_button = cbs.comnt_visit_change_button(
             datasets=self.datasets,
             position_source=self.position_plot_source,
+            key_mapper=self.key_ds_mapper,
             comnt_obj=self.comnt_visit,
         )
 
@@ -301,6 +296,7 @@ class QCWorkTool:
         self.comnt_samp_button = cbs.comnt_samp_change_button(
             datasets=self.datasets,
             position_source=self.position_plot_source,
+            key_mapper=self.key_ds_mapper,
             data_source=self.data_source['main_source'],
             comnt_obj=self.comnt_samp,
         )
@@ -361,6 +357,7 @@ class QCWorkTool:
             self.position_plot_source,
             self.data_source,
             self.datasets,
+            key_mapper=self.key_ds_mapper,
             parameter_selector=self.parameter_selector,
             parameter_mapping=self.plot_parameters_mapping,
             figure_objs=None

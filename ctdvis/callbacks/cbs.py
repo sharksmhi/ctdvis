@@ -426,8 +426,9 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
     return row([flag_selector, button], sizing_mode="stretch_width")
 
 
-def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=None,
-                            color_keys=None, figure_objs=None, select_button=None):
+def get_flag_buttons_widget(position_source, data_source, datasets, key_mapper=None,
+                            flag_keys=None, color_keys=None,
+                            figure_objs=None, select_button=None):
     """Return a list of buttons.
 
     Each button represents a QC-flag which will be applied when the button is pressed.
@@ -495,10 +496,9 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
             print('multi serie selection, no good! len(selected_position) = {}'
                   ''.format(len(selected_position)))
             return
-
         selected_key = position_source.data['KEY'][selected_position[0]]
+        ds_key = key_mapper.get(selected_key)
         selected_indices = data_source.selected.indices
-        ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
         flag_value = flag_color_mapping[flag].get('flag')
         datasets[ds_key]['data'].loc[selected_indices, flag_keys] = flag_value
 
@@ -532,7 +532,8 @@ def get_flag_buttons_widget(position_source, data_source, datasets, flag_keys=No
     return row(button_list, sizing_mode="stretch_width")
 
 
-def get_multi_serie_flag_widget(position_source, data_source, datasets, parameter_selector=None,
+def get_multi_serie_flag_widget(position_source, data_source, datasets,
+                                key_mapper=None, parameter_selector=None,
                                 parameter_mapping=None, figure_objs=None):
     """Return a list of buttons.
 
@@ -595,7 +596,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets, paramete
         selected_position = position_source.selected.indices
         for pos_source_index in selected_position:
             selected_key = position_source.data['KEY'][pos_source_index]
-            ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
+            ds_key = key_mapper.get(selected_key)
             flag_value = flag_color_mapping[flag].get('flag')
             datasets[ds_key]['data'].loc[:, flag_keys] = flag_value
 
@@ -668,7 +669,8 @@ def get_download_widget(datasets, series, session, savepath):
     return button
 
 
-def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=None):
+def comnt_visit_change_button(datasets=None, position_source=None,
+                              key_mapper=None, comnt_obj=None):
     """Return a button."""
     def callback_py(attr, old, new, comnt_obj=None):
         selected_indices = position_source.selected.indices
@@ -677,7 +679,7 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
                   ''.format(len(selected_indices)))
             return
         selected_key = position_source.data['KEY'][selected_indices[0]]
-        ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
+        ds_key = key_mapper.get(selected_key)
         cv_boolean = datasets[ds_key]['metadata'].str.startswith('//METADATA;COMNT_VISIT;')
         datasets[ds_key]['metadata'][cv_boolean] = '//METADATA;COMNT_VISIT;' + comnt_obj.value
 
@@ -719,7 +721,8 @@ def comnt_visit_change_button(datasets=None, position_source=None, comnt_obj=Non
     return button
 
 
-def comnt_samp_change_button(datasets=None, position_source=None, data_source=None, comnt_obj=None):
+def comnt_samp_change_button(datasets=None, position_source=None,
+                             key_mapper=None, data_source=None, comnt_obj=None):
     """Return a button."""
     def callback_py(attr, old, new, comnt_obj=None):
         selected_indices = position_source.selected.indices
@@ -730,7 +733,7 @@ def comnt_samp_change_button(datasets=None, position_source=None, data_source=No
         selected_key = position_source.data['KEY'][selected_indices[0]]
         selected_data_indices = data_source.selected.indices
         # data_source[selected_key].data['COMNT_SAMP'][selected_data_indices] = comnt_obj.value
-        ds_key = ''.join(('ctd_profile_', selected_key, '.txt'))
+        ds_key = key_mapper.get(selected_key)
         # TODO add '; '.join(...)
         # datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices] = \
         #     datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices].apply(

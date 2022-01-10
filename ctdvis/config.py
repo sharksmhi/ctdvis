@@ -25,6 +25,7 @@ class Settings:
         """Initiate."""
         self.multi_sensors = None
         self.combo_plots = None
+        self.file_name_elements = None
         self.visualize_setting = visualize_setting or 'smhi_viz'
         self.base_directory = os.path.dirname(os.path.realpath(__file__))
         self.user_download_directory = os.path.join(os.path.expanduser("~"), "Downloads")
