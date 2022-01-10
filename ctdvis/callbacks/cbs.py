@@ -626,14 +626,13 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
     return row(button_list, sizing_mode="stretch_width")
 
 
-def get_download_widget(datasets, series, session, savepath):
+def get_download_widget(datasets, series, session, key_mapper, savepath):
     """Return a download button."""
     def callback_download(event):
-        def serie_generator(datasets_filelist, selected_keylist):
-            for name in datasets_filelist:
-                for key in selected_keylist:
-                    if key in name:
-                        yield name, key
+        def serie_generator(selected_keylist):
+            for key in selected_keylist:
+                if key in key_mapper:
+                    yield key_mapper.get(key)
 
         def append_qc_comment(meta):
             time_stamp = get_time_as_format(now=True, fmt='%Y%m%d%H%M')
@@ -646,12 +645,11 @@ def get_download_widget(datasets, series, session, savepath):
             return
 
         generator = serie_generator(
-            datasets.keys(),
             [series.data['KEY'][idx] for idx in series.selected.indices]
         )
 
         datasets_to_update = {}
-        for ds_name, _ in generator:
+        for ds_name in generator:
             append_qc_comment(datasets[ds_name]['metadata'])
             datasets_to_update[ds_name] = datasets[ds_name]
 
