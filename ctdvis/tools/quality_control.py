@@ -250,6 +250,7 @@ class QCWorkTool:
         self.download_button = cbs.get_download_widget(self.datasets,
                                                        self.position_plot_source,
                                                        self.ctd_session,
+                                                       self.key_ds_mapper,
                                                        savepath)
 
     def _setup_get_file_button(self):
