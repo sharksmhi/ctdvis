@@ -13,12 +13,13 @@ class Name:
 
     splitter = '_'
 
-    def __init__(self, file_name):
+    def __init__(self, file_name, name_elements):
         """Initiate."""
         args = file_name.replace('.txt', '').split(self.splitter)
-        self.date = pd.Timestamp(args[2])
-        self.shipc = args[3]
-        self.serno = float(args[4])
+        key_mapper = {k: v for k, v in zip(name_elements, args)}
+        self.date = pd.Timestamp(key_mapper.get('SDATE'))
+        self.shipc = key_mapper.get('SHIPC')
+        self.serno = float(key_mapper.get('SERNO'))
 
 
 class SplitNameList:
@@ -28,11 +29,11 @@ class SplitNameList:
     ships = []
     sernos = []
 
-    def __init__(self, name_list):
+    def __init__(self, name_list, name_elements):
         """Initiate."""
         self.names = name_list
         for name in name_list:
-            name_obj = Name(name)
+            name_obj = Name(name, name_elements)
             self.append_date(name_obj.date)
             self.append_shipc(name_obj.shipc)
             self.append_serno(name_obj.serno)
@@ -59,9 +60,9 @@ class Filter:
     Filename example: 'ctd_profile_20181208_34AR_0171.txt'.
     """
 
-    def __init__(self, name_list):
+    def __init__(self, name_list, file_name_elements):
         """Initiate."""
-        lists = SplitNameList(name_list)
+        lists = SplitNameList(name_list, file_name_elements)
         self.serie_names = pd.Series(lists.names)
         self.serie_dates = pd.Series(lists.dates)
         self.serie_ships = pd.Series(lists.ships)

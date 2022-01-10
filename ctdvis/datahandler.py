@@ -39,7 +39,8 @@ class Datadict(dict):
         super().__init__()
         self.data_directory = data_directory
 
-    def load_data(self, return_session=False, filters=None):
+    def load_data(self, return_session=False, filters=None,
+                  file_name_elements=None):
         """Load CTD-standard-formnat data.
 
         Using ctdpy.
@@ -49,14 +50,17 @@ class Datadict(dict):
             filters (dict | None): Filter out files to load based on month, serno or ship.
         """
         files = generate_filepaths(self.data_directory,
-                                   pattern='ctd_profile_',
+                                   not_pattern_list=['delivery_note',
+                                                     'information',
+                                                     'metadata',
+                                                     'sensorinfo'],
                                    endswith='.txt',
                                    only_from_dir=True)
 
         files = list(files)
 
         if filters:
-            filter_obj = Filter([os.path.basename(f) for f in files])
+            filter_obj = Filter([os.path.basename(f) for f in files], file_name_elements)
             filter_obj.add_filter(**filters)
             files = [f for f in files if os.path.basename(f) in filter_obj.valid_file_names]
 
@@ -119,9 +123,10 @@ class DataHandler:
     Conform self.df in order to use it in bokeh tools.
     """
 
-    def __init__(self, filters):
+    def __init__(self, filters, file_name_elements):
         """Initiate."""
         self.filters = filters
+        self.file_name_elements = file_name_elements
         self.raw_data = Datadict()
         self.df = Frame(index=[])
         self.ctd_session = None
@@ -129,13 +134,21 @@ class DataHandler:
     def load_profile_data(self, directory):
         """Load data."""
         self.raw_data.data_directory = directory
-        self.ctd_session = self.raw_data.load_data(return_session=True, filters=self.filters)
+        self.ctd_session = self.raw_data.load_data(
+            return_session=True,
+            filters=self.filters,
+            file_name_elements=self.file_name_elements
+        )
 
     def construct_dataframe(self, settings):
         """Set up dataframe according to a bokeh friendly format."""
+        selected_keys = ('SDATE', 'SHIPC', 'SERNO')
         for key, item in self.raw_data.items():
             df = item['data'].copy()
-            df['KEY'] = key.replace('ctd_profile_', '').replace('.txt', '')
+            key_mapper = {
+                k: v for k, v in zip(self.file_name_elements, key.replace('.txt', '').split('_'))
+            }
+            df['KEY'] = '_'.join((key_mapper.get(k, '') for k in selected_keys))
             self.df = self.df.append(Frame(df))
 
         self.df.reset_index(drop=True, inplace=True)
