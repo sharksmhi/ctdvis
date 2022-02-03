@@ -35,7 +35,7 @@
             "plot_color_key": "color_x4"
         },
         "SALT_CTD": {
-            "unit": "[psu (PSS-78)]",
+            "unit": "[psu]",
             "q_flag": "Q_SALT_CTD",
             "q0_flag": "Q0_SALT_CTD",
             "plot_key": "x2",
@@ -43,7 +43,7 @@
             "plot_color_key": "color_x2"
         },
         "SALT2_CTD": {
-            "unit": "[psu (PSS-78)]",
+            "unit": "[psu]",
             "q_flag": "Q_SALT2_CTD",
             "q0_flag": "Q0_SALT2_CTD",
             "plot_key": "x5",
