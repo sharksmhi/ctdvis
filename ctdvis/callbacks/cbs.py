@@ -730,15 +730,8 @@ def comnt_samp_change_button(datasets=None, position_source=None,
             return
         selected_key = position_source.data['KEY'][selected_indices[0]]
         selected_data_indices = data_source.selected.indices
-        # data_source[selected_key].data['COMNT_SAMP'][selected_data_indices] = comnt_obj.value
         ds_key = key_mapper.get(selected_key)
-        # TODO add '; '.join(...)
-        # datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices] = \
-        #     datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices].apply(
-        #         lambda x: '; '.join((x, comnt_obj.value))
-        #     )
         datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices] = comnt_obj.value
-        # datasets[ds_key]['data'][cv_boolean] = comnt_obj.value
 
     js_code = """
     console.log('comnt_visit_change_button')
