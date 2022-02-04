@@ -639,7 +639,7 @@ def get_download_widget(datasets, series, session, key_mapper, savepath):
             meta[len(meta) + 1] = '//COMNT_QC; MANUAL QC PERFORMED BY {}; TIMESTAMP {}'.format(
                 session.settings.user, time_stamp)
 
-        if not any(series.selected.indices):
+        if not len(series.selected.indices):
             print('No selected series to download')
             print('len(series.selected.indices)', series.selected.indices)
             return
@@ -653,7 +653,7 @@ def get_download_widget(datasets, series, session, key_mapper, savepath):
             append_qc_comment(datasets[ds_name]['metadata'])
             datasets_to_update[ds_name] = datasets[ds_name]
 
-        if any(datasets_to_update):
+        if datasets_to_update:
             session.save_data(
                 [datasets_to_update],
                 save_path=savepath or 'C:/QC_CTD',
