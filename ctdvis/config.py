@@ -10,7 +10,7 @@ import sys
 import requests
 from ctdvis.readers import JSONreader, load_json
 try:
-    from sharkpylib.qc.settings import Settings as shark_qc_settings
+    from profileqc.config import Settings as shark_qc_settings
 except ModuleNotFoundError as error:
     print(error)
     print('Could not import sharkpylib.qc.settings.',
@@ -40,15 +40,15 @@ class Settings:
             if not os.path.exists(file_path):
                 try:
                     r = requests.get(
-                        'https://raw.githubusercontent.com/sharksmhi/sharkpylib/master/sharkpylib/qc/etc/parameter_dependencies.json',  # noqa: E501
+                        'https://raw.githubusercontent.com/sharksmhi/profileqc/master/profileqc/etc/parameter_dependencies.json',  # noqa: E501
                         allow_redirects=True,
                     )
                     open(file_path, 'wb').write(r.content)
                     print('Download completed! file saved here: {}'.format(file_path))
                 except ConnectionError as error:
                     raise error(
-                        'Was not able to download https://raw.githubusercontent.com/sharksmhi/sharkpylib/master/sharkpylib/qc/etc/parameter_dependencies.json'  # noqa: E501
-                        'and could not import sharkpylib.qc.settings\n '
+                        'Was not able to download https://raw.githubusercontent.com/sharksmhi/profileqc/master/profileqc/etc/parameter_dependencies.json'  # noqa: E501
+                        'and could not import profileqc.config\n '
                         'Try again when you have access to the internet!'
                     )
             self.parameter_dependencies = load_json(file_path)
