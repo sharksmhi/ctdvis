@@ -12,20 +12,28 @@ from PyQt5.QtWidgets import QFileDialog, QApplication
 
 
 class DirectoryWindow(QFileDialog):
+    """Dialog window for directory selection."""
+
     def __init__(self, folder=None):
+        """Initiate."""
         super().__init__()
         self.folder = folder or 'C:/'
 
     def open_dialog(self, *args):
-        fname = self.getExistingDirectory(
+        """Set selected directory path."""
+        path = self.getExistingDirectory(
             self, 'Select a directory', self.folder
         )
-        if Path(fname).is_dir():
-            self.folder = fname
+        if Path(path).is_dir():
+            self.folder = path
 
 
 def get_folder_path_from_user():
-    app = QApplication(sys.argv)
+    """Return the selected directory path.
+
+    Opens up a diolog window.
+    """
+    app = QApplication(sys.argv)  # noqa: F841
     dir_selector = DirectoryWindow()
     dir_selector.open_dialog()
     return dir_selector.folder

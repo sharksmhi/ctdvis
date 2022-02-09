@@ -651,7 +651,6 @@ def get_download_widget(datasets, series, session, key_mapper, savepath):
                   'Using the system standard download '
                   'folder instead (Hämtade filer)')
 
-
         generator = serie_generator(
             [series.data['KEY'][idx] for idx in series.selected.indices]
         )
