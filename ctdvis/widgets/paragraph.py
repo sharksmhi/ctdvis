@@ -61,14 +61,24 @@ def get_info_block():
     return Div(text=text, width=200, height=100)
 
 
-def get_export_info_block():
+def get_export_info_block(export_folder):
     """Return Div object."""
-    text = """
-    <h4>Download steps:</h4>
-    <ol>
-      <li>Select series using "map-lasso" or "Shift-table-select"</li>
-      <li>Click on Download below</li>
-    </ol>
-    A folder with datafiles will be downloaded to your computer download-folder (eg. "Hämtade filer")
-    """  # noqa: E501
+    if export_folder:
+        text = f"""
+        <h4>Download steps:</h4>
+        <ol>
+          <li>Select series using "map-lasso" or "Shift-table-select"</li>
+          <li>Click on Download below</li>
+        </ol>
+        Datafiles will be downloaded to your data folder ({export_folder})
+        """  # noqa: E501
+    else:
+        text = """
+        <h4>Download steps:</h4>
+        <ol>
+          <li>Select series using "map-lasso" or "Shift-table-select"</li>
+          <li>Click on Download below</li>
+        </ol>
+        Select a folder for download after clicking on the green button below. If no valid folder is selected, datafiles will be downloaded to your computers download-folder (eg. "Hämtade filer")
+        """  # noqa: E501
     return Div(text=text)

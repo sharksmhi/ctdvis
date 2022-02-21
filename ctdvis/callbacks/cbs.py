@@ -12,6 +12,7 @@ from bokeh.models.widgets import Select
 from bokeh.plotting import figure
 from bokeh.events import ButtonClick
 from ctdvis.utils import get_time_as_format
+from ctdvis.widgets.directory_selection import get_folder_path_from_user
 
 
 def callback_test(source):
@@ -626,7 +627,8 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
     return row(button_list, sizing_mode="stretch_width")
 
 
-def get_download_widget(datasets, series, session, key_mapper, savepath):
+def get_download_widget(datasets, series, session, key_mapper, savepath,
+                        export_folder=None):
     """Return a download button."""
     def callback_download(event):
         def serie_generator(selected_keylist):
@@ -644,6 +646,15 @@ def get_download_widget(datasets, series, session, key_mapper, savepath):
             print('len(series.selected.indices)', series.selected.indices)
             return
 
+        if export_folder:
+            path = export_folder
+        else:
+            path = get_folder_path_from_user()
+        if not path:
+            print('No download directory selected! '
+                  'Using the system standard download '
+                  'folder instead (Hämtade filer)')
+
         generator = serie_generator(
             [series.data['KEY'][idx] for idx in series.selected.indices]
         )
@@ -656,13 +667,15 @@ def get_download_widget(datasets, series, session, key_mapper, savepath):
         if datasets_to_update:
             session.save_data(
                 [datasets_to_update],
-                save_path=savepath or 'C:/QC_CTD',
+                save_path=path or savepath or 'C:/QC_CTD',
+                collection_folder=False if path else True,
                 writer='ctd_standard_template',
             )
         else:
             print('No download!')
 
-    button = Button(label="Download selected data", button_type="success", width=40)
+    button = Button(label="Select directory and download data",
+                    button_type="success", width=40)
     button.on_event(ButtonClick, callback_download)
     return button
 
