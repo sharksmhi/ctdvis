@@ -8,5 +8,4 @@ ctdpy
 requests
 PyYAML
 setuptools
-yaml
 PyQt5
