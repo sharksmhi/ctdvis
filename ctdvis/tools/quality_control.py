@@ -57,6 +57,7 @@ class QCWorkTool:
                  settings=None,
                  tabs=None,
                  ctdpy_session=None,
+                 export_folder=False,
                  output_filename="CTD_QC_VIZ.html",
                  output_as_notebook=False,
                  ):
@@ -167,10 +168,11 @@ class QCWorkTool:
         self._setup_flag_widgets()
         self._setup_reset_callback(**xrange_callbacks)
         self._setup_datasource_callbacks()
-        self._setup_download_button(settings.user_download_directory)
+        self._setup_download_button(settings.user_download_directory,
+                                    export_folder=export_folder)
         self._setup_get_file_button()
         self._setup_serie_table()
-        self._setup_info_block()
+        self._setup_info_block(export_folder)
         self._setup_map()
 
         self.ts_axis_ranges = {'t_min': 0, 't_max': 25, 's_min': 2, 's_max': 36}
@@ -245,13 +247,14 @@ class QCWorkTool:
         # self.month_selector.title.text_align = 'center'
         callback.args["month"] = self.month_selector
 
-    def _setup_download_button(self, savepath):
+    def _setup_download_button(self, savepath, export_folder=None):
         """Set download widget."""
         self.download_button = cbs.get_download_widget(self.datasets,
                                                        self.position_plot_source,
                                                        self.ctd_session,
                                                        self.key_ds_mapper,
-                                                       savepath)
+                                                       savepath,
+                                                       export_folder=export_folder)
 
     def _setup_get_file_button(self):
         """Set file button widget."""
@@ -307,10 +310,10 @@ class QCWorkTool:
             comnt_obj=self.comnt_samp,
         )
 
-    def _setup_info_block(self):
+    def _setup_info_block(self, export_folder):
         """Set text block objects."""
         self.info_block = get_info_block()
-        self.text_export = get_export_info_block()
+        self.text_export = get_export_info_block(export_folder)
         self.text_index_selection = standard_block_header(text='Profile index selection', height=30)
         self.text_multi_serie_flagging = standard_block_header(
             text='Multi serie parameter flagging', height=30

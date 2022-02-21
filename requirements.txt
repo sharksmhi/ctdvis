@@ -1,6 +1,6 @@
 numpy
 matplotlib
-bokeh>=2.3.3
+bokeh
 gsw
 pyproj
 pandas
@@ -8,3 +8,5 @@ ctdpy
 requests
 PyYAML
 setuptools
+yaml
+PyQt5
