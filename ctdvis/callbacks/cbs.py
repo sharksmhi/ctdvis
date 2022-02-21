@@ -627,7 +627,8 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
     return row(button_list, sizing_mode="stretch_width")
 
 
-def get_download_widget(datasets, series, session, key_mapper, savepath):
+def get_download_widget(datasets, series, session, key_mapper, savepath,
+                        export_folder=None):
     """Return a download button."""
     def callback_download(event):
         def serie_generator(selected_keylist):
@@ -645,7 +646,10 @@ def get_download_widget(datasets, series, session, key_mapper, savepath):
             print('len(series.selected.indices)', series.selected.indices)
             return
 
-        path = get_folder_path_from_user()
+        if export_folder:
+            path = export_folder
+        else:
+            path = get_folder_path_from_user()
         if not path:
             print('No download directory selected! '
                   'Using the system standard download '
