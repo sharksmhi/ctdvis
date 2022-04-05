@@ -85,7 +85,6 @@ class QCWorkTool:
         elif self.as_standalone:
             output_file(output_filename)
 
-
         self.tile_provider = get_provider(Vendors.CARTODBPOSITRON_RETINA)
 
         self.figures = {}
