@@ -24,7 +24,8 @@ class Session:
         self.dh.load_profile_data(self.data_directory)
         self.dh.construct_dataframe(self.settings)
 
-    def run_tool(self, tool='qc_smhi', return_layout=False, export_folder=None):
+    def run_tool(self, tool='qc_smhi', return_layout=False, export_folder=None,
+                 output_as_standalone=False):
         """Run the main QC tool (Bokeh)."""
         # TODO settings in yaml-files.. dynamic obj-load..
         plot = QCWorkTool(
@@ -33,9 +34,12 @@ class Session:
             settings=self.settings,
             ctdpy_session=self.dh.ctd_session,
             export_folder=export_folder,
+            output_as_standalone=output_as_standalone,
         )
         plot.plot_stations()
         plot.plot_data()
 
         if return_layout:
             return plot.return_layout()
+        elif output_as_standalone:
+            plot.show_plot()
