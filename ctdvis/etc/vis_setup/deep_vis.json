@@ -51,11 +51,17 @@
                      "plot_key":  "x7",
                      "plot_q0_key":  "x7_q0",
                      "plot_color_key":  "color_x7"},
+        "DOXY_SAT_CTD": {"unit":  "[%]",
+                         "q_flag":  "Q_DOXY_SAT_CTD",
+                         "q0_flag":  "Q0_DOXY_SAT_CTD",
+                         "plot_key":  "x9",
+                         "plot_q0_key":  "x9_q0",
+                         "plot_color_key":  "color_x9"},
         "PAR_CTD": {"unit":  "[µE]",
                      "q_flag":  "Q_PAR_CTD",
                      "q0_flag":  "Q0_PAR_CTD",
-                     "plot_key":  "x9",
-                     "plot_q0_key":  "x9_q0",
-                     "plot_color_key":  "color_x9"}
+                     "plot_key":  "x11",
+                     "plot_q0_key":  "x1_q0",
+                     "plot_color_key":  "color_x11"}
     }
 }
