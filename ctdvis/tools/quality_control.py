@@ -79,13 +79,12 @@ class QCWorkTool:
         self.auto_qflag_fields = settings.q0_plot_keys
         self.tabs = tabs
         self.output_as_notebook = output_as_notebook
+        self.as_standalone = output_as_standalone
         if self.output_as_notebook:
             raise NotImplementedError('Not yet applicable to work with notebooks!')
-        elif output_as_standalone:
+        elif self.as_standalone:
             output_file(output_filename)
-            # output_notebook()
-        # else:
-        #     output_file(output_filename)
+
 
         self.tile_provider = get_provider(Vendors.CARTODBPOSITRON_RETINA)
 
@@ -624,22 +623,29 @@ class QCWorkTool:
     def get_layout(self):
         """Return the complete bokeh layout."""
         tabs = self.get_tab_layout()
-        meta_tabs = self.get_tabs(Data=['text_index_selection',
-                                        ('select_all_button', 'deselect_all_button'),
-                                        'pressure_slider',
-                                        'text_multi_serie_flagging',
-                                        'parameter_selector',
-                                        'multi_flag_widget'],
-                                  Metadata=['text_meta',
-                                            'comnt_visit', 'comnt_visit_button',
-                                            'comnt_samp',
-                                            'comnt_samp_selector',
-                                            'comnt_samp_button'],
-                                  Import=['text_import',
-                                          'file_button'],
-                                  Export=['text_export',
-                                          'download_button'],
-                                  Info=['info_block'])
+        tab_kwargs = {
+            'Data': [
+                'text_index_selection',
+                ('select_all_button', 'deselect_all_button'),
+                'pressure_slider',
+                'text_multi_serie_flagging',
+                'parameter_selector',
+                'multi_flag_widget'
+            ],
+            'Metadata': [
+                'text_meta',
+                'comnt_visit', 'comnt_visit_button',
+                'comnt_samp',
+                'comnt_samp_selector',
+                'comnt_samp_button'
+            ],
+            'Info': ['info_block']
+        }
+        if not self.as_standalone:
+            tab_kwargs['Import'] = ['text_import', 'file_button']
+            tab_kwargs['Export'] = ['text_export', 'download_button']
+
+        meta_tabs = self.get_tabs(**tab_kwargs)
         std_parameter_tabs = self.get_std_parameter_tab_layout()
         widgets_1 = column([self.month_selector, self.spacer, self.selected_series],
                            sizing_mode="fixed", height=400, width=200)
