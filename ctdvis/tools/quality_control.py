@@ -21,7 +21,7 @@ from bokeh.models import (
 )
 from bokeh.layouts import grid, row, column, Spacer
 from bokeh.models.widgets import Select, RangeSlider, DataTable, TableColumn, Panel, Tabs
-from bokeh.plotting import figure, show
+from bokeh.plotting import figure, show, output_file
 from bokeh.tile_providers import get_provider, Vendors
 from bokeh.core.validation import silence
 from bokeh.core.validation.warnings import FIXED_SIZING_MODE
@@ -60,6 +60,7 @@ class QCWorkTool:
                  export_folder=False,
                  output_filename="CTD_QC_VIZ.html",
                  output_as_notebook=False,
+                 output_as_standalone=False,
                  ):
         """Initiate."""
         self.seconds = ColumnDataSource(data=dict(tap_time=[None], reset_time=[None]))
@@ -80,6 +81,8 @@ class QCWorkTool:
         self.output_as_notebook = output_as_notebook
         if self.output_as_notebook:
             raise NotImplementedError('Not yet applicable to work with notebooks!')
+        elif output_as_standalone:
+            output_file(output_filename)
             # output_notebook()
         # else:
         #     output_file(output_filename)
