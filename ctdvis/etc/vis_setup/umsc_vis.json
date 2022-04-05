@@ -49,6 +49,12 @@
                     "q0_flag":  "Q0_PAR_CTD",
                     "plot_key":  "x11",
                     "plot_q0_key":  "x11_q0",
-                    "plot_color_key":  "color_x11"}
+                    "plot_color_key":  "color_x11"},
+        "SPAR_CTD": {"unit":  "[µmol/(m2 sec)]",
+                    "q_flag":  "Q_SPAR_CTD",
+                    "q0_flag":  "Q0_SPAR_CTD",
+                    "plot_key":  "x12",
+                    "plot_q0_key":  "x12_q0",
+                    "plot_color_key":  "color_x12"}
     }
 }
