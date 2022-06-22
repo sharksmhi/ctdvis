@@ -22,4 +22,4 @@ if __name__ == "__main__":
         filters=filters,
     )
 
-    s.setup_datahandler()
+    # s.setup_datahandler()

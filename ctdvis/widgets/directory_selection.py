@@ -8,7 +8,9 @@ Created on 2022-02-09 11:27
 """
 import sys
 from pathlib import Path
-from PyQt5.QtWidgets import QFileDialog, QApplication
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 
 
 class DirectoryWindow(QFileDialog):
@@ -39,10 +41,29 @@ def get_folder_path_from_user():
     return dir_selector.folder
 
 
+def message_box(text, icon_path=None):
+    """Return dialog window.
+
+    Args:
+        text: Text.
+        picture_path: Path to file.
+    """
+    app = QApplication(sys.argv)  # noqa: F841
+    msgbox = QMessageBox()
+    msgbox.setWindowTitle("Profile QC-tool")
+    msgbox.setText(text)
+    if icon_path:
+        msgbox.setIconPixmap(QPixmap(icon_path))
+    msgbox.setWindowFlags(Qt.WindowStaysOnTopHint)
+    msgbox.exec_()
+
+
 if __name__ == '__main__':
     # app = QApplication(sys.argv)
     # dir_selector = DirectoryWindow()
     # dir_selector.open_dialog()
     # sys.exit(app.exec_())
-    p = get_folder_path_from_user()
-    print(p)
+    # p = get_folder_path_from_user()
+    path = r'C:\Temp\skräp'
+    p = message_box(f"Download completed!\nThe files are stored under:\n{path}")
+    # print(p)
