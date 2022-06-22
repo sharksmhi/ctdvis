@@ -170,7 +170,8 @@ class QCWorkTool:
         self._setup_reset_callback(**xrange_callbacks)
         self._setup_datasource_callbacks()
         self._setup_download_button(settings.user_download_directory,
-                                    export_folder=export_folder)
+                                    export_folder=export_folder,
+                                    icons=settings.icons)
         self._setup_get_file_button()
         self._setup_serie_table()
         self._setup_info_block(export_folder)
@@ -248,14 +249,15 @@ class QCWorkTool:
         # self.month_selector.title.text_align = 'center'
         callback.args["month"] = self.month_selector
 
-    def _setup_download_button(self, savepath, export_folder=None):
+    def _setup_download_button(self, savepath, export_folder=None, icons=None):
         """Set download widget."""
         self.download_button = cbs.get_download_widget(self.datasets,
                                                        self.position_plot_source,
                                                        self.ctd_session,
                                                        self.key_ds_mapper,
                                                        savepath,
-                                                       export_folder=export_folder)
+                                                       export_folder=export_folder,
+                                                       icons=icons)
 
     def _setup_get_file_button(self):
         """Set file button widget."""
