@@ -6,6 +6,7 @@ Created on 2020-07-03 11:37
 @author: a002028
 """
 import os
+from pathlib import Path
 import sys
 import requests
 from ctdvis.readers import JSONreader, load_json
@@ -106,6 +107,12 @@ class Settings:
                 path_list.append(p)
         settings = JSONreader().load_json(config_files=path_list, return_dict=True)
         self.set_attributes(self, **settings)
+
+        paths = self.generate_filepaths(etc_path, pattern='.png')
+        icon_paths = {'icons': {}}
+        for p in paths:
+            icon_paths['icons'].setdefault(Path(p).stem, p)
+        self.set_attributes(self, **icon_paths)
 
     @staticmethod
     def set_attributes(obj, **kwargs):

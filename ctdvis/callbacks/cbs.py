@@ -12,7 +12,8 @@ from bokeh.models.widgets import Select
 from bokeh.plotting import figure
 from bokeh.events import ButtonClick
 from ctdvis.utils import get_time_as_format
-from ctdvis.widgets.directory_selection import get_folder_path_from_user
+from ctdvis.widgets.directory_selection import (get_folder_path_from_user,
+                                                message_box)
 
 
 def callback_test(source):
@@ -628,7 +629,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
 
 
 def get_download_widget(datasets, series, session, key_mapper, savepath,
-                        export_folder=None):
+                        export_folder=None, icons=None):
     """Return a download button."""
     def callback_download(event):
         def serie_generator(selected_keylist):
@@ -642,6 +643,8 @@ def get_download_widget(datasets, series, session, key_mapper, savepath,
                 session.settings.user, time_stamp)
 
         if not len(series.selected.indices):
+            message_box("No files where downloaded. Did you select any?",
+                        icon_path=icons.get('question'))
             print('No selected series to download')
             print('len(series.selected.indices)', series.selected.indices)
             return
@@ -665,13 +668,21 @@ def get_download_widget(datasets, series, session, key_mapper, savepath,
             datasets_to_update[ds_name] = datasets[ds_name]
 
         if datasets_to_update:
+            selected_path = path or savepath or 'C:/QC_CTD'
             session.save_data(
                 [datasets_to_update],
-                save_path=path or savepath or 'C:/QC_CTD',
+                save_path=selected_path,
                 collection_folder=False if path else True,
                 writer='ctd_standard_template',
             )
+            message_box(f"Download completed!\n"
+                        f"The files are stored under:\n{selected_path}",
+                        icon_path=icons.get('success'))
         else:
+            message_box("No files where downloaded. "
+                        "A guess: Not able to map between "
+                        "loaded files and file names.",
+                        icon_path=icons.get('question'))
             print('No download!')
 
     button = Button(label="Select directory and download data",
