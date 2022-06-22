@@ -1,4 +1,5 @@
-{   "multi_sensors": false,
+{
+    "multi_sensors": false,
     "combo_plots": false,
     "file_name_elements": [
         "SMTYP", "DTYPE", "SDATE", "SHIPC", "SERNO"
@@ -44,7 +45,7 @@
                      "plot_key":  "x8",
                      "plot_q0_key":  "x8_q0",
                      "plot_color_key":  "color_x8"},
-        "DENS_CTD": {"unit":  "[kg/m^3]",
+        "DENS_CTD": {"unit":  "[kg/m3]",
                      "q_flag":  "Q_DENS_CTD",
                      "q0_flag":  "Q0_DENS_CTD",
                      "plot_key":  "x9",
