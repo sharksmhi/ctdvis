@@ -25,7 +25,7 @@ def bokeh_qc_tool():
 
     Path to CTD-standard-format (including auto-QC-fields).
     """
-    data_dir = r'C:\Temp\CTD_DV\test_flex_format'
+    data_dir = r'C:\Utveckling\ctdpy\ctdpy\tests\test_data\bas2019'
 
     filters = None
     # filters = dict(
@@ -40,8 +40,8 @@ def bokeh_qc_tool():
 
     s = Session(
         # visualize_setting='slua_vis',
-        visualize_setting='smhi_expedition_vis',
-        # visualize_setting='smhi_vis',
+        # visualize_setting='smhi_expedition_vis',
+        visualize_setting='smhi_vis',
         data_directory=data_dir,
         filters=filters,
     )
