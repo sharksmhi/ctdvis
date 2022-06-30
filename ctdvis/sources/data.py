@@ -24,6 +24,8 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
             main_source[p] = ['']
         elif p.startswith('color'):
             main_source[p] = ['navy']
+        elif p.startswith('size'):
+            main_source[p] = [6]
         else:
             main_source[p] = [1]
 
@@ -39,13 +41,20 @@ def setup_data_source(df, pmap=None, key_list=None, parameter_list=None):
         for p in parameter_list:
             if p.startswith('COMNT'):
                 df_column = p
+            elif not p.startswith('color') and not p.startswith('size'):
+                df_column = pmap.get(p)
             else:
-                df_column = pmap.get(p) if not p.startswith('color') else p
+                df_column = p
 
             if df_column and df_column in key_df:
                 key_dict[p] = key_df[df_column].values
             else:
-                v = 'navy' if p.startswith('color') else np.nan
+                if p.startswith('color'):
+                    v = 'navy'
+                elif p.startswith('size'):
+                    v = 6
+                else:
+                    v = np.nan
                 key_dict[p] = [v] * key_df.__len__()
 
         data_dict[key] = ColumnDataSource(key_dict, name=key)

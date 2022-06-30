@@ -75,6 +75,7 @@ class QCWorkTool:
         self.parameters = settings.data_parameters_with_units
         self.plot_parameters_mapping = settings.plot_parameters_mapping
         self.color_fields = settings.q_colors
+        self.size_fields = settings.scatter_size
         self.qflag_fields = settings.q_parameters
         self.auto_qflag_fields = settings.q0_plot_keys
         self.tabs = tabs
@@ -91,7 +92,8 @@ class QCWorkTool:
         xrange_callbacks = {}
         y_range_setting = None
         for p in self.plot_parameters_mapping:
-            if p == 'y' or 'q' in p or p[0].isupper() or p.startswith('color'):
+            if p == 'y' or 'q' in p or p[0].isupper() or \
+                    p.startswith('color') or p.startswith('size'):
                 continue
             param = self.plot_parameters_mapping.get(p)
             self.figures[p] = figure(tools="pan,reset,wheel_zoom,lasso_select,save",
@@ -155,9 +157,8 @@ class QCWorkTool:
             dataframe,
             pmap=self.plot_parameters_mapping,
             key_list=np.unique(self.position_source.data['KEY']),
-            parameter_list=self.color_fields + self.plot_keys + self.auto_qflag_fields + ['COMNT_SAMP']  # noqa: E501
+            parameter_list=self.color_fields + self.size_fields + self.plot_keys + self.auto_qflag_fields + ['COMNT_SAMP']  # noqa: E501
         )
-
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)
         self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
@@ -286,6 +287,7 @@ class QCWorkTool:
                 figure_objs=self.figures,
                 flag_keys=self.plot_parameters_mapping[parameter].get('q_flags'),
                 color_keys=self.plot_parameters_mapping[parameter].get('color_keys'),
+                size_keys=self.plot_parameters_mapping[parameter].get('size_keys'),
                 select_button=self.select_all_button
             )
 
@@ -487,33 +489,34 @@ class QCWorkTool:
             if p.startswith('COMBO'):
                 p1, p2 = combo_mapping.get(p)
                 item.line(
-                    p1, 'y', color="color_{}".format(p1), line_color="navy", line_width=1,
+                    p1, 'y', color=f"color_{p1}", line_color="navy", line_width=1,
                     alpha=0.3,
                     source=self.data_source['main_source']
                 )
                 item.circle(
-                    p1, 'y', color="color_{}".format(p1), line_color="white", size=6, alpha=0.5,
+                    p1, 'y', color=f"color_{p1}", line_color="white",
+                    size=f"size_{p1}", alpha=0.5,
                     source=self.data_source['main_source']
                 )
 
                 item.line(
-                    p2, 'y', color="color_{}".format(p2), line_color="navy", line_width=1,
+                    p2, 'y', color=f"color_{p2}", line_color="navy", line_width=1,
                     alpha=0.3,
                     source=self.data_source['main_source']
                 )
                 item.cross(
-                    p2, 'y', color="color_{}".format(p2), size=6, alpha=0.5,
+                    p2, 'y', color=f"color_{p2}", size=f"size_{p2}", alpha=0.5,
                     source=self.data_source['main_source']
                 )
 
                 item.y_range.flipped = True
             else:
                 item.line(
-                    p, 'y', color="color_{}".format(p), line_color="navy", line_width=1, alpha=0.3,
+                    p, 'y', color=f"color_{p}", line_color="navy", line_width=1, alpha=0.3,
                     source=self.data_source['main_source']
                 )
                 renderer = item.circle(
-                    p, 'y', color="color_{}".format(p), line_color="white", size=6, alpha=0.5,
+                    p, 'y', color=f"color_{p}", line_color="white", size=f"size_{p}", alpha=0.5,
                     source=self.data_source['main_source']
                 )
                 renderer.nonselection_glyph = nonselected_circle
