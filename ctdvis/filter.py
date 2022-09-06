@@ -89,6 +89,9 @@ class Filter:
         if 'serno_min' in kwargs:
             self.boolean = self.serie_sernos >= kwargs.get('serno_min')
 
+        if 'file_names' in kwargs:
+            self.boolean = self.serie_names.isin(kwargs.get('file_names'))
+
     @property
     def valid_file_names(self):
         """Return valid filenames."""
