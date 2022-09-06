@@ -176,6 +176,11 @@ class Settings:
         return [item.get('plot_key') for item in self.data_parameters.values()]
 
     @property
+    def scatter_size(self):
+        """Return scatter-size-field-name of each parameter."""
+        return [item.get('plot_size_key') for item in self.data_parameters.values()]
+
+    @property
     def data_parameters_with_units(self):
         """Return list of paramter names including there respective unit."""
         return [' '.join((key, item.get('unit'))) for key, item in self.data_parameters.items()]
@@ -183,13 +188,21 @@ class Settings:
     @property
     def selected_keys(self):
         """Return selected data keys."""
-        return self.q_parameters + self.q0_parameters + self.q_colors + self.data_parameters_with_units + self.meta_parameters  # noqa: E501
+        return self.q_parameters + self.q0_parameters + self.q_colors + self.scatter_size + self.data_parameters_with_units + self.meta_parameters  # noqa: E501
 
     @property
     def q_colors_mapper(self):
         """Return mapper."""
         return {
             item.get('q_flag'): item.get('plot_color_key')
+            for item in self.data_parameters.values()
+        }
+
+    @property
+    def q_size_mapper(self):
+        """Return mapper."""
+        return {
+            item.get('q_flag'): item.get('plot_size_key')
             for item in self.data_parameters.values()
         }
 
@@ -201,6 +214,7 @@ class Settings:
             d[item.get('plot_key')] = ' '.join((key, item.get('unit')))
             d[item.get('plot_q0_key')] = item.get('q0_flag')
             d[item.get('plot_color_key')] = item.get('q_flag')
+            d[item.get('plot_size_key')] = item.get('q_flag')
             d[key] = {
                 'q_flags': [
                     self.data_parameters[k].get('q_flag') for k in self.parameter_dependencies[key]
@@ -208,6 +222,10 @@ class Settings:
                 ],
                 'color_keys': [
                     self.data_parameters[k].get('plot_color_key')
+                    for k in self.parameter_dependencies[key] if k in self.data_parameters
+                ],
+                'size_keys': [
+                    self.data_parameters[k].get('plot_size_key')
                     for k in self.parameter_dependencies[key] if k in self.data_parameters
                 ]
             }

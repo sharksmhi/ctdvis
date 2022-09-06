@@ -28,6 +28,18 @@ def set_color_code(qf):
         return 'navy'
 
 
+def set_scatter_size(qf):
+    """Return size based on the given flag."""
+    if qf == 'B':
+        return 12
+    elif qf == 'S':
+        return 12
+    elif qf == 'E':
+        return 12
+    else:
+        return 6
+
+
 class Datadict(dict):
     """Data Dictionary.
 
@@ -114,6 +126,13 @@ class Frame(pd.DataFrame, ABC):
             if q_para in self:
                 self[color_key] = np.vectorize(set_color_code)(self[q_para].fillna(''))
 
+    def add_size_columns(self, q_params, mapper=None):
+        """Add color columns for each parameter."""
+        for q_para in q_params:
+            size_key = mapper.get(q_para)
+            if q_para in self:
+                self[size_key] = np.vectorize(set_scatter_size)(self[q_para].fillna(''))
+
 
 class DataHandler:
     """Handler of data formats.
@@ -154,6 +173,7 @@ class DataHandler:
         self.df.reset_index(drop=True, inplace=True)
         self.df.convert_formats()
         self.df.add_color_columns(settings.q_parameters, mapper=settings.q_colors_mapper)
+        self.df.add_size_columns(settings.q_parameters, mapper=settings.q_size_mapper)
         self.df.set_column_format(**settings.parameter_formats)
         self.check_columns(*settings.selected_keys)
 

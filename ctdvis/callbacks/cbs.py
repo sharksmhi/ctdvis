@@ -377,17 +377,18 @@ def range_selection_callback(data_source=None):
                     code=code)
 
 
-def get_flag_widget(position_source, data_source, flag_key=None, color_key=None):
+def get_flag_widget(position_source, data_source, flag_key=None, color_key=None,
+                    size_key=None):
     """Return a bokeh row layout.
 
     Flag selector.
     """
     code = """
     console.log('get_flag_widget');
-    var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
-                              'B-flag': {'c':'red', 'flag': 'B'},
-                              'E-flag': {'c':'green', 'flag': 'E'},
-                              'S-flag': {'c':'orange', 'flag': 'S'}};
+    var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': '', 'size': 6},
+                              'B-flag': {'c':'red', 'flag': 'B', 'size': 12},
+                              'E-flag': {'c':'green', 'flag': 'E', 'size': 12},
+                              'S-flag': {'c':'orange', 'flag': 'S', 'size': 12}};
 
     // Get data from ColumnDataSource
     var position_data = position_source.data;
@@ -395,6 +396,7 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
 
     // Set variables attributes
     var color_column = color_key;
+    var size_column = size_key;
     var selected_flag = flag_selection.value;
 
     var selected_position = position_source.selected.indices;
@@ -406,6 +408,7 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
 
     for (var i = 0; i < selected_indices.length; i++) {
         data[color_column][selected_indices[i]] = flag_color_mapping[selected_flag]['c'];
+        data[size_column][selected_indices[i]] = flag_color_mapping[selected_flag]['size'];
         data[flag_column][selected_indices[i]] = flag_color_mapping[selected_flag]['flag'];
         // console.log('data[flag_column][selected_indices[i]]', data[flag_column][selected_indices[i]])
     }
@@ -421,6 +424,7 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
                            width=100, height=50)
     callback.args["flag_selection"] = flag_selector
     callback.args["color_key"] = color_key
+    callback.args["size_key"] = size_key
     callback.args["flag_key"] = flag_key
     button = Button(label="Flag Data", width=50)
     button.js_on_event(ButtonClick, callback)
@@ -429,7 +433,7 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None)
 
 
 def get_flag_buttons_widget(position_source, data_source, datasets, key_mapper=None,
-                            flag_keys=None, color_keys=None,
+                            flag_keys=None, color_keys=None, size_keys=None,
                             figure_objs=None, select_button=None):
     """Return a list of buttons.
 
@@ -437,10 +441,10 @@ def get_flag_buttons_widget(position_source, data_source, datasets, key_mapper=N
     """
     code = """
     //console.log('get_flag_buttons_widget');
-    var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
-                              'B-flag': {'c':'red', 'flag': 'B'},
-                              'E-flag': {'c':'green', 'flag': 'E'},
-                              'S-flag': {'c':'orange', 'flag': 'S'}};
+    var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': '', 'size': 6},
+                              'B-flag': {'c':'red', 'flag': 'B', 'size': 12},
+                              'E-flag': {'c':'green', 'flag': 'E', 'size': 12},
+                              'S-flag': {'c':'orange', 'flag': 'S', 'size': 12}};
 
     // Get data from ColumnDataSource
     var position_data = position_source.data;
@@ -449,6 +453,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, key_mapper=N
 
     // Set variables attributes
     var color_columns = color_keys;
+    var size_columns = size_keys;
     var flag_keys = flag_keys;
     var selected_flag = flag;
 
@@ -459,6 +464,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, key_mapper=N
     var selected_indices = data_source.selected.indices;
 
     var flag_value = flag_color_mapping[selected_flag]['flag'];
+    var size_value = flag_color_mapping[selected_flag]['size'];
     var color_value = flag_color_mapping[selected_flag]['c'];
 
     if (selected_position.length == 1) {
@@ -467,6 +473,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, key_mapper=N
             //console.log('index_value', index_value)
             for (var j = 0; j < color_columns.length; j++) {
                 data[color_columns[j]][selected_indices[i]] = color_value;
+                data[size_columns[j]][selected_indices[i]] = size_value;
                 //data[flag_keys[j]][selected_indices[i]] = flag_value;
             }
         }
@@ -522,6 +529,7 @@ def get_flag_buttons_widget(position_source, data_source, datasets, key_mapper=N
                             code=code)
 
         callback.args["color_keys"] = color_keys
+        callback.args["size_keys"] = size_keys
         callback.args["flag_keys"] = flag_keys
 
         button = Button(label=flag, width=30, button_type=b_type)
@@ -543,11 +551,10 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
     """
     code = """
     console.log('get_multi_serie_flag_widget');
-    var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': ''},
-                              'B-flag': {'c':'red', 'flag': 'B'},
-                              'E-flag': {'c':'green', 'flag': 'E'},
-                              'S-flag': {'c':'orange', 'flag': 'S'}};
-
+    var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': '', 'size': 6},
+                              'B-flag': {'c':'red', 'flag': 'B', 'size': 12},
+                              'E-flag': {'c':'green', 'flag': 'E', 'size': 12},
+                              'S-flag': {'c':'orange', 'flag': 'S', 'size': 12}};
     // Get data from ColumnDataSource
     var position_data = position_source.data;
     // var data = data_source.data;
@@ -556,10 +563,12 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
     var selected_flag = flag;
 
     var flag_keys = parameter_mapping[parameter_selector.value]['q_flags']
+    var size_columns = parameter_mapping[parameter_selector.value]['size_keys']
     var color_columns = parameter_mapping[parameter_selector.value]['color_keys']
 
     var flag_value = flag_color_mapping[selected_flag]['flag'];
     var color_value = flag_color_mapping[selected_flag]['c'];
+    var size_value = flag_color_mapping[selected_flag]['size'];
 
     var selected_position_indices = position_source.selected.indices;
     var selected_key = 0;
@@ -573,6 +582,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
         for (var i = 0; i < value_array.length; i++) {
             for (var j = 0; j < color_columns.length; j++) {
                 data_source[selected_key].data[color_columns[j]][i] = color_value;
+                data_source[selected_key].data[size_columns[j]][i] = size_value;
             }
         }
         data_source[selected_key].change.emit();
