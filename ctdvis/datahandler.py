@@ -5,7 +5,6 @@ Created on 2020-07-03 11:24
 
 @author: a002028
 """
-from abc import ABC
 import os
 
 import pandas as pd
@@ -92,7 +91,7 @@ class Datadict(dict):
         self.setdefault(key, item)
 
 
-class Frame(pd.DataFrame, ABC):
+class Frame(pd.DataFrame):
     """Subclassing pandas.DataFrame.
 
     We intend to use Frame as a DataFrame for all selected profile dataset.
