@@ -9,7 +9,8 @@ from ctdvis.session import Session
 
 
 if __name__ == "__main__":
-    data_dir = 'C:/Temp/CTD_DV/ctd_std_fmt_20200526_095058'
+    # data_dir = 'C:/Temp/CTD_DV/ctd_std_fmt_20200526_095058'
+    data_dir = r'C:\Arbetsmapp\datasets\Profile\2020\SHARK_Profile_2020_COD_SMHI\processed_data'
 
     filters = dict(
         month_list=[5],
@@ -19,6 +20,6 @@ if __name__ == "__main__":
     s = Session(
         visualize_setting='smhi_vis',
         data_directory=data_dir,
-        filters=filters,
+        # filters=filters,
     )
     # s.setup_datahandler()
