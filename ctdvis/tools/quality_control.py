@@ -183,7 +183,7 @@ class QCWorkTool:
             dataframe,
             pmap=self.plot_parameters_mapping,
             key_list=np.unique(self.position_source.data['KEY']),
-            parameter_list = self.color_fields + self.size_fields + self.plot_keys + self.auto_qflag_fields + ['COMNT_SAMP']  # noqa: E501
+            parameter_list=self.color_fields + self.size_fields + self.plot_keys + self.auto_qflag_fields + ['COMNT_SAMP']  # noqa: E501
         )
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)

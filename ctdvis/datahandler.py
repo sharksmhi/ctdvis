@@ -64,7 +64,7 @@ class Datadict(dict):
         files = generate_filepaths(
             self.data_directory,
             not_pattern_list=[
-                'delivery_note', 'information', 'metadata','sensorinfo'],
+                'delivery_note', 'information', 'metadata', 'sensorinfo'],
             endswith='.txt',
             only_from_dir=True
         )
