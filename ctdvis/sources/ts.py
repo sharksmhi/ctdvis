@@ -27,6 +27,8 @@ class Source(ColumnDataSource):
         ts_df = df.loc[:, parameters].copy()
         ts_df.loc[:, 'x'] = ts_df.loc[:, pmap.get('x2')]  # x2 = SALT
         ts_df.loc[:, 'y'] = ts_df.loc[:, pmap.get('x1')]  # x1 = TEMP
-        ts_df.loc[:, 'color'] = get_color_palette(dep_serie=ts_df.loc[:, pmap.get('y')])
+        ts_df.loc[:, 'color'] = get_color_palette(
+            dep_serie=ts_df.loc[:, pmap.get('y')]
+        )
 
         self.data.update(ts_df)

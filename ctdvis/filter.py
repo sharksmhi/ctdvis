@@ -78,7 +78,8 @@ class Filter:
         """
         if 'month_list' in kwargs:
             print('month', self.serie_dates.dt.month)
-            self.boolean = self.serie_dates.dt.month.isin(kwargs.get('month_list'))
+            self.boolean = self.serie_dates.dt.month.isin(
+                kwargs.get('month_list'))
 
         if 'ship_list' in kwargs:
             self.boolean = self.serie_ships.isin(kwargs.get('ship_list'))

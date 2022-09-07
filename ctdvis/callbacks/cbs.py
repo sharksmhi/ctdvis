@@ -12,8 +12,10 @@ from bokeh.models.widgets import Select
 from bokeh.plotting import figure
 from bokeh.events import ButtonClick
 from ctdvis.utils import get_time_as_format
-from ctdvis.widgets.directory_selection import (get_folder_path_from_user,
-                                                message_box)
+from ctdvis.widgets.directory_selection import (
+    get_folder_path_from_user,
+    message_box
+)
 
 
 def callback_test(source):
@@ -37,7 +39,9 @@ def month_selection_callback(position_source=None, position_plot_source=None):
     code = """
     console.log('month_selection_callback');
     // Get data from ColumnDataSource
-    var selected_data = {LATIT: [], LONGI: [], STATION: [], KEY: [], MONTH: [], COMNT_VISIT: []};
+    var selected_data = {
+        LATIT: [], LONGI: [], STATION: [], KEY: [], MONTH: [], COMNT_VISIT: []
+    };
     var data = source.data;
 
     var month_mapping = {'All': 'All',
@@ -127,7 +131,9 @@ def station_callback(position_source=None, data_source=None,
         data_source['main_source'].change.emit();
     } else {
         data_source['main_source'].data = data_source['default_source'].data;
-        console.log('We can only work with one serie at a time', selected.length)
+        console.log(
+            'We can only work with one serie at a time', selected.length
+        )
     }
 
     var d = new Date();
@@ -142,16 +148,20 @@ def station_callback(position_source=None, data_source=None,
     //console.log('station_callback - DONE');
     """
     # Create a CustomJS callback with the code and the data
-    return CustomJS(args={'position_source': position_source,
-                          'data_source': data_source,
-                          'figures': figures,
-                          'seconds': seconds,
-                          'parameter_mapping': pmap,
-                          },
-                    code=code)
+    return CustomJS(
+        args={
+            'position_source': position_source,
+            'data_source': data_source,
+            'figures': figures,
+            'seconds': seconds,
+            'parameter_mapping': pmap,
+        },
+        code=code
+    )
 
 
-def lasso_callback(monthly_keys=None, in_data=None, plot_data=None, x_range=None, y_range=None):
+def lasso_callback(monthly_keys=None, in_data=None, plot_data=None,
+                   x_range=None, y_range=None):
     """Return a CustomJS callback."""
     code = """
     //console.log('lasso_callback');
@@ -318,9 +328,18 @@ def select_button(data_source=None):
     button.button_type = 'success';
     //console.log('select_button DONE');
     """
-    button = Button(label="Select all indices", width=30, button_type="default")
-    callback = CustomJS(args={'data_source': data_source, 'button': button}, code=code)
-    button_type_callback = change_button_type_callback(button=button, btype='success')
+    button = Button(
+        label="Select all indices", width=30, button_type="default"
+    )
+    callback = CustomJS(
+        args={
+            'data_source': data_source,
+            'button': button
+        },
+        code=code
+    )
+    button_type_callback = change_button_type_callback(button=button,
+                                                       btype='success')
     button.js_on_event(ButtonClick, callback, button_type_callback)
     return button
 
@@ -331,7 +350,8 @@ def deselect_button(data_source=None):
     data_source.selected.indices = [];
     """
     callback = CustomJS(args={'data_source': data_source}, code=code)
-    button = Button(label="Deselect all indices", width=30, button_type="default")
+    button = Button(label="Deselect all indices", width=30,
+                    button_type="default")
     button.js_on_event(ButtonClick, callback)
     return button
 
@@ -385,10 +405,12 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None,
     """
     code = """
     console.log('get_flag_widget');
-    var flag_color_mapping = {'A-flag': {'c':'navy', 'flag': '', 'size': 6},
-                              'B-flag': {'c':'red', 'flag': 'B', 'size': 12},
-                              'E-flag': {'c':'green', 'flag': 'E', 'size': 12},
-                              'S-flag': {'c':'orange', 'flag': 'S', 'size': 12}};
+    var flag_color_mapping = {
+        'A-flag': {'c':'navy', 'flag': '', 'size': 6},
+        'B-flag': {'c':'red', 'flag': 'B', 'size': 12},
+        'E-flag': {'c':'green', 'flag': 'E', 'size': 12},
+        'S-flag': {'c':'orange', 'flag': 'S', 'size': 12}
+    };
 
     // Get data from ColumnDataSource
     var position_data = position_source.data;
@@ -410,7 +432,6 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None,
         data[color_column][selected_indices[i]] = flag_color_mapping[selected_flag]['c'];
         data[size_column][selected_indices[i]] = flag_color_mapping[selected_flag]['size'];
         data[flag_column][selected_indices[i]] = flag_color_mapping[selected_flag]['flag'];
-        // console.log('data[flag_column][selected_indices[i]]', data[flag_column][selected_indices[i]])
     }
 
     // Save changes to ColumnDataSource
@@ -432,12 +453,14 @@ def get_flag_widget(position_source, data_source, flag_key=None, color_key=None,
     return row([flag_selector, button], sizing_mode="stretch_width")
 
 
-def get_flag_buttons_widget(position_source, data_source, datasets, key_mapper=None,
-                            flag_keys=None, color_keys=None, size_keys=None,
-                            figure_objs=None, select_button=None):
+def get_flag_buttons_widget(position_source, data_source, datasets,
+                            key_mapper=None, flag_keys=None, color_keys=None,
+                            size_keys=None, figure_objs=None,
+                            select_button=None):
     """Return a list of buttons.
 
-    Each button represents a QC-flag which will be applied when the button is pressed.
+    Each button represents a QC-flag which will be applied when
+    the button is pressed.
     """
     code = """
     //console.log('get_flag_buttons_widget');
@@ -547,7 +570,8 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
                                 parameter_mapping=None, figure_objs=None):
     """Return a list of buttons.
 
-    Each button represents a QC-flag which will be applied when the button is pressed.
+    Each button represents a QC-flag which will be applied when
+    the button is pressed.
     """
     code = """
     console.log('get_multi_serie_flag_widget');
@@ -649,7 +673,8 @@ def get_download_widget(datasets, series, session, key_mapper, savepath,
 
         def append_qc_comment(meta):
             time_stamp = get_time_as_format(now=True, fmt='%Y%m%d%H%M')
-            meta[len(meta) + 1] = '//COMNT_QC; MANUAL QC PERFORMED BY {}; TIMESTAMP {}'.format(
+            comnt_string = '//COMNT_QC; MANUAL QC PERFORMED BY {}; TIMESTAMP {}'
+            meta[len(meta) + 1] = comnt_string.format(
                 session.settings.user, time_stamp)
 
         if not len(series.selected.indices):
@@ -712,8 +737,11 @@ def comnt_visit_change_button(datasets=None, position_source=None,
             return
         selected_key = position_source.data['KEY'][selected_indices[0]]
         ds_key = key_mapper.get(selected_key)
-        cv_boolean = datasets[ds_key]['metadata'].str.startswith('//METADATA;COMNT_VISIT;')
-        datasets[ds_key]['metadata'][cv_boolean] = '//METADATA;COMNT_VISIT;' + comnt_obj.value
+        cv_boolean = datasets[ds_key]['metadata'].str.startswith(
+            '//METADATA;COMNT_VISIT;')
+        datasets[ds_key]['metadata'][cv_boolean] = \
+            f'//METADATA;COMNT_VISIT;{comnt_obj.value}'
+
 
     js_code = """
     console.log('comnt_visit_change_button')
@@ -741,12 +769,17 @@ def comnt_visit_change_button(datasets=None, position_source=None,
     """  # noqa: E501
     dummy_figure = figure()
     dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
-    dummy_trigger.glyph.on_change('size', partial(callback_py, comnt_obj=comnt_obj))
+    dummy_trigger.glyph.on_change(
+        'size', partial(callback_py, comnt_obj=comnt_obj))
 
-    callback = CustomJS(args={'position_source': position_source,
-                              'comnt_obj': comnt_obj,
-                              'dummy_trigger': dummy_trigger},
-                        code=js_code)
+    callback = CustomJS(
+        args={
+            'position_source': position_source,
+            'comnt_obj': comnt_obj,
+            'dummy_trigger': dummy_trigger
+        },
+        code=js_code
+    )
 
     button = Button(label="Commit visit comnt", width=30, button_type="success")
     button.js_on_event(ButtonClick, callback)
@@ -765,7 +798,8 @@ def comnt_samp_change_button(datasets=None, position_source=None,
         selected_key = position_source.data['KEY'][selected_indices[0]]
         selected_data_indices = data_source.selected.indices
         ds_key = key_mapper.get(selected_key)
-        datasets[ds_key]['data']['COMNT_SAMP'].iloc[selected_data_indices] = comnt_obj.value
+        datasets[ds_key]['data']['COMNT_SAMP'].iloc[
+            selected_data_indices] = comnt_obj.value
 
     js_code = """
     console.log('comnt_visit_change_button')
@@ -797,15 +831,21 @@ def comnt_samp_change_button(datasets=None, position_source=None,
     """  # noqa: E501
     dummy_figure = figure()
     dummy_trigger = dummy_figure.circle(x=[1], y=[2], alpha=0)
-    dummy_trigger.glyph.on_change('size', partial(callback_py, comnt_obj=comnt_obj))
+    dummy_trigger.glyph.on_change(
+        'size', partial(callback_py, comnt_obj=comnt_obj))
 
-    callback = CustomJS(args={'position_source': position_source,
-                              'data_source': data_source,
-                              'comnt_obj': comnt_obj,
-                              'dummy_trigger': dummy_trigger},
-                        code=js_code)
+    callback = CustomJS(
+        args={
+            'position_source': position_source,
+            'data_source': data_source,
+            'comnt_obj': comnt_obj,
+            'dummy_trigger': dummy_trigger
+        },
+        code=js_code
+    )
 
-    button = Button(label="Commit sample comnt", width=30, button_type="success")
+    button = Button(label="Commit sample comnt", width=30,
+                    button_type="success")
     button.js_on_event(ButtonClick, callback)
     return button
 

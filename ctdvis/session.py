@@ -13,7 +13,8 @@ from ctdvis.datahandler import DataHandler
 class Session:
     """Main class of ctdvis."""
 
-    def __init__(self, visualize_setting=None, data_directory=None, filters=None):
+    def __init__(self, visualize_setting=None, data_directory=None,
+                 filters=None):
         """Initiate."""
         self.data_directory = data_directory
         self.settings = Settings(visualize_setting=visualize_setting)

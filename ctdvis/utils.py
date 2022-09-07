@@ -19,7 +19,9 @@ def get_color_palette(dep_serie=None):
     """Return palette."""
     number_of_colors = int(dep_serie.max() * 2 + 1)
     cm_map = cm.get_cmap('cool', number_of_colors)
-    color_array = pd.Series([colors.to_hex(cm_map(c)) for c in range(number_of_colors)])
+    color_array = pd.Series(
+        [colors.to_hex(cm_map(c)) for c in range(number_of_colors)]
+    )
     return [color_array[int(d * 2)] if d > 0 else 0 for d in dep_serie]
 
 
@@ -27,7 +29,13 @@ def convert_projection(lats, lons):
     """Return position in google projection."""
     project_projection = CRS('EPSG:4326')
     google_projection = CRS('EPSG:3857')
-    x, y = transform(project_projection, google_projection, lons, lats, always_xy=True)
+    x, y = transform(
+        project_projection,
+        google_projection,
+        lons,
+        lats,
+        always_xy=True
+    )
     return x, y
 
 
@@ -88,11 +96,7 @@ def get_time_as_format(now=None, timestamp=None, fmt=None):
 
 
 def recursive_dict_update(d, u):
-    """Recursive dictionary update.
-
-    Copied from:
-        http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth
-    """  # noqa: E501
+    """Recursive dictionary update."""
     for k, v in u.items():
         if isinstance(v, Mapping):
             r = recursive_dict_update(d.get(k, {}), v)
