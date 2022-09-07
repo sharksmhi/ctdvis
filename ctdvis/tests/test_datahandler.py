@@ -21,5 +21,4 @@ if __name__ == "__main__":
         data_directory=data_dir,
         filters=filters,
     )
-
     # s.setup_datahandler()
