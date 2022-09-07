@@ -183,9 +183,7 @@ class QCWorkTool:
             dataframe,
             pmap=self.plot_parameters_mapping,
             key_list=np.unique(self.position_source.data['KEY']),
-            parameter_list=self.color_fields + self.size_fields +
-                           self.plot_keys + self.auto_qflag_fields
-                           + ['COMNT_SAMP']  # noqa: E501
+            parameter_list = self.color_fields + self.size_fields + self.plot_keys + self.auto_qflag_fields + ['COMNT_SAMP']  # noqa: E501
         )
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)
@@ -647,7 +645,7 @@ class QCWorkTool:
         """
         time_stamp = get_time_as_format(now=True, fmt='%Y%m%d%H%M')
         comnt_string = '//QC_COMNT; MANUAL QC PERFORMED BY {}; TIMESTAMP {}'
-        meta_series[len(meta_series) + 1] =  comnt_string.format(
+        meta_series[len(meta_series) + 1] = comnt_string.format(
             self.ctd_session.settings.user, time_stamp)
 
     def get_tab_layout(self):

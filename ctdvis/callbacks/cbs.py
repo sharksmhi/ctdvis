@@ -620,7 +620,7 @@ def get_multi_serie_flag_widget(position_source, data_source, datasets,
     dummy_trigger.glyph.size = {'value': Math.random(), 'units': 'screen'};
     dummy_trigger.glyph.change.emit();
     console.log('DONE - get_multi_serie_flag_widget');
-    """
+    """  # noqa: E501
     flag_color_mapping = {'A-flag': {'c': 'navy', 'flag': ''},
                           'B-flag': {'c': 'red', 'flag': 'B'},
                           'E-flag': {'c': 'green', 'flag': 'E'},
@@ -741,7 +741,6 @@ def comnt_visit_change_button(datasets=None, position_source=None,
             '//METADATA;COMNT_VISIT;')
         datasets[ds_key]['metadata'][cv_boolean] = \
             f'//METADATA;COMNT_VISIT;{comnt_obj.value}'
-
 
     js_code = """
     console.log('comnt_visit_change_button')

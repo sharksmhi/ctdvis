@@ -198,9 +198,7 @@ class Settings:
     @property
     def selected_keys(self):
         """Return selected data keys."""
-        return self.q_parameters + self.q0_parameters + self.q_colors + \
-               self.scatter_size + self.data_parameters_with_units + \
-               self.meta_parameters
+        return self.q_parameters + self.q0_parameters + self.q_colors + self.scatter_size + self.data_parameters_with_units + self.meta_parameters  # noqa: E501
 
     @property
     def q_colors_mapper(self):
