@@ -29,13 +29,14 @@ class Settings:
         self.file_name_elements = None
         self.visualize_setting = visualize_setting or 'smhi_viz'
         self.base_directory = os.path.dirname(os.path.realpath(__file__))
-        self.user_download_directory = os.path.join(os.path.expanduser("~"), "Downloads")
+        self.user_download_directory = os.path.join(
+            os.path.expanduser("~"), "Downloads")
         etc_path = os.path.join(self.base_directory, 'etc')
         self._load_settings(etc_path)
 
         if shark_qc_settings:
             qc_settings = shark_qc_settings()
-            self.parameter_dependencies = qc_settings.parameter_dependencies.copy()
+            self.parameter_dependencies = qc_settings.parameter_dependencies.copy()  # noqa: E501
         else:
             file_path = os.path.join(etc_path, 'parameter_dependencies.json')
             if not os.path.exists(file_path):
@@ -45,7 +46,8 @@ class Settings:
                         allow_redirects=True,
                     )
                     open(file_path, 'wb').write(r.content)
-                    print('Download completed! file saved here: {}'.format(file_path))
+                    print('Download completed! file saved here: {}'.format(
+                        file_path))
                 except ConnectionError as error:
                     raise error(
                         'Was not able to download https://raw.githubusercontent.com/sharksmhi/profileqc/master/profileqc/etc/parameter_dependencies.json'  # noqa: E501
@@ -105,7 +107,8 @@ class Settings:
                     pass
             else:
                 path_list.append(p)
-        settings = JSONreader().load_json(config_files=path_list, return_dict=True)
+        settings = JSONreader().load_json(
+            config_files=path_list, return_dict=True)
         self.set_attributes(self, **settings)
 
         paths = self.generate_filepaths(etc_path, pattern='.png')
@@ -163,12 +166,16 @@ class Settings:
     @property
     def q_colors(self):
         """Return color-field-name of each parameter."""
-        return [item.get('plot_color_key') for item in self.data_parameters.values()]
+        return [
+            item.get('plot_color_key') for item in self.data_parameters.values()
+        ]
 
     @property
     def q0_plot_keys(self):
         """Return Q0-plot-key of each parameter."""
-        return [item.get('plot_q0_key') for item in self.data_parameters.values()]
+        return [
+            item.get('plot_q0_key') for item in self.data_parameters.values()
+        ]
 
     @property
     def plot_keys(self):
@@ -178,12 +185,15 @@ class Settings:
     @property
     def scatter_size(self):
         """Return scatter-size-field-name of each parameter."""
-        return [item.get('plot_size_key') for item in self.data_parameters.values()]
+        return [
+            item.get('plot_size_key') for item in self.data_parameters.values()
+        ]
 
     @property
     def data_parameters_with_units(self):
         """Return list of paramter names including there respective unit."""
-        return [' '.join((key, item.get('unit'))) for key, item in self.data_parameters.items()]
+        return [' '.join((key, item.get('unit')))
+                for key, item in self.data_parameters.items()]
 
     @property
     def selected_keys(self):
@@ -217,16 +227,19 @@ class Settings:
             d[item.get('plot_size_key')] = item.get('q_flag')
             d[key] = {
                 'q_flags': [
-                    self.data_parameters[k].get('q_flag') for k in self.parameter_dependencies[key]
+                    self.data_parameters[k].get('q_flag')
+                    for k in self.parameter_dependencies[key]
                     if k in self.data_parameters
                 ],
                 'color_keys': [
                     self.data_parameters[k].get('plot_color_key')
-                    for k in self.parameter_dependencies[key] if k in self.data_parameters
+                    for k in self.parameter_dependencies[key]
+                    if k in self.data_parameters
                 ],
                 'size_keys': [
                     self.data_parameters[k].get('plot_size_key')
-                    for k in self.parameter_dependencies[key] if k in self.data_parameters
+                    for k in self.parameter_dependencies[key]
+                    if k in self.data_parameters
                 ]
             }
         return d

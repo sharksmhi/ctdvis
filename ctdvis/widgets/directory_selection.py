@@ -56,14 +56,3 @@ def message_box(text, icon_path=None):
         msgbox.setIconPixmap(QPixmap(icon_path))
     msgbox.setWindowFlags(Qt.WindowStaysOnTopHint)
     msgbox.exec_()
-
-
-if __name__ == '__main__':
-    # app = QApplication(sys.argv)
-    # dir_selector = DirectoryWindow()
-    # dir_selector.open_dialog()
-    # sys.exit(app.exec_())
-    # p = get_folder_path_from_user()
-    path = r'C:\Temp\skräp'
-    p = message_box(f"Download completed!\nThe files are stored under:\n{path}")
-    # print(p)

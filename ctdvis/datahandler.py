@@ -58,22 +58,29 @@ class Datadict(dict):
 
         Args:
             return_session (bool): True/False
-            filters (dict | None): Filter out files to load based on month, serno or ship.
+            filters (dict | None): Filter out files to load based on month,
+                                   serno or ship.
         """
-        files = generate_filepaths(self.data_directory,
-                                   not_pattern_list=['delivery_note',
-                                                     'information',
-                                                     'metadata',
-                                                     'sensorinfo'],
-                                   endswith='.txt',
-                                   only_from_dir=True)
+        files = generate_filepaths(
+            self.data_directory,
+            not_pattern_list=[
+                'delivery_note', 'information', 'metadata', 'sensorinfo'],
+            endswith='.txt',
+            only_from_dir=True
+        )
 
         files = list(files)
 
         if filters:
-            filter_obj = Filter([os.path.basename(f) for f in files], file_name_elements)
+            filter_obj = Filter(
+                [os.path.basename(f) for f in files],
+                file_name_elements
+            )
             filter_obj.add_filter(**filters)
-            files = [f for f in files if os.path.basename(f) in filter_obj.valid_file_names]
+            files = [
+                f for f in files if os.path.basename(f)
+                in filter_obj.valid_file_names
+            ]
 
         ctd_session = Session(filepaths=files, reader='ctd_stdfmt')
 
@@ -104,8 +111,10 @@ class Frame(pd.DataFrame):
 
     def convert_formats(self):
         """Convert hard coded formats."""
-        self['SDATE'] = self[['YEAR', 'MONTH', 'DAY']].astype(str).apply('-'.join, axis=1)
-        self['STIME'] = self[['HOUR', 'MINUTE']].astype(str).apply(':'.join, axis=1)
+        self['SDATE'] = self[['YEAR', 'MONTH', 'DAY']].astype(str).apply(
+            '-'.join, axis=1)
+        self['STIME'] = self[['HOUR', 'MINUTE']].astype(str).apply(
+            ':'.join, axis=1)
 
     def set_column_format(self, **kwargs):
         """Set dtype of each parameter in the dataframe."""
@@ -123,14 +132,16 @@ class Frame(pd.DataFrame):
         for q_para in q_params:
             color_key = mapper.get(q_para)
             if q_para in self:
-                self[color_key] = np.vectorize(set_color_code)(self[q_para].fillna(''))
+                self[color_key] = np.vectorize(
+                    set_color_code)(self[q_para].fillna(''))
 
     def add_size_columns(self, q_params, mapper=None):
         """Add color columns for each parameter."""
         for q_para in q_params:
             size_key = mapper.get(q_para)
             if q_para in self:
-                self[size_key] = np.vectorize(set_scatter_size)(self[q_para].fillna(''))
+                self[size_key] = np.vectorize(
+                    set_scatter_size)(self[q_para].fillna(''))
 
 
 class DataHandler:
@@ -164,15 +175,19 @@ class DataHandler:
         for key, item in self.raw_data.items():
             df = item['data'].copy()
             key_mapper = {
-                k: v for k, v in zip(self.file_name_elements, key.replace('.txt', '').split('_'))
+                k: v for k, v in zip(
+                    self.file_name_elements, key.replace('.txt', '').split('_')
+                )
             }
             df['KEY'] = '_'.join((key_mapper.get(k, '') for k in selected_keys))
             self.df = self.df.append(Frame(df))
 
         self.df.reset_index(drop=True, inplace=True)
         self.df.convert_formats()
-        self.df.add_color_columns(settings.q_parameters, mapper=settings.q_colors_mapper)
-        self.df.add_size_columns(settings.q_parameters, mapper=settings.q_size_mapper)
+        self.df.add_color_columns(
+            settings.q_parameters, mapper=settings.q_colors_mapper)
+        self.df.add_size_columns(
+            settings.q_parameters, mapper=settings.q_size_mapper)
         self.df.set_column_format(**settings.parameter_formats)
         self.check_columns(*settings.selected_keys)
 

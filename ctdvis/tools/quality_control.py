@@ -20,7 +20,14 @@ from bokeh.models import (
     LinearColorMapper
 )
 from bokeh.layouts import grid, row, column, Spacer
-from bokeh.models.widgets import Select, RangeSlider, DataTable, TableColumn, Panel, Tabs
+from bokeh.models.widgets import (
+    Select,
+    RangeSlider,
+    DataTable,
+    TableColumn,
+    Panel,
+    Tabs
+)
 from bokeh.plotting import figure, show, output_file
 from bokeh.tile_providers import get_provider, Vendors
 from bokeh.core.validation import silence
@@ -29,7 +36,11 @@ import numpy as np
 import pandas as pd
 from matplotlib import colors
 from matplotlib import cm
-from ctdvis.utils import get_time_as_format, convert_projection, get_contour_data
+from ctdvis.utils import (
+    get_time_as_format,
+    convert_projection,
+    get_contour_data
+)
 from ctdvis.callbacks import cbs
 from ctdvis.sources.ts import Source as TS_Source
 from ctdvis.sources.data import setup_data_source
@@ -63,7 +74,9 @@ class QCWorkTool:
                  output_as_standalone=False,
                  ):
         """Initiate."""
-        self.seconds = ColumnDataSource(data=dict(tap_time=[None], reset_time=[None]))
+        self.seconds = ColumnDataSource(
+            data=dict(tap_time=[None], reset_time=[None])
+        )
         self.ctd_session = ctdpy_session
         self.multi_sensors = settings.multi_sensors
         self.combo_plots = settings.combo_plots
@@ -71,7 +84,8 @@ class QCWorkTool:
         self.map = None
         self.plot_keys = settings.plot_keys
         self.datasets = datasets
-        self.key_ds_mapper = self.get_mapper_key_to_ds(settings.file_name_elements)
+        self.key_ds_mapper = self.get_mapper_key_to_ds(
+            settings.file_name_elements)
         self.parameters = settings.data_parameters_with_units
         self.plot_parameters_mapping = settings.plot_parameters_mapping
         self.color_fields = settings.q_colors
@@ -82,7 +96,8 @@ class QCWorkTool:
         self.output_as_notebook = output_as_notebook
         self.as_standalone = output_as_standalone
         if self.output_as_notebook:
-            raise NotImplementedError('Not yet applicable to work with notebooks!')
+            raise NotImplementedError(
+                'Not yet applicable to work with notebooks!')
         elif self.as_standalone:
             output_file(output_filename)
 
@@ -96,19 +111,23 @@ class QCWorkTool:
                     p.startswith('color') or p.startswith('size'):
                 continue
             param = self.plot_parameters_mapping.get(p)
-            self.figures[p] = figure(tools="pan,reset,wheel_zoom,lasso_select,save",
-                                     active_drag="lasso_select",
-                                     title="", height=400, width=400,
-                                     y_range=y_range_setting,
-                                     tooltips=[(param, "@{}".format(p)),
-                                               ("Pressure [dbar]", "@y"),
-                                               ("Auto-QC", "@{}_q0".format(p))])
+            self.figures[p] = figure(
+                tools="pan,reset,wheel_zoom,lasso_select,save",
+                active_drag="lasso_select",
+                title="",
+                height=400, width=400,
+                y_range=y_range_setting,
+                tooltips=[(param, "@{}".format(p)),
+                          ("Pressure [dbar]", "@y"),
+                          ("Auto-QC", "@{}_q0".format(p))]
+            )
             self.figures[p].title.align = 'center'
             self.figures[p].xaxis.axis_label = param
             self.figures[p].xaxis.axis_label_text_font_style = 'bold'
             self.figures[p].ygrid.band_fill_alpha = 0.05
             self.figures[p].ygrid.band_fill_color = "black"
-            self.figures[p].toolbar.active_scroll = self.figures[p].select_one(WheelZoomTool)
+            self.figures[p].toolbar.active_scroll = self.figures[p].select_one(
+                WheelZoomTool)
 
             if not y_range_setting or (self.multi_sensors and p == 'x4'):
                 self.figures[p].yaxis.axis_label = 'Pressure (dbar)'
@@ -116,8 +135,10 @@ class QCWorkTool:
 
             y_range_setting = y_range_setting or self.figures[p].y_range
 
-            xrange_callbacks[p] = cbs.x_range_callback(x_range_obj=self.figures[p].x_range,
-                                                       seconds=self.seconds)
+            xrange_callbacks[p] = cbs.x_range_callback(
+                x_range_obj=self.figures[p].x_range,
+                seconds=self.seconds
+            )
             self.figures[p].x_range.js_on_change('start', xrange_callbacks[p])
 
         if self.combo_plots and self.multi_sensors:
@@ -126,11 +147,13 @@ class QCWorkTool:
                     ('COMBO_TEMP', 'COMBO_SALT', 'COMBO_DOXY'),
                     ('x1', 'x2', 'x3'), ('x4', 'x5', 'x6')):
                 param = self.plot_parameters_mapping.get(p1)
-                self.figures[name] = figure(tools="pan,reset,wheel_zoom,lasso_select,save",
-                                            active_drag="lasso_select",
-                                            title="", height=400, width=400,
-                                            y_range=y_range_setting,
-                                            )
+                self.figures[name] = figure(
+                    tools="pan,reset,wheel_zoom,lasso_select,save",
+                    active_drag="lasso_select",
+                    title="",
+                    height=400, width=400,
+                    y_range=y_range_setting,
+                )
                 self.figures[name].title.align = 'center'
                 self.figures[name].xaxis.axis_label = param
                 self.figures[name].xaxis.axis_label_text_font_style = 'bold'
@@ -143,11 +166,14 @@ class QCWorkTool:
                     self.figures[name].yaxis.axis_label = 'Pressure (dbar)'
                     self.figures[name].yaxis.axis_label_text_font_style = 'bold'
 
-        cbs.add_hlinked_crosshairs(*(fig_obj for i, fig_obj in self.figures.items()))
+        cbs.add_hlinked_crosshairs(
+            *(fig_obj for i, fig_obj in self.figures.items()))
 
         self.ts = figure(
-            title="CTD TS Diagram", tools=[PanTool(), WheelZoomTool(), ResetTool(), SaveTool()],
-            tooltips=[("Serie", "@key")], height=400, width=400,
+            title="CTD TS Diagram",
+            tools=[PanTool(), WheelZoomTool(), ResetTool(), SaveTool()],
+            tooltips=[("Serie", "@key")],
+            height=400, width=400,
             x_range=(2, 36), y_range=(-2, 20)
         )
         self.ts.title.align = 'center'
@@ -161,7 +187,9 @@ class QCWorkTool:
         )
         self.ts_source = TS_Source()
         self.ts_source.setup_source(dataframe, self.plot_parameters_mapping)
-        self.ts_plot_source = ColumnDataSource(data=dict(x=[], y=[], color=[], key=[]))
+        self.ts_plot_source = ColumnDataSource(
+            data=dict(x=[], y=[], color=[], key=[])
+        )
 
         self._setup_month_selector()
         self._setup_comnt_inputs()
@@ -170,9 +198,11 @@ class QCWorkTool:
         self._setup_flag_widgets()
         self._setup_reset_callback(**xrange_callbacks)
         self._setup_datasource_callbacks()
-        self._setup_download_button(settings.user_download_directory,
-                                    export_folder=export_folder,
-                                    icons=settings.icons)
+        self._setup_download_button(
+            settings.user_download_directory,
+            export_folder=export_folder,
+            icons=settings.icons
+        )
         self._setup_get_file_button()
         self._setup_serie_table()
         self._setup_info_block(export_folder)
@@ -188,8 +218,10 @@ class QCWorkTool:
         selected_keys = ('SDATE', 'SHIPC', 'SERNO')
         mapper = {}
         for ds_name in self.datasets:
-            name_map = {k: v for k, v in zip(file_name_elements,
-                                             ds_name.replace('.txt', '').split('_'))}
+            name_map = {
+                k: v for k, v in zip(file_name_elements,
+                                     ds_name.replace('.txt', '').split('_'))
+            }
             mapper['_'.join((name_map.get(k) for k in selected_keys))] = ds_name
         return mapper
 
@@ -219,8 +251,10 @@ class QCWorkTool:
             except Exception:
                 print('not valid', pos_row.KEY)
 
-        xs, ys = convert_projection(position_df['LATITUDE_DD'].astype(float).values,
-                                    position_df['LONGITUDE_DD'].astype(float).values)
+        xs, ys = convert_projection(
+            position_df['LATITUDE_DD'].astype(float).values,
+            position_df['LONGITUDE_DD'].astype(float).values
+        )
         position_df['LONGI'] = xs
         position_df['LATIT'] = ys
 
@@ -228,7 +262,8 @@ class QCWorkTool:
         for key in position_df['KEY']:
             ds_meta = self.datasets[self.key_ds_mapper.get(key)]['metadata']
             cv_boolean = ds_meta.str.startswith('//METADATA;COMNT_VISIT;')
-            value = ds_meta[cv_boolean].values[0].replace('//METADATA;COMNT_VISIT;', '')
+            value = ds_meta[cv_boolean].values[0].replace(
+                '//METADATA;COMNT_VISIT;', '')
             comnts.append(value)
         position_df['COMNT_VISIT'] = comnts
 
@@ -238,8 +273,10 @@ class QCWorkTool:
 
     def _setup_month_selector(self):
         """Set month selection widget."""
-        callback = cbs.month_selection_callback(position_source=self.position_source,
-                                                position_plot_source=self.position_plot_source)
+        callback = cbs.month_selection_callback(
+            position_source=self.position_source,
+            position_plot_source=self.position_plot_source
+        )
         self.month_selector = Select(
             title="Select month",
             value='All',
@@ -252,13 +289,15 @@ class QCWorkTool:
 
     def _setup_download_button(self, savepath, export_folder=None, icons=None):
         """Set download widget."""
-        self.download_button = cbs.get_download_widget(self.datasets,
-                                                       self.position_plot_source,
-                                                       self.ctd_session,
-                                                       self.key_ds_mapper,
-                                                       savepath,
-                                                       export_folder=export_folder,
-                                                       icons=icons)
+        self.download_button = cbs.get_download_widget(
+            self.datasets,
+            self.position_plot_source,
+            self.ctd_session,
+            self.key_ds_mapper,
+            savepath,
+            export_folder=export_folder,
+            icons=icons
+        )
 
     def _setup_get_file_button(self):
         """Set file button widget."""
@@ -269,8 +308,11 @@ class QCWorkTool:
         columns = [TableColumn(field="STATION", title="Station"),
                    TableColumn(field="KEY", title="Key"),
                    ]
-        self.selected_series = DataTable(source=self.position_plot_source, columns=columns,
-                                         width=300, height=322)
+        self.selected_series = DataTable(
+            source=self.position_plot_source,
+            columns=columns,
+            width=300, height=322
+        )
 
     def _setup_flag_widgets(self):
         """Set flag widgets."""
@@ -285,9 +327,9 @@ class QCWorkTool:
                 self.datasets,
                 key_mapper=self.key_ds_mapper,
                 figure_objs=self.figures,
-                flag_keys=self.plot_parameters_mapping[parameter].get('q_flags'),
-                color_keys=self.plot_parameters_mapping[parameter].get('color_keys'),
-                size_keys=self.plot_parameters_mapping[parameter].get('size_keys'),
+                flag_keys=self.plot_parameters_mapping[parameter].get('q_flags'),  # noqa: E501
+                color_keys=self.plot_parameters_mapping[parameter].get('color_keys'),  # noqa: E501
+                size_keys=self.plot_parameters_mapping[parameter].get('size_keys'),  # noqa: E501
                 select_button=self.select_all_button
             )
 
@@ -319,21 +361,29 @@ class QCWorkTool:
         """Set text block objects."""
         self.info_block = get_info_block()
         self.text_export = get_export_info_block(export_folder)
-        self.text_index_selection = standard_block_header(text='Profile index selection', height=30)
+        self.text_index_selection = standard_block_header(
+            text='Profile index selection', height=30)
         self.text_multi_serie_flagging = standard_block_header(
             text='Multi serie parameter flagging', height=30
         )
-        self.text_meta = standard_block_header(text='Change comments', height=30)
-        self.text_import = standard_block_header(text='Not yet applicable', height=30)
+        self.text_meta = standard_block_header(
+            text='Change comments', height=30)
+        self.text_import = standard_block_header(
+            text='Not yet applicable', height=30)
 
     def _setup_selection_widgets(self):
         """Set selection widgets."""
-        self.select_all_button = cbs.select_button(data_source=self.data_source['main_source'])
-        self.deselect_all_button = cbs.deselect_button(data_source=self.data_source['main_source'])
+        self.select_all_button = cbs.select_button(
+            data_source=self.data_source['main_source'])
+        self.deselect_all_button = cbs.deselect_button(
+            data_source=self.data_source['main_source'])
 
-        self.pressure_slider = RangeSlider(start=0, end=100, value=(0, 100),
-                                           step=0.5, title="Select with pressure range", width=300)
-        callback = cbs.range_selection_callback(data_source=self.data_source['main_source'])
+        self.pressure_slider = RangeSlider(
+            start=0, end=100, value=(0, 100),
+            step=0.5, title="Select with pressure range", width=300
+        )
+        callback = cbs.range_selection_callback(
+            data_source=self.data_source['main_source'])
         self.pressure_slider.js_on_change('value', callback)
 
     def _setup_multiflag_widget(self):
@@ -353,14 +403,16 @@ class QCWorkTool:
         parameter_list = []
         for p in self.figures.keys():
             if not p.startswith('COMBO'):
-                parameter_list.append(self.plot_parameters_mapping.get(p).split()[0])
+                parameter_list.append(
+                    self.plot_parameters_mapping.get(p).split()[0])
 
         parameter_list = sorted_params(sorted(parameter_list))
 
-        self.parameter_selector = Select(title="Select parameter",
-                                         value=parameter_list[0],
-                                         options=parameter_list
-                                         )
+        self.parameter_selector = Select(
+            title="Select parameter",
+            value=parameter_list[0],
+            options=parameter_list
+        )
 
         self.multi_flag_widget = cbs.get_multi_serie_flag_widget(
             self.position_plot_source,
@@ -379,14 +431,19 @@ class QCWorkTool:
         """
         for p in self.figures.keys():
             xr_cbs = (xr_cb for xr_cb in kwargs.values())
-            self.figures[p].js_on_event('reset', cbs.reset_callback(self.seconds),
-                                        *xr_cbs)
+            self.figures[p].js_on_event(
+                'reset', cbs.reset_callback(self.seconds), *xr_cbs
+            )
 
     def _setup_datasource_callbacks(self):
         """Set multiflag widgets."""
-        set_button_type_callback = cbs.change_button_type_callback(button=self.select_all_button,
-                                                                   btype='default')
-        self.data_source['main_source'].selected.js_on_change('indices', set_button_type_callback)
+        set_button_type_callback = cbs.change_button_type_callback(
+            button=self.select_all_button,
+            btype='default'
+        )
+        self.data_source['main_source'].selected.js_on_change(
+            'indices', set_button_type_callback
+        )
 
     def _setup_map(self):
         """Initiate the map object including all the connected interactivity."""
@@ -401,40 +458,53 @@ class QCWorkTool:
                                        ("Serie", "@KEY")])
 
         # range bounds supplied in web mercator coordinates
-        self.map = figure(x_range=(0, 4000000), y_range=(7100000, 9850000),
-                          x_axis_type="mercator", y_axis_type="mercator",
-                          plot_height=420, plot_width=1000,
-                          tools=[pan, wheel, tap, lasso, tooltips, reset, save])
+        self.map = figure(
+            x_range=(0, 4000000), y_range=(7100000, 9850000),
+            x_axis_type="mercator", y_axis_type="mercator",
+            plot_height=420, plot_width=1000,
+            tools=[pan, wheel, tap, lasso, tooltips, reset, save]
+        )
 
-        self.map.yaxis.axis_label = ' '  # in order to aline y-axis with figure window below
+        # in order to aline y-axis with figure window below,
+        # we set axis_label to ' '.
+        self.map.yaxis.axis_label = ' '
         self.map.xgrid.grid_line_color = None
         self.map.ygrid.grid_line_color = None
         self.map.toolbar.active_scroll = self.map.select_one(WheelZoomTool)
         self.map.add_tile(self.tile_provider)
 
-        station_data_callback = cbs.station_callback(position_source=self.position_plot_source,
-                                                     data_source=self.data_source,
-                                                     figures=self.figures,
-                                                     seconds=self.seconds,
-                                                     pmap=self.plot_parameters_mapping)
+        station_data_callback = cbs.station_callback(
+            position_source=self.position_plot_source,
+            data_source=self.data_source,
+            figures=self.figures,
+            seconds=self.seconds,
+            pmap=self.plot_parameters_mapping
+        )
         tap.callback = station_data_callback
 
-        # When we mark stations on the map using lasso selection, we activate the TS-diagram.
-        lasso_callback = cbs.lasso_callback(monthly_keys=self.monthly_keys,
-                                            in_data=self.ts_source,
-                                            plot_data=self.ts_plot_source,
-                                            x_range=self.ts.x_range,
-                                            y_range=self.ts.y_range)
+        # When we mark stations on the map using lasso selection,
+        # we activate the TS-diagram.
+        lasso_callback = cbs.lasso_callback(
+            monthly_keys=self.monthly_keys,
+            in_data=self.ts_source,
+            plot_data=self.ts_plot_source,
+            x_range=self.ts.x_range,
+            y_range=self.ts.y_range
+        )
 
-        station_data_callback_2 = cbs.station_callback(position_source=self.position_plot_source,
-                                                       data_source=self.data_source,
-                                                       figures=self.figures,
-                                                       seconds=self.seconds,
-                                                       pmap=self.plot_parameters_mapping)
+        station_data_callback_2 = cbs.station_callback(
+            position_source=self.position_plot_source,
+            data_source=self.data_source,
+            figures=self.figures,
+            seconds=self.seconds,
+            pmap=self.plot_parameters_mapping
+        )
 
-        comnt_callback = cbs.comnt_callback(position_source=self.position_plot_source,
-                                            comnt_obj=self.comnt_visit,
-                                            single_select=1)
+        comnt_callback = cbs.comnt_callback(
+            position_source=self.position_plot_source,
+            comnt_obj=self.comnt_visit,
+            single_select=1
+        )
 
         comnt_samp_callback = cbs.comnt_samp_callback(
             position_source=self.position_plot_source,
@@ -467,10 +537,16 @@ class QCWorkTool:
 
     def plot_stations(self):
         """Plot loaded stations on the map."""
-        renderer = self.map.circle('LONGI', 'LATIT', source=self.position_plot_source,
-                                   color="#5BC798", line_color="aquamarine", size=10, alpha=0.7)
-        selected_circle = Circle(fill_alpha=0.5, fill_color="#FF0202", line_color="aquamarine")
-        nonselected_circle = Circle(fill_alpha=0.3, fill_color="#5BC798", line_color="aquamarine")
+        renderer = self.map.circle(
+            'LONGI', 'LATIT', source=self.position_plot_source,
+            color="#5BC798", line_color="aquamarine", size=10, alpha=0.7
+        )
+        selected_circle = Circle(
+            fill_alpha=0.5, fill_color="#FF0202", line_color="aquamarine"
+        )
+        nonselected_circle = Circle(
+            fill_alpha=0.3, fill_color="#5BC798", line_color="aquamarine"
+        )
         renderer.selection_glyph = selected_circle
         renderer.nonselection_glyph = nonselected_circle
 
@@ -480,16 +556,21 @@ class QCWorkTool:
         Default data: x=[1] and y=[1].
         """
         combo_mapping = {
-            'COMBO_TEMP': ('x1', 'x4'), 'COMBO_SALT': ('x2', 'x5'), 'COMBO_DOXY': ('x3', 'x6')
+            'COMBO_TEMP': ('x1', 'x4'),
+            'COMBO_SALT': ('x2', 'x5'),
+            'COMBO_DOXY': ('x3', 'x6')
         }
 
-        nonselected_circle = Circle(fill_alpha=0.1, fill_color="#898989", line_color="lightgrey")
+        nonselected_circle = Circle(
+            fill_alpha=0.1, fill_color="#898989", line_color="lightgrey"
+        )
 
         for p, item in self.figures.items():
             if p.startswith('COMBO'):
                 p1, p2 = combo_mapping.get(p)
                 item.line(
-                    p1, 'y', color=f"color_{p1}", line_color="navy", line_width=1,
+                    p1, 'y', color=f"color_{p1}",
+                    line_color="navy", line_width=1,
                     alpha=0.3,
                     source=self.data_source['main_source']
                 )
@@ -500,7 +581,8 @@ class QCWorkTool:
                 )
 
                 item.line(
-                    p2, 'y', color=f"color_{p2}", line_color="navy", line_width=1,
+                    p2, 'y', color=f"color_{p2}",
+                    line_color="navy", line_width=1,
                     alpha=0.3,
                     source=self.data_source['main_source']
                 )
@@ -512,11 +594,13 @@ class QCWorkTool:
                 item.y_range.flipped = True
             else:
                 item.line(
-                    p, 'y', color=f"color_{p}", line_color="navy", line_width=1, alpha=0.3,
+                    p, 'y', color=f"color_{p}",
+                    line_color="navy", line_width=1, alpha=0.3,
                     source=self.data_source['main_source']
                 )
                 renderer = item.circle(
-                    p, 'y', color=f"color_{p}", line_color="white", size=f"size_{p}", alpha=0.5,
+                    p, 'y', color=f"color_{p}", line_color="white",
+                    size=f"size_{p}", alpha=0.5,
                     source=self.data_source['main_source']
                 )
                 renderer.nonselection_glyph = nonselected_circle
@@ -528,15 +612,20 @@ class QCWorkTool:
         self.ts.toolbar.active_scroll = self.ts.select_one(WheelZoomTool)
         self.ts.legend.location = "top_left"
 
-        number_of_colors = int(self.ts_source.data[self.plot_parameters_mapping.get('y')].max()) * 2
+        number_of_colors = int(
+            self.ts_source.data[self.plot_parameters_mapping.get('y')].max()
+        ) * 2
         number_of_colors += 1
         cm_map = cm.get_cmap('cool', number_of_colors)
-        color_array = [colors.to_hex(cm_map(c)) for c in range(number_of_colors)]
+        color_array = [
+            colors.to_hex(cm_map(c)) for c in range(number_of_colors)
+        ]
         color_bar = ColorBar(
             color_mapper=LinearColorMapper(
                 palette=color_array,
                 low=0,
-                high=self.ts_source.data[self.plot_parameters_mapping.get('y')].max()
+                high=self.ts_source.data[
+                    self.plot_parameters_mapping.get('y')].max()
             ),
             location=(0, 0),
         )
@@ -555,18 +644,24 @@ class QCWorkTool:
         Will be placed on the row just above the data table in each data file.
         """
         time_stamp = get_time_as_format(now=True, fmt='%Y%m%d%H%M')
-        meta_series[len(meta_series) + 1] = '//QC_COMNT; MANUAL QC PERFORMED BY {}; TIMESTAMP {}' \
-                                            ''.format(self.ctd_session.settings.user, time_stamp)
+        comnt_string = '//QC_COMNT; MANUAL QC PERFORMED BY {}; TIMESTAMP {}'
+        meta_series[len(meta_series) + 1] = comnt_string.format(
+            self.ctd_session.settings.user, time_stamp)
 
     def get_tab_layout(self):
         """Return bokeh tab widget."""
-        fig_tabs = [Panel(child=column([Spacer(height=30, width=20), self.ts]), title="TS")]
+        fig_tabs = [
+            Panel(child=column([Spacer(height=30, width=20), self.ts]),
+                  title="TS")
+        ]
         for p, item in self.figures.items():
-            if (self.multi_sensors and p not in ['x1', 'x2', 'x3', 'x4', 'x5', 'x6',
-                                                 'COMBO_TEMP', 'COMBO_SALT', 'COMBO_DOXY']) \
-                    or (not self.multi_sensors and p not in ['x1', 'x2', 'x3']):
+            if (self.multi_sensors and p not in [
+                'x1', 'x2', 'x3', 'x4', 'x5', 'x6',
+                'COMBO_TEMP', 'COMBO_SALT', 'COMBO_DOXY'
+            ]) or (not self.multi_sensors and p not in ['x1', 'x2', 'x3']):
                 tab_layout = column([self.flag_widgets[p], item])
-                tab_name = self.plot_parameters_mapping.get(p).split()[0].replace('_CTD', '')
+                tab_name = self.plot_parameters_mapping.get(
+                    p).split()[0].replace('_CTD', '')
                 pan = Panel(child=tab_layout, title=tab_name)
                 fig_tabs.append(pan)
 
@@ -589,7 +684,8 @@ class QCWorkTool:
             if type(attr) == str:
                 c_list.append(self.__getattribute__(attr))
             elif type(attr) == tuple:
-                r = row([self.__getattribute__(a) for a in attr], sizing_mode="stretch_width")
+                r = row([self.__getattribute__(a) for a in attr],
+                        sizing_mode="stretch_width")
                 c_list.append(r)
         return column(c_list)
 
@@ -614,13 +710,15 @@ class QCWorkTool:
                         tab_cols.append(self.figures[p])
                         tab = column(tab_cols)
                         pan = Panel(
-                            child=tab, title=pan_title(self.plot_parameters_mapping.get(p) or p)
+                            child=tab, title=pan_title(
+                                self.plot_parameters_mapping.get(p) or p)
                         )
                         pans.append(pan)
                 columns.append(column([Tabs(tabs=pans)]))
         else:
             for p1 in ('x1', 'x2', 'x3'):
-                columns.append(column([self.flag_widgets[p1], self.figures[p1]]))
+                columns.append(column([
+                    self.flag_widgets[p1], self.figures[p1]]))
 
         return columns
 
@@ -651,11 +749,13 @@ class QCWorkTool:
 
         meta_tabs = self.get_tabs(**tab_kwargs)
         std_parameter_tabs = self.get_std_parameter_tab_layout()
-        widgets_1 = column([self.month_selector, self.spacer, self.selected_series],
+        widgets_1 = column([self.month_selector, self.spacer,
+                            self.selected_series],
                            sizing_mode="fixed", height=400, width=200)
         widgets_2 = column([Spacer(height=10, width=125)],
                            sizing_mode="fixed", height=10, width=125)
-        widgets_3 = column([meta_tabs], sizing_mode="stretch_both", height=100, width=100)
+        widgets_3 = column([meta_tabs], sizing_mode="stretch_both",
+                           height=100, width=100)
         return grid(
             [
                 row([self.map, widgets_1, widgets_2, widgets_3]),
