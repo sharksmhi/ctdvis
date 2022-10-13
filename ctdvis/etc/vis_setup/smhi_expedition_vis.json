@@ -91,6 +91,24 @@
             "plot_color_key": "color_x8",
             "plot_size_key": "size_x8"
         },
+        "SIGMA_THETA_CTD": {
+            "unit": "[kg/m3]",
+            "q_flag": "Q_SIGMA_THETA_CTD",
+            "q0_flag": "Q0_SIGMA_THETA_CTD",
+            "plot_key": "x17",
+            "plot_q0_key": "x17_q0",
+            "plot_color_key": "color_x17",
+            "plot_size_key": "size_x17"
+        },
+        "SIGMA_THETA2_CTD": {
+            "unit": "[kg/m3]",
+            "q_flag": "Q_SIGMA_THETA2_CTD",
+            "q0_flag": "Q0_SIGMA_THETA2_CTD",
+            "plot_key": "x18",
+            "plot_q0_key": "x18_q0",
+            "plot_color_key": "color_x18",
+            "plot_size_key": "size_x18"
+        },
         "DENS_CTD": {
             "unit": "[kg/m3]",
             "q_flag": "Q_DENS_CTD",
@@ -144,6 +162,24 @@
             "plot_q0_key": "x14_q0",
             "plot_color_key": "color_x14",
             "plot_size_key": "size_x14"
+        },
+        "DOXY_SAT_CTD": {
+            "unit": "[%]",
+            "q_flag": "Q_DOXY_SAT_CTD",
+            "q0_flag": "Q0_DOXY_SAT_CTD",
+            "plot_key": "x15",
+            "plot_q0_key": "x15_q0",
+            "plot_color_key": "color_x15",
+            "plot_size_key": "size_x15"
+        },
+        "DOXY_SAT2_CTD": {
+            "unit": "[%]",
+            "q_flag": "Q_DOXY_SAT2_CTD",
+            "q0_flag": "Q0_DOXY_SAT2_CTD",
+            "plot_key": "x16",
+            "plot_q0_key": "x16_q0",
+            "plot_color_key": "color_x16",
+            "plot_size_key": "size_x16"
         }
     }
 }
