@@ -503,9 +503,10 @@ def get_flag_buttons_widget(position_source, data_source, datasets,
 
         // Save changes to ColumnDataSource (only on the plotting side of ColumnDataSource)
         data_source.change.emit();
-        for (var key in figure_objs) {
-            figure_objs[key].reset.emit();
-        }
+        // If we want to reset figure size after flagging.
+        // for (var key in figure_objs) {
+        //     figure_objs[key].reset.emit();
+        // }
         data_source.selected.indices = selected_indices;
         select_button.button_type = select_button_type;
 

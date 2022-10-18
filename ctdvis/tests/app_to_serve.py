@@ -7,6 +7,8 @@ Created on 2021-03-17 09:17
 """
 from bokeh.plotting import curdoc
 from ctdvis.session import Session
+import warnings
+warnings.filterwarnings('ignore')
 
 
 """
@@ -25,7 +27,7 @@ def bokeh_qc_tool():
 
     Path to CTD-standard-format (including auto-QC-fields).
     """
-    data_dir = r'C:\Utveckling\ctdpy\ctdpy\tests\test_data\bas2019'
+    data_dir = r'C:\Temp\CTD_DV\mh_test'
 
     filters = None
     # filters = dict(
@@ -40,8 +42,8 @@ def bokeh_qc_tool():
 
     s = Session(
         # visualize_setting='slua_vis',
-        # visualize_setting='smhi_expedition_vis',
-        visualize_setting='smhi_vis',
+        visualize_setting='smhi_expedition_vis',
+        # visualize_setting='smhi_vis',
         data_directory=data_dir,
         filters=filters,
     )
