@@ -109,24 +109,6 @@
             "plot_color_key": "color_x18",
             "plot_size_key": "size_x18"
         },
-        "DENS_CTD": {
-            "unit": "[kg/m3]",
-            "q_flag": "Q_DENS_CTD",
-            "q0_flag": "Q0_DENS_CTD",
-            "plot_key": "x9",
-            "plot_q0_key": "x9_q0",
-            "plot_color_key": "color_x9",
-            "plot_size_key": "size_x9"
-        },
-        "DENS2_CTD": {
-            "unit": "[kg/m3]",
-            "q_flag": "Q_DENS2_CTD",
-            "q0_flag": "Q0_DENS2_CTD",
-            "plot_key": "x10",
-            "plot_q0_key": "x10_q0",
-            "plot_color_key": "color_x10",
-            "plot_size_key": "size_x10"
-        },
         "PAR_CTD": {
             "unit": "[µE/(cm2 sec)]",
             "q_flag": "Q_PAR_CTD",
@@ -180,6 +162,24 @@
             "plot_q0_key": "x16_q0",
             "plot_color_key": "color_x16",
             "plot_size_key": "size_x16"
-        }
+        },
+        "SVEL_CTD": {
+            "unit": "[m/s]",
+            "q_flag": "Q_SVEL_CTD",
+            "q0_flag": "Q0_SVEL_CTD",
+            "plot_key": "x19",
+            "plot_q0_key": "x19_q0",
+            "plot_color_key": "color_x19",
+            "plot_size_key": "size_x19"
+        },
+        "SVEL2_CTD": {
+            "unit": "[m/s]",
+            "q_flag": "Q_SVEL2_CTD",
+            "q0_flag": "Q0_SVEL2_CTD",
+            "plot_key": "x20",
+            "plot_q0_key": "x20_q0",
+            "plot_color_key": "color_x20",
+            "plot_size_key": "size_x20"
+        }        
     }
 }
