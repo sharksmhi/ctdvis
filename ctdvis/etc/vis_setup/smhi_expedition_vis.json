@@ -73,24 +73,6 @@
             "plot_color_key": "color_x6",
             "plot_size_key": "size_x6"
         },
-        "CNDC_CTD": {
-            "unit": "[S/m]",
-            "q_flag": "Q_CNDC_CTD",
-            "q0_flag": "Q0_CNDC_CTD",
-            "plot_key": "x7",
-            "plot_q0_key": "x7_q0",
-            "plot_color_key": "color_x7",
-            "plot_size_key": "size_x7"
-        },
-        "CNDC2_CTD": {
-            "unit": "[S/m]",
-            "q_flag": "Q_CNDC2_CTD",
-            "q0_flag": "Q0_CNDC2_CTD",
-            "plot_key": "x8",
-            "plot_q0_key": "x8_q0",
-            "plot_color_key": "color_x8",
-            "plot_size_key": "size_x8"
-        },
         "SIGMA_THETA_CTD": {
             "unit": "[kg/m3]",
             "q_flag": "Q_SIGMA_THETA_CTD",
@@ -180,6 +162,60 @@
             "plot_q0_key": "x20_q0",
             "plot_color_key": "color_x20",
             "plot_size_key": "size_x20"
-        }        
+        },
+        "ALTM_CTD": {
+            "unit": "[m]",
+            "q_flag": "Q_ALTM_CTD",
+            "q0_flag": "Q0_ALTM_CTD",
+            "plot_key": "x21",
+            "plot_q0_key": "x21_q0",
+            "plot_color_key": "color_x21",
+            "plot_size_key": "size_x21"
+        },        
+        "DESC_RATE_CTD": {
+            "unit": "[m/s]",
+            "q_flag": "Q_DESC_RATE_CTD",
+            "q0_flag": "Q0_DESC_RATE_CTD",
+            "plot_key": "x22",
+            "plot_q0_key": "x22_q0",
+            "plot_color_key": "color_x22",
+            "plot_size_key": "size_x22"
+        },        
+        "CNDC_CTD": {
+            "unit": "[S/m]",
+            "q_flag": "Q_CNDC_CTD",
+            "q0_flag": "Q0_CNDC_CTD",
+            "plot_key": "x7",
+            "plot_q0_key": "x7_q0",
+            "plot_color_key": "color_x7",
+            "plot_size_key": "size_x7"
+        },
+        "CNDC2_CTD": {
+            "unit": "[S/m]",
+            "q_flag": "Q_CNDC2_CTD",
+            "q0_flag": "Q0_CNDC2_CTD",
+            "plot_key": "x8",
+            "plot_q0_key": "x8_q0",
+            "plot_color_key": "color_x8",
+            "plot_size_key": "size_x8"
+        },
+        "DENS_CTD": {
+            "unit": "[kg/m3]",
+            "q_flag": "Q_DENS_CTD",
+            "q0_flag": "Q0_DENS_CTD",
+            "plot_key": "x9",
+            "plot_q0_key": "x9_q0",
+            "plot_color_key": "color_x9",
+            "plot_size_key": "size_x9"
+        },
+        "DENS2_CTD": {
+            "unit": "[kg/m3]",
+            "q_flag": "Q_DENS2_CTD",
+            "q0_flag": "Q0_DENS2_CTD",
+            "plot_key": "x10",
+            "plot_q0_key": "x10_q0",
+            "plot_color_key": "color_x10",
+            "plot_size_key": "size_x10"
+        }
     }
 }
