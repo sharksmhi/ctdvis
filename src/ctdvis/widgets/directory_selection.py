@@ -8,9 +8,15 @@ Created on 2022-02-09 11:27
 """
 import sys
 from pathlib import Path
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+# from PyQt5.QtWidgets import QFileDialog, QApplication, QMessageBox
+# from PyQt5.QtGui import QPixmap
+# from PyQt5.QtCore import Qt
+
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import filedialog
+root = tk.Tk()
+root.withdraw()
 
 
 class DirectoryWindow(QFileDialog):
@@ -30,7 +36,7 @@ class DirectoryWindow(QFileDialog):
             self.folder = path
 
 
-def get_folder_path_from_user():
+def old_get_folder_path_from_user():
     """Return the selected directory path.
 
     Opens up a diolog window.
@@ -41,7 +47,7 @@ def get_folder_path_from_user():
     return dir_selector.folder
 
 
-def message_box(text, icon_path=None):
+def old_message_box(text, icon_path=None):
     """Return dialog window.
 
     Args:
@@ -56,3 +62,11 @@ def message_box(text, icon_path=None):
         msgbox.setIconPixmap(QPixmap(icon_path))
     msgbox.setWindowFlags(Qt.WindowStaysOnTopHint)
     msgbox.exec_()
+
+
+def get_folder_path_from_user():
+    return filedialog.askdirectory()
+
+
+def message_box(text, icon_path=None):
+    messagebox.showinfo('', text)
