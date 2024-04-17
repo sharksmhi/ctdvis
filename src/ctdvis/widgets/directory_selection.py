@@ -19,21 +19,21 @@ root = tk.Tk()
 root.withdraw()
 
 
-class DirectoryWindow(QFileDialog):
-    """Dialog window for directory selection."""
-
-    def __init__(self, folder=None):
-        """Initiate."""
-        super().__init__()
-        self.folder = folder or 'C:/'
-
-    def open_dialog(self, *args):
-        """Set selected directory path."""
-        path = self.getExistingDirectory(
-            self, 'Select a directory', self.folder
-        )
-        if Path(path).is_dir():
-            self.folder = path
+# class DirectoryWindow(QFileDialog):
+#     """Dialog window for directory selection."""
+#
+#     def __init__(self, folder=None):
+#         """Initiate."""
+#         super().__init__()
+#         self.folder = folder or 'C:/'
+#
+#     def open_dialog(self, *args):
+#         """Set selected directory path."""
+#         path = self.getExistingDirectory(
+#             self, 'Select a directory', self.folder
+#         )
+#         if Path(path).is_dir():
+#             self.folder = path
 
 
 def old_get_folder_path_from_user():
