@@ -143,6 +143,10 @@ class Frame(pd.DataFrame):
                 self[size_key] = np.vectorize(
                     set_scatter_size)(self[q_para].fillna(''))
 
+    def append(self, df):
+        new_df = pd.concat([self, df])
+        return Frame(new_df)
+
 
 class DataHandler:
     """Handler of data formats.

@@ -28,6 +28,14 @@ from bokeh.models.widgets import (
     Panel,
     Tabs
 )
+# from bokeh.models.widgets import Select
+# from bokeh.models.widgets import RangeSlider
+# from bokeh.models.widgets import DataTable
+# from bokeh.models.widgets import TableColumn
+# from bokeh.models.layouts import TabPanel
+# from bokeh.models.layouts import Tabs
+
+
 from bokeh.plotting import figure, show, output_file
 from bokeh.tile_providers import get_provider, Vendors
 from bokeh.core.validation import silence

@@ -5,7 +5,7 @@ Created on 2020-07-03 11:25
 
 @author: a002028
 """
-from collections import Mapping
+from collections.abc import Mapping
 from datetime import datetime
 from pyproj import CRS, transform
 import numpy as np
