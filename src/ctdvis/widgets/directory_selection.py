@@ -71,8 +71,8 @@ def get_folder_path_from_user():
 
 def message_box(text, icon_path=None):
     try:
-        messagebox.showinfo('', text)
+        messagebox.showinfo('Meddelande', text)
     except:
         root = tk.Tk()
         root.withdraw()
-        messagebox.showinfo('', text)
+        messagebox.showinfo('Meddelande', text)
