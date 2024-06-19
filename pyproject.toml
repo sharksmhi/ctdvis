@@ -6,13 +6,14 @@ authors = [
     {name = "Johannes Johansson", email = "nodc@smhi.se"},
 ]
 dependencies = [
-    "pandas>=2.2.2",
-    "bokeh==2.4.2",
+    "pandas~=2.2",
+    "bokeh==2.4.*",
     "pyproj>=3.6.1",
     "pyyaml>=6.0.1",
-    "matplotlib>=3.8.4",
+    "matplotlib==3.8.*",
     "requests>=2.31.0",
     "gsw>=3.6.17",
+    "numpy>=1.26.4,<2.0.0",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
