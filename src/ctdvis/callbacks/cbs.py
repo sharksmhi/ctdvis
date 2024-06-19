@@ -14,7 +14,7 @@ from bokeh.events import ButtonClick
 from ctdvis.utils import get_time_as_format
 from ctdvis.widgets.directory_selection import (
     get_folder_path_from_user,
-    message_box
+    # message_box
 )
 
 
@@ -679,9 +679,10 @@ def get_download_widget(datasets, series, session, key_mapper, savepath,
                 session.settings.user, time_stamp)
 
         if not len(series.selected.indices):
-            message_box("No files where downloaded. Did you select any?",
-                        icon_path=icons.get('question'))
-            print('No selected series to download')
+            # message_box("No files where downloaded. Did you select any?",
+            #             icon_path=icons.get('question'))
+            print('\n' * 10)
+            print('No selected series to download. Did you select any?')
             print('len(series.selected.indices)', series.selected.indices)
             return
 
@@ -704,6 +705,7 @@ def get_download_widget(datasets, series, session, key_mapper, savepath,
             datasets_to_update[ds_name] = datasets[ds_name]
 
         if datasets_to_update:
+            print('\n' * 10)
             selected_path = path or savepath or 'C:/QC_CTD'
             session.save_data(
                 [datasets_to_update],
@@ -711,15 +713,22 @@ def get_download_widget(datasets, series, session, key_mapper, savepath,
                 collection_folder=False if path else True,
                 writer='ctd_standard_template',
             )
-            message_box(f"Download completed!\n"
-                        f"The files are stored under:\n{selected_path}",
-                        icon_path=icons.get('success'))
+
+            # from bokeh.io import curdoc, show
+            # from bokeh.models import Label
+            # layout = Label(x=70, y=70, text='Download completed!')
+            # curdoc().add_root(layout)
+            # curdoc().title = "Pop-up Alert"
+            print(f'Download completed! The files are stored under:\n    {selected_path}')
+            # message_box(f"Download completed!\n"
+            #             f"The files are stored under:\n{selected_path}",
+            #             icon_path=icons.get('success'))
         else:
-            message_box("No files where downloaded. "
-                        "A guess: Not able to map between "
-                        "loaded files and file names.",
-                        icon_path=icons.get('question'))
-            print('No download!')
+            # message_box("No files where downloaded. "
+            #             "A guess: Not able to map between "
+            #             "loaded files and file names.",
+            #             icon_path=icons.get('question'))
+            print('No files where downloaded. A guess: Not able to map between loaded files and file names.'.upper())
 
     button = Button(label="Select directory and download data",
                     button_type="success", width=40)
