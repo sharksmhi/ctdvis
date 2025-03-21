@@ -86,7 +86,7 @@
                      "plot_q0_key":  "x10_q0",
                      "plot_color_key":  "color_x10",
                      "plot_size_key":  "size_x10"},
-        "PAR_CTD": {"unit":  "[µE/(cm2 sec)]",
+        "PAR_CTD": {"unit":  "[µE/(m2 sec)]",
                      "q_flag":  "Q_PAR_CTD",
                      "q0_flag":  "Q0_PAR_CTD",
                      "plot_key":  "x11",

@@ -92,7 +92,7 @@
             "plot_size_key": "size_x18"
         },
         "PAR_CTD": {
-            "unit": "[µE/(cm2 sec)]",
+            "unit": "[µE/(m2 sec)]",
             "q_flag": "Q_PAR_CTD",
             "q0_flag": "Q0_PAR_CTD",
             "plot_key": "x11",
