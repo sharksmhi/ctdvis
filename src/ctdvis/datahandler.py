@@ -52,7 +52,7 @@ class Datadict(dict):
 
     def load_data(self, return_session=False, filters=None,
                   file_name_elements=None):
-        """Load CTD-standard-formnat data.
+        """Load CTD-standard-format data.
 
         Using ctdpy.
 
